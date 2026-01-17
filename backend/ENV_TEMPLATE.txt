@@ -1,0 +1,6 @@
+# Backend environment variables
+PORT=4000
+DATABASE_URL=postgresql://user:password@localhost:5432/skillxintell
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+JWT_SECRET=change-me

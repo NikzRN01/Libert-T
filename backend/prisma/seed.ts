@@ -1,0 +1,2 @@
+// Prisma seed placeholder.
+export {};
