@@ -1,19 +1,5 @@
 {
   "name": "skillxintell",
-  "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
-  "scripts": {
-    "dev": "npm run dev --workspace frontend & npm run dev --workspace backend",
-    "lint": "npm run lint --workspace frontend",
-    "build": "npm run build --workspace frontend && npm run build --workspace backend"
-  }
-}
-
-{
-  "name": "skillxintell",
   "version": "1.0.0",
   "description": "Holistic Academic and Professional Skill Intelligence System for Emerging Sectors",
   "private": true,
