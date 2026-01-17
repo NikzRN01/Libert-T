@@ -32,7 +32,7 @@ export default function RegisterPage() {
     const roles = [
         { id: "STUDENT", label: "Student/Learner" },
         { id: "EDUCATOR", label: "Educator/Mentor" },
-        { id: "EMPLOYER", label: "Employer/Recruiter" },
+        { id: "Employee", label: "Employee/Recruiter" },
     ];
 
     // Password strength calculation

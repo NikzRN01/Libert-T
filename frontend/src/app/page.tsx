@@ -189,7 +189,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Projects</h3>
               <p className="text-slate-600 leading-relaxed">
-                Showcase your real-world projects and demonstrate practical expertise to employers
+                Showcase your real-world projects and demonstrate practical expertise to Employees
               </p>
             </div>
 

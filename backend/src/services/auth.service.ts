@@ -16,7 +16,7 @@ export interface RegisterData {
     email: string;
     password: string;
     name: string;
-    role?: 'STUDENT' | 'EDUCATOR' | 'EMPLOYER' | 'ADMIN';
+    role?: 'STUDENT' | 'EDUCATOR' | 'Employee' | 'ADMIN';
 }
 
 export interface LoginData {

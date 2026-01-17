@@ -27,10 +27,10 @@ async function main() {
             role: 'EDUCATOR',
         },
         {
-            email: 'employer@skillxintell.com',
-            password: 'Employer@123',
-            name: 'Employer Demo',
-            role: 'EMPLOYER',
+            email: 'Employee@skillxintell.com',
+            password: 'Employee@123',
+            name: 'Employee Demo',
+            role: 'Employee',
         },
     ];
 
@@ -78,9 +78,9 @@ async function main() {
     console.log('   Email: educator@skillxintell.com');
     console.log('   Password: Educator@123');
     console.log('');
-    console.log('💼 Employer Account:');
-    console.log('   Email: employer@skillxintell.com');
-    console.log('   Password: Employer@123');
+    console.log('💼 Employee Account:');
+    console.log('   Email: Employee@skillxintell.com');
+    console.log('   Password: Employee@123');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     console.log('\n💡 Next steps:');
