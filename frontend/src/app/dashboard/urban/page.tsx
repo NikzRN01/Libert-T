@@ -235,7 +235,7 @@ export default function UrbanDashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-3 gap-6">
                 <Link
-                    href="/dashboard/skills?sector=URBAN"
+                    href="/dashboard/urban/skills"
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">

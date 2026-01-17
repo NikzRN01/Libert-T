@@ -203,7 +203,7 @@ export default function HealthcareDashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-3 gap-6">
                 {[{
-                    href: "/dashboard/skills?sector=HEALTHCARE",
+                    href: "/dashboard/healthcare/skills",
                     icon: <Target className="h-6 w-6 text-blue-600" />,
                     title: "Skills Tracker",
                     copy: "Manage healthcare IT skills, proficiencies, and gaps.",
