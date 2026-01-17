@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
+import { getHealthcareCareerPaths } from '../services/udemy.service';
 
 // Healthcare-specific skill categories
 const HEALTHCARE_CATEGORIES = [
@@ -250,8 +251,17 @@ export const getHealthcareCareerPathways = async (req: Request, res: Response) =
             },
         });
 
-        // Career pathways based on skills
-        const pathways = generateCareerPathways(skills);
+        // Get career pathways with Udemy courses
+        const pathwaysWithCourses = await getHealthcareCareerPaths();
+
+        // Calculate match scores based on user skills
+        const pathways = pathwaysWithCourses.map(pathway => {
+            const matchScore = calculateMatchScoreFromSkills(skills, pathway.skills);
+            return {
+                ...pathway,
+                matchScore,
+            };
+        }).sort((a, b) => b.matchScore - a.matchScore);
 
         res.json({
             success: true,
@@ -607,6 +617,29 @@ function calculateMatchScore(userSkills: any[], requiredSkills: string[]): numbe
     const matchPercentage = (matchedSkills.length / requiredSkills.length) * 100;
 
     // Factor in proficiency
+    const avgProficiency = matchedSkills.length > 0
+        ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
+        : 0;
+
+    return Math.round((matchPercentage * 0.7) + (avgProficiency / 5 * 100 * 0.3));
+}
+
+// Helper: Calculate match score from skill names
+function calculateMatchScoreFromSkills(userSkills: any[], requiredSkillNames: string[]): number {
+    if (requiredSkillNames.length === 0) return 0;
+
+    const userSkillNames = userSkills.map(s => s.name.toLowerCase());
+    const matchedCount = requiredSkillNames.filter(required =>
+        userSkillNames.some(userSkill => userSkill.includes(required.toLowerCase()))
+    ).length;
+
+    const matchPercentage = (matchedCount / requiredSkillNames.length) * 100;
+
+    // Factor in average proficiency of matched skills
+    const matchedSkills = userSkills.filter(s =>
+        requiredSkillNames.some(required => s.name.toLowerCase().includes(required.toLowerCase()))
+    );
+
     const avgProficiency = matchedSkills.length > 0
         ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
         : 0;

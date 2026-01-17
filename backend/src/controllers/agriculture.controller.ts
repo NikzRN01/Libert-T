@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
+import { getAgricultureCareerPaths } from '../services/udemy.service';
 
 // Type definitions for Prisma models
 interface Skill {
@@ -221,32 +222,17 @@ export const getAgricultureCareerPathways = async (req: Request, res: Response) 
             where: { userId, sector: 'AGRICULTURE' },
         });
 
-        const pathways = [
-            {
-                role: 'Precision Agriculture Specialist',
-                description: 'Implement technology-driven farming solutions',
-                requiredSkills: ['PRECISION_AGRICULTURE', 'AGRICULTURAL_IOT'],
-                matchScore: calculateMatchScore(skills, ['PRECISION_AGRICULTURE', 'AGRICULTURAL_IOT']),
-                salaryRange: '$55,000 - $85,000',
-                demand: 'High',
-            },
-            {
-                role: 'AgriTech Data Analyst',
-                description: 'Analyze agricultural data for optimization',
-                requiredSkills: ['CROP_MONITORING', 'SOIL_ANALYSIS'],
-                matchScore: calculateMatchScore(skills, ['CROP_MONITORING', 'SOIL_ANALYSIS']),
-                salaryRange: '$50,000 - $75,000',
-                demand: 'Growing',
-            },
-            {
-                role: 'Sustainable Farming Consultant',
-                description: 'Advise on sustainable agricultural practices',
-                requiredSkills: ['SUSTAINABLE_FARMING', 'AGRIBUSINESS'],
-                matchScore: calculateMatchScore(skills, ['SUSTAINABLE_FARMING', 'AGRIBUSINESS']),
-                salaryRange: '$60,000 - $90,000',
-                demand: 'Very High',
-            },
-        ].sort((a, b) => b.matchScore - a.matchScore);
+        // Get career pathways with Udemy courses
+        const pathwaysWithCourses = await getAgricultureCareerPaths();
+
+        // Calculate match scores based on user skills
+        const pathways = pathwaysWithCourses.map(pathway => {
+            const matchScore = calculateMatchScoreFromSkills(skills, pathway.skills);
+            return {
+                ...pathway,
+                matchScore,
+            };
+        }).sort((a, b) => b.matchScore - a.matchScore);
 
         res.json({
             success: true,
@@ -554,5 +540,28 @@ function calculateMatchScore(userSkills: any[], requiredSkills: string[]): numbe
     const avgProficiency = matchedSkills.length > 0
         ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
         : 0;
+    return Math.round((matchPercentage * 0.7) + (avgProficiency / 5 * 100 * 0.3));
+}
+
+// Helper: Calculate match score from skill names
+function calculateMatchScoreFromSkills(userSkills: any[], requiredSkillNames: string[]): number {
+    if (requiredSkillNames.length === 0) return 0;
+
+    const userSkillNames = userSkills.map(s => s.name.toLowerCase());
+    const matchedCount = requiredSkillNames.filter(required =>
+        userSkillNames.some(userSkill => userSkill.includes(required.toLowerCase()))
+    ).length;
+
+    const matchPercentage = (matchedCount / requiredSkillNames.length) * 100;
+
+    // Factor in average proficiency of matched skills
+    const matchedSkills = userSkills.filter(s =>
+        requiredSkillNames.some(required => s.name.toLowerCase().includes(required.toLowerCase()))
+    );
+
+    const avgProficiency = matchedSkills.length > 0
+        ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
+        : 0;
+
     return Math.round((matchPercentage * 0.7) + (avgProficiency / 5 * 100 * 0.3));
 }

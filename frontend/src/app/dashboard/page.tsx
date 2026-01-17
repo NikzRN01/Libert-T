@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStoredToken, useStoredUser } from "@/lib/auth";
+import { Activity, TrendingUp, Building2, BarChart3, Sparkles } from "lucide-react";
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -17,89 +18,122 @@ export default function DashboardPage() {
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-muted-foreground">Loading...</p>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-slate-600">Loading your dashboard...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-slate-300 via-blue-100 to-slate-200">
-           
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 border-slate-300">
-                    <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                        Welcome, {user.name}!!!
-                    </h2>
-                    <div className="flex gap-4">
-
-                        <span className="px-4 py-2 bg-green-100 text-green-900 rounded-xl text-sm font-bold shadow-md border-2 border-green-300">
-                            Status: <span className="font-bold">Active</span>
-                        </span>
+        <div className="space-y-8">
+            {/* Welcome Section */}
+            <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-8 md:p-10 overflow-hidden shadow-xl">
+                <div className="absolute inset-0 bg-grid-white/10"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="relative">
+                    <div className="flex items-center gap-3 mb-3">
+                        <Sparkles className="h-6 w-6 text-yellow-300" />
+                        <span className="text-blue-100 font-semibold">Welcome back!</span>
                     </div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+                        Hi, {user.name}! 👋
+                    </h1>
+                    <p className="text-xl text-blue-100 max-w-2xl">
+                        Continue your journey to master skills in Healthcare, Agriculture, and Urban Technology
+                    </p>
                 </div>
+            </div>
 
-                {/* Dashboard Navigation Grid */}
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Your Dashboards</h3>
+            {/* Dashboard Navigation Grid */}
+            <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Explore Your Sectors</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Healthcare */}
-                    <div
+                    <button
                         onClick={() => router.push('/dashboard/healthcare')}
-                        className="bg-white p-8 rounded-2xl shadow-lg border-2 border-slate-200 hover:border-slate-400 hover:shadow-2xl transition-all cursor-pointer group transform hover:-translate-y-1"
+                        className="group relative bg-white rounded-2xl p-8 border-2 border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                     >
-                        <div className="w-16 h-16 bg-slate-700 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full opacity-50"></div>
+                        <div className="relative">
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                                <Activity className="h-8 w-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Healthcare</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                Medical coding, EHR systems, and clinical informatics
+                            </p>
+                            <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                                <span>View Dashboard</span>
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
                         </div>
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">Healthcare</h4>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Manage medical coding, EHR skills, and clinical informatics certifications.
-                        </p>
-                    </div>
+                    </button>
 
                     {/* Agriculture */}
-                    <div
+                    <button
                         onClick={() => router.push('/dashboard/agriculture')}
-                        className="bg-white p-8 rounded-2xl shadow-lg border-2 border-slate-200 hover:border-slate-400 hover:shadow-2xl transition-all cursor-pointer group transform hover:-translate-y-1"
+                        className="group relative bg-white rounded-2xl p-8 border-2 border-green-100 hover:border-green-300 hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                     >
-                        <div className="w-16 h-16 bg-slate-600 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50"></div>
+                        <div className="relative">
+                            <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                                <TrendingUp className="h-8 w-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Agriculture</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                Precision farming, IoT sensors, and agritech projects
+                            </p>
+                            <div className="flex items-center text-green-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                                <span>View Dashboard</span>
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
                         </div>
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">Agriculture</h4>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Track precision farming, IoT sensor knowledge, and agritech projects.
-                        </p>
-                    </div>
+                    </button>
 
                     {/* Urban */}
-                    <div
+                    <button
                         onClick={() => router.push('/dashboard/urban')}
-                        className="bg-white p-8 rounded-2xl shadow-lg border-2 border-slate-200 hover:border-slate-400 hover:shadow-2xl transition-all cursor-pointer group transform hover:-translate-y-1"
+                        className="group relative bg-white rounded-2xl p-8 border-2 border-purple-100 hover:border-purple-300 hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                     >
-                        <div className="w-16 h-16 bg-slate-500 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full opacity-50"></div>
+                        <div className="relative">
+                            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                                <Building2 className="h-8 w-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Urban & Smart Cities</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                GIS, smart infrastructure, and urban planning
+                            </p>
+                            <div className="flex items-center text-purple-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                                <span>View Dashboard</span>
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
                         </div>
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">Urban</h4>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Monitor GIS, smart city infrastructure, and urban planning competencies.
-                        </p>
-                    </div>
+                    </button>
 
                     {/* Analytics */}
-                    <div
+                    <button
                         onClick={() => router.push('/dashboard/analytics')}
-                        className="bg-white p-8 rounded-2xl shadow-lg border-2 border-slate-200 hover:border-slate-400 hover:shadow-2xl transition-all cursor-pointer group transform hover:-translate-y-1"
+                        className="group relative bg-white rounded-2xl p-8 border-2 border-orange-100 hover:border-orange-300 hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                     >
-                        <div className="w-16 h-16 bg-slate-400 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full opacity-50"></div>
+                        <div className="relative">
+                            <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-amber-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                                <BarChart3 className="h-8 w-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Analytics</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                Skill gap analysis, career readiness, and AI insights
+                            </p>
+                            <div className="flex items-center text-orange-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                                <span>View Dashboard</span>
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
                         </div>
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">Analytics</h4>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            View skill gap analysis, career readiness scores, and AI recommendations.
-                        </p>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>

@@ -25,6 +25,12 @@ export const config = {
     cors: {
         origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     },
+
+    rapidApi: {
+        key: process.env.RAPIDAPI_KEY || '',
+        // Default to the expected RapidAPI host so a stale .env won't point to the old domain
+        host: process.env.RAPIDAPI_HOST || 'paid-udemy-course-for-free.p.rapidapi.com',
+    },
 };
 
 // Validate required environment variables

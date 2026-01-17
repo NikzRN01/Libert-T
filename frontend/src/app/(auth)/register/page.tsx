@@ -160,28 +160,28 @@ export default function RegisterPage() {
     return (
         <div className="space-y-7">
             <div className="space-y-3 text-center">
-                <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                    Create an account
+                <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+                    Create Your Account
                 </h1>
-                <p className="text-sm text-slate-600 font-medium">
-                    Join SkillXIntell to start your journey
+                <p className="text-base text-slate-600">
+                    Start your skill development journey with SkillXIntell
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 {error && (
-                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-xl flex items-center gap-2 border-2 border-red-300 shadow-md">
-                        <AlertCircle className="h-5 w-5" />
-                        {error}
+                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-xl flex items-center gap-3 border border-red-200">
+                        <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                        <span>{error}</span>
                     </div>
                 )}
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-900" htmlFor="name">
+                    <label className="text-sm font-semibold text-slate-700" htmlFor="name">
                         Full Name
                     </label>
                     <input
-                        className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-slate-50/50 px-4 py-2 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:border-purple-500 focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                        className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                         id="name"
                         placeholder="John Doe"
                         type="text"
@@ -193,11 +193,11 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-900" htmlFor="email">
-                        Email
+                    <label className="text-sm font-semibold text-slate-700" htmlFor="email">
+                        Email Address
                     </label>
                     <input
-                        className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-slate-50/50 px-4 py-2 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:border-purple-500 focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                        className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                         id="email"
                         placeholder="name@example.com"
                         type="email"
@@ -213,22 +213,22 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <label className="text-sm font-bold text-slate-900" htmlFor="password">
+                        <label className="text-sm font-semibold text-slate-700" htmlFor="password">
                             Password
                         </label>
                         <button
                             type="button"
                             onClick={generatePassword}
-                            className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1 transition-colors"
+                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 transition-colors"
                             disabled={isLoading}
                         >
-                            <RefreshCw className="h-3 w-3" />
-                            Generate
+                            <RefreshCw className="h-3.5 w-3.5" />
+                            Generate Strong Password
                         </button>
                     </div>
                     <div className="relative">
                         <input
-                            className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-slate-50/50 px-4 py-2 pr-20 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:border-purple-500 focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                            className="flex h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 pr-20 text-base text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                             id="password"
                             type={showPassword ? "text" : "password"}
                             autoComplete="new-password"
@@ -313,12 +313,12 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-900" htmlFor="confirmPassword">
+                    <label className="text-sm font-semibold text-slate-700" htmlFor="confirmPassword">
                         Confirm Password
                     </label>
                     <div className="relative">
                         <input
-                            className={`flex h-12 w-full rounded-xl border-2 bg-slate-50/50 px-4 py-2 pr-10 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all ${
+                            className={`flex h-12 w-full rounded-xl border-2 bg-white px-4 py-3 pr-10 text-base text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all ${
                                 formData.confirmPassword && formData.password !== formData.confirmPassword
                                     ? 'border-red-300 focus-visible:border-red-500 focus-visible:ring-red-500'
                                     : formData.confirmPassword && formData.password === formData.confirmPassword
@@ -358,13 +358,13 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-900">
+                    <label className="text-sm font-semibold text-slate-700">
                         I am a...
                     </label>
                     <div className="relative">
                         {/* Custom Trigger */}
                         <div
-                            className={`flex h-12 w-full items-center justify-between rounded-xl border-2 border-slate-200 bg-slate-50/50 px-4 py-2 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer transition-all ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+                            className={`flex h-12 w-full items-center justify-between rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-300 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer transition-all ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                             onClick={() => !isLoading && setIsRoleOpen(!isRoleOpen)}
                         >
                             <span className={formData.role ? "text-slate-900" : "text-slate-400"}>
@@ -409,19 +409,19 @@ export default function RegisterPage() {
                 </div>
 
                 <button
-                    className="inline-flex items-center justify-center rounded-xl text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-12 w-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center rounded-xl text-base font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-xl hover:scale-105 text-white h-12 w-full shadow-lg mt-2"
                     type="submit"
                     disabled={isLoading || (formData.password !== formData.confirmPassword && formData.confirmPassword !== "")}
                 >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Account
+                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    Create Account & Get Started
                 </button>
             </form>
 
-            <div className="text-center text-sm text-slate-600">
+            <div className="text-center text-base text-slate-600">
                 Already have an account?{" "}
-                <Link href="/login" className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all">
-                    Sign in →
+                <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                    Sign In →
                 </Link>
             </div>
         </div>
