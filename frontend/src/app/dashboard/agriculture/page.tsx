@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { TrendingUp, Award, Briefcase, Target, Sprout } from "lucide-react";
 import Link from "next/link";
+import CourseCard from "@/components/course-card";
 
 interface AgricultureStats {
     totalSkills: number;
@@ -12,12 +13,27 @@ interface AgricultureStats {
     averageProficiency: string;
 }
 
+interface UdemyCourse {
+    id: string;
+    title: string;
+    url: string;
+    price: string;
+    image: string;
+    instructor: string;
+    rating: number;
+    students: number;
+    duration: string;
+    level: string;
+}
+
 interface CareerPathway {
     role: string;
     description: string;
     matchScore: number;
     salaryRange: string;
     demand: string;
+    skills: string[];
+    courses: UdemyCourse[];
 }
 
 export default function AgricultureDashboard() {
@@ -204,65 +220,72 @@ export default function AgricultureDashboard() {
             </div>
 
             {/* Career Pathways */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-4">Recommended Career Pathways</h2>
-                <div className="space-y-3">
-                    {pathways.length > 0 ? (
-                        pathways.map((pathway, index) => (
-                            <div key={index} className="p-4 rounded-lg bg-muted/50">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold">{pathway.role}</h3>
-                                    <span className="text-sm font-medium text-secondary">{pathway.matchScore}% Match</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                    {pathway.description}
-                                </p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>💰 {pathway.salaryRange}</span>
-                                    <span>•</span>
-                                    <span>📈 {pathway.demand}</span>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <>
-                            <div className="p-4 rounded-lg bg-muted/50">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold">Precision Agriculture Specialist</h3>
-                                    <span className="text-sm font-medium text-secondary">-- Match</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                    Implement technology-driven farming solutions
-                                </p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>💰 $55,000 - $85,000</span>
-                                    <span>•</span>
-                                    <span>📈 High Demand</span>
-                                </div>
-                            </div>
-                            <div className="p-4 rounded-lg bg-muted/50">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold">Sustainable Farming Consultant</h3>
-                                    <span className="text-sm font-medium text-secondary">-- Match</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                    Advise on sustainable agricultural practices
-                                </p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>💰 $60,000 - $90,000</span>
-                                    <span>•</span>
-                                    <span>📈 Very High Demand</span>
-                                </div>
-                            </div>
-                        </>
-                    )}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Recommended Career Pathways</h2>
+                    <Link
+                        href="/dashboard/agriculture/career-pathways"
+                        className="text-sm text-primary hover:underline"
+                    >
+                        View all →
+                    </Link>
                 </div>
-                <Link
-                    href="/dashboard/agriculture/career-pathways"
-                    className="mt-4 inline-block text-sm text-secondary hover:underline"
-                >
-                    View all career pathways →
-                </Link>
+
+                {pathways.length > 0 ? (
+                    <div className="space-y-6">
+                        {pathways.map((pathway, index) => (
+                            <div key={index} className="p-6 rounded-xl border border-border bg-card space-y-4">
+                                {/* Pathway Header */}
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h3 className="text-xl font-bold">{pathway.role}</h3>
+                                            <span className="px-3 py-1 bg-secondary/10 text-secondary text-sm font-semibold rounded-full">
+                                                {pathway.matchScore}% Match
+                                            </span>
+                                        </div>
+                                        <p className="text-muted-foreground mb-3">{pathway.description}</p>
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                            <span>💰 {pathway.salaryRange}</span>
+                                            <span>•</span>
+                                            <span>📈 {pathway.demand}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Required Skills */}
+                                {pathway.skills && pathway.skills.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-semibold mb-2">Required Skills:</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {pathway.skills.map((skill, idx) => (
+                                                <span key={idx} className="px-3 py-1 bg-muted text-sm rounded-full">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Recommended Courses */}
+                                {pathway.courses && pathway.courses.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-semibold mb-3">Recommended Courses:</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {pathway.courses.slice(0, 3).map((course) => (
+                                                <CourseCard key={course.id} course={course} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="p-8 rounded-xl border border-border bg-card text-center">
+                        <p className="text-muted-foreground">No career pathways available. Add more skills to get personalized recommendations.</p>
+                    </div>
+                )}
             </div>
 
             {/* Innovation Readiness */}

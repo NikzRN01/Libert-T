@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
+import { getUrbanCareerPaths } from '../services/udemy.service';
 
 // Urban-specific skill categories
 const URBAN_CATEGORIES = [
@@ -162,40 +163,17 @@ export const getUrbanCareerPathways = async (req: Request, res: Response) => {
             where: { userId, sector: 'URBAN' },
         });
 
-        const pathways = [
-            {
-                role: 'Smart City Planner',
-                description: 'Design and implement smart city initiatives',
-                requiredSkills: ['URBAN_PLANNING', 'SMART_INFRASTRUCTURE'],
-                matchScore: calculateMatchScore(skills, ['URBAN_PLANNING', 'SMART_INFRASTRUCTURE']),
-                salaryRange: '$65,000 - $100,000',
-                demand: 'Very High',
-            },
-            {
-                role: 'GIS Specialist',
-                description: 'Analyze spatial data for urban development',
-                requiredSkills: ['GIS_MAPPING', 'URBAN_PLANNING'],
-                matchScore: calculateMatchScore(skills, ['GIS_MAPPING', 'URBAN_PLANNING']),
-                salaryRange: '$55,000 - $85,000',
-                demand: 'High',
-            },
-            {
-                role: 'Sustainable Urban Designer',
-                description: 'Create environmentally sustainable urban spaces',
-                requiredSkills: ['SUSTAINABLE_URBAN_DESIGN', 'ENERGY_MANAGEMENT'],
-                matchScore: calculateMatchScore(skills, ['SUSTAINABLE_URBAN_DESIGN', 'ENERGY_MANAGEMENT']),
-                salaryRange: '$60,000 - $95,000',
-                demand: 'Growing',
-            },
-            {
-                role: 'Smart Transportation Engineer',
-                description: 'Develop intelligent transportation systems',
-                requiredSkills: ['TRANSPORTATION_SYSTEMS', 'IOT_SENSORS'],
-                matchScore: calculateMatchScore(skills, ['TRANSPORTATION_SYSTEMS', 'IOT_SENSORS']),
-                salaryRange: '$70,000 - $105,000',
-                demand: 'High',
-            },
-        ].sort((a, b) => b.matchScore - a.matchScore);
+        // Get career pathways with Udemy courses
+        const pathwaysWithCourses = await getUrbanCareerPaths();
+
+        // Calculate match scores based on user skills
+        const pathways = pathwaysWithCourses.map(pathway => {
+            const matchScore = calculateMatchScoreFromSkills(skills, pathway.skills);
+            return {
+                ...pathway,
+                matchScore,
+            };
+        }).sort((a, b) => b.matchScore - a.matchScore);
 
         res.json({
             success: true,
@@ -503,5 +481,28 @@ function calculateMatchScore(userSkills: any[], requiredSkills: string[]): numbe
     const avgProficiency = matchedSkills.length > 0
         ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
         : 0;
+    return Math.round((matchPercentage * 0.7) + (avgProficiency / 5 * 100 * 0.3));
+}
+
+// Helper: Calculate match score from skill names
+function calculateMatchScoreFromSkills(userSkills: any[], requiredSkillNames: string[]): number {
+    if (requiredSkillNames.length === 0) return 0;
+
+    const userSkillNames = userSkills.map(s => s.name.toLowerCase());
+    const matchedCount = requiredSkillNames.filter(required =>
+        userSkillNames.some(userSkill => userSkill.includes(required.toLowerCase()))
+    ).length;
+
+    const matchPercentage = (matchedCount / requiredSkillNames.length) * 100;
+
+    // Factor in average proficiency of matched skills
+    const matchedSkills = userSkills.filter(s =>
+        requiredSkillNames.some(required => s.name.toLowerCase().includes(required.toLowerCase()))
+    );
+
+    const avgProficiency = matchedSkills.length > 0
+        ? matchedSkills.reduce((sum, s) => sum + s.proficiencyLevel, 0) / matchedSkills.length
+        : 0;
+
     return Math.round((matchPercentage * 0.7) + (avgProficiency / 5 * 100 * 0.3));
 }
