@@ -81,7 +81,7 @@ export default function UrbanAssessmentPage() {
             };
 
             const allItems: AssessmentItem[] = [];
-            
+
             const WEIGHTS = {
                 skill: { base: 50, proficiencyMultiplier: 1.5, verifiedBonus: 20 },
                 project: { base: 80, completedMultiplier: 1.5, inProgressMultiplier: 0.8, publicBonus: 15 },
@@ -111,7 +111,7 @@ export default function UrbanAssessmentPage() {
                         const proficiencyScore = skill.proficiencyLevel * WEIGHTS.skill.proficiencyMultiplier;
                         const verifiedBonus = skill.verified ? WEIGHTS.skill.verifiedBonus : 0;
                         const rawScore = WEIGHTS.skill.base + proficiencyScore + verifiedBonus;
-                        
+
                         allItems.push({
                             type: "skill",
                             name: skill.name,
@@ -148,10 +148,10 @@ export default function UrbanAssessmentPage() {
                         let statusMultiplier = 0.5;
                         if (project.status === "COMPLETED") statusMultiplier = WEIGHTS.project.completedMultiplier;
                         else if (project.status === "IN_PROGRESS") statusMultiplier = WEIGHTS.project.inProgressMultiplier;
-                        
+
                         const publicBonus = project.isPublic ? WEIGHTS.project.publicBonus : 0;
                         const rawScore = (WEIGHTS.project.base * statusMultiplier) + publicBonus;
-                        
+
                         allItems.push({
                             type: "project",
                             name: project.title,
@@ -173,7 +173,7 @@ export default function UrbanAssessmentPage() {
                 );
 
                 console.log("Certification response status:", certRes.status);
-                
+
                 if (certRes.ok) {
                     const certData: unknown = await certRes.json();
                     console.log("Raw certification data:", certData);
@@ -187,23 +187,23 @@ export default function UrbanAssessmentPage() {
                                     ? (certData as { data: unknown[] }).data
                                     : []
                     ) as CertificationLike[];
-                    
+
                     console.log("Parsed certifications array:", certificationsArray);
 
                     certificationsArray.forEach((cert) => {
                         const isActive = cert.status === "ACTIVE" || !cert.expiryDate || new Date(cert.expiryDate) > new Date();
                         const activeMultiplier = isActive ? WEIGHTS.certification.activeMultiplier : 0.7;
                         const rawScore = WEIGHTS.certification.base * activeMultiplier;
-                        
+
                         allItems.push({
                             type: "certification",
-                            name: cert.name || cert.title || cert.certificationName,
+                            name: cert.name || cert.title || cert.certificationName || "Certification",
                             percentage: rawScore,
                             sector: sector,
                             category: cert.issuingOrganization || cert.organization || cert.issuer || "Certification",
                         });
                     });
-                    
+
                     console.log("Total certifications added:", certificationsArray.length);
                 } else {
                     console.error("Certification fetch failed with status:", certRes.status);
@@ -271,11 +271,10 @@ export default function UrbanAssessmentPage() {
                         <button
                             key={type}
                             onClick={() => setFilter(type as typeof filter)}
-                            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                filter === type
+                            className={`px-4 py-2 rounded-lg font-medium transition-all ${filter === type
                                     ? "bg-cyan-600 text-white shadow-lg"
                                     : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                            }`}
+                                }`}
                         >
                             {type.charAt(0).toUpperCase() + type.slice(1)}
                         </button>
@@ -324,13 +323,12 @@ export default function UrbanAssessmentPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <span
-                                                className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                                                    item.type === "skill"
+                                                className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${item.type === "skill"
                                                         ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                                                         : item.type === "project"
-                                                        ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
-                                                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                                                }`}
+                                                            ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
+                                                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                                    }`}
                                             >
                                                 {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
                                             </span>
@@ -351,13 +349,12 @@ export default function UrbanAssessmentPage() {
 
                                 <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                                     <div
-                                        className={`h-full transition-all ${
-                                            item.type === "skill"
+                                        className={`h-full transition-all ${item.type === "skill"
                                                 ? "bg-gradient-to-r from-green-500 to-green-600"
                                                 : item.type === "project"
-                                                ? "bg-gradient-to-r from-purple-500 to-purple-600"
-                                                : "bg-gradient-to-r from-blue-500 to-blue-600"
-                                        }`}
+                                                    ? "bg-gradient-to-r from-purple-500 to-purple-600"
+                                                    : "bg-gradient-to-r from-blue-500 to-blue-600"
+                                            }`}
                                         style={{ width: `${Math.min(item.percentage, 100)}%` }}
                                     ></div>
                                 </div>
