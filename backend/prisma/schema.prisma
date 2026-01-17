@@ -1,13 +1,338 @@
+// SkillXIntell Database Schema
+// Holistic Academic and Professional Skill Intelligence System
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  passwordHash  String?
+  role          Role     @default(STUDENT)
+  avatar        String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  profile        Profile?
+  skills         Skill[]
+  projects       Project[]
+  certifications Certification[]
+  learningPaths  LearningPath[]
+  analytics      SkillAnalytics[]
+
+  @@index([email])
+  @@index([role])
+}
+
+enum Role {
+  STUDENT
+  EDUCATOR
+  EMPLOYER
+  ADMIN
+}
+
+// ============================================
+// PROFILE
+// ============================================
+
+model Profile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bio             String?  @db.Text
+  phone           String?
+  location        String?
+  linkedIn        String?
+  github          String?
+  portfolio       String?
+  dateOfBirth     DateTime?
+
+  // Education history (JSON array)
+  education       Json?
+
+  // Work experience (JSON array)
+  experience      Json?
+
+  // Interests and goals
+  interests       String[]
+  targetSectors   Sector[]
+  careerGoals     String?  @db.Text
+
+  // Preferences
+  preferredLearningStyle String?
+  availableHoursPerWeek  Int?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum Sector {
+  HEALTHCARE
+  AGRICULTURE
+  URBAN
+}
+
+// ============================================
+// SKILLS
+// ============================================
+
+model Skill {
+  id                String        @id @default(uuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name              String
+  category          SkillCategory
+  sector            Sector
+  proficiencyLevel  Int           // 1-5 scale
+
+  // Verification
+  verified          Boolean       @default(false)
+  verificationSource String?
+
+  // Metadata
+  tags              String[]
+  description       String?       @db.Text
+  yearsOfExperience Float?
+  lastUsed          DateTime?
+
+  // Endorsements
+  endorsements      Int           @default(0)
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([userId, sector])
+  @@index([sector, category])
+  @@index([name])
+}
+
+enum SkillCategory {
+  // Healthcare
+  CLINICAL_INFORMATICS
+  HEALTH_DATA_ANALYTICS
+  EHR_SYSTEMS
+  TELEMEDICINE
+  MEDICAL_CODING
+  HIPAA_COMPLIANCE
+  HEALTHCARE_IT
+
+  // Agriculture
+  PRECISION_AGRICULTURE
+  FARM_MANAGEMENT_SOFTWARE
+  AGRICULTURAL_IOT
+  CROP_MONITORING
+  SOIL_ANALYSIS
+  SUSTAINABLE_FARMING
+  AGRIBUSINESS
+
+  // Urban
+  URBAN_PLANNING
+  GIS_MAPPING
+  SMART_INFRASTRUCTURE
+  IOT_SENSORS
+  SUSTAINABLE_URBAN_DESIGN
+  TRANSPORTATION_SYSTEMS
+  ENERGY_MANAGEMENT
+
+  // Cross-sector
+  DATA_ANALYSIS
+  MACHINE_LEARNING
+  PROJECT_MANAGEMENT
+  COMMUNICATION
+  LEADERSHIP
+  RESEARCH
+}
+
+// ============================================
+// PROJECTS
+// ============================================
+
+model Project {
+  id              String          @id @default(uuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title           String
+  description     String          @db.Text
+  sector          Sector
+  category        ProjectCategory
+
+  // Skills and technologies
+  skillsUsed      String[]
+  technologies    String[]
+
+  // Outcomes and impact
+  outcomes        String          @db.Text
+  impact          String?         @db.Text
+  metrics         Json?
+
+  // Timeline
+  startDate       DateTime
+  endDate         DateTime?
+  status          ProjectStatus   @default(IN_PROGRESS)
+
+  // Collaboration
+  teamSize        Int?
+  role            String?
+
+  // Attachments and links
+  attachments     Json?
+  repositoryUrl   String?
+  liveUrl         String?
+
+  // Visibility
+  isPublic        Boolean         @default(true)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId, sector])
+  @@index([sector, status])
+}
+
+enum ProjectCategory {
+  RESEARCH
+  DEVELOPMENT
+  IMPLEMENTATION
+  CASE_STUDY
+  INTERNSHIP
+  ACADEMIC
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+// ============================================
+// CERTIFICATIONS
+// ============================================
+
+model Certification {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String
+  issuingOrg      String
+  sector          Sector
+
+  credentialId    String?
+  credentialUrl   String?
+
+  issueDate       DateTime
+  expiryDate      DateTime?
+  neverExpires    Boolean  @default(false)
+
+  // Related skills
+  skills          String[]
+
+  // Verification
+  verified        Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId, sector])
+  @@index([sector])
+}
+
+// ============================================
+// LEARNING PATHS
+// ============================================
+
+model LearningPath {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title           String
+  description     String     @db.Text
+  sector          Sector
+  targetRole      String
+
+  // Progress tracking
+  currentStep     Int        @default(0)
+  totalSteps      Int
+  progress        Float      @default(0)
+
+  // Learning steps (JSON array)
+  steps           Json
+
+  // AI-generated recommendations
+  recommendations Json?
+
+  // Timeline
+  estimatedDuration Int?
+  startDate       DateTime?
+  targetEndDate   DateTime?
+
+  status          PathStatus @default(ACTIVE)
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([userId, sector])
+  @@index([status])
+}
+
+enum PathStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+// ============================================
+// ANALYTICS
+// ============================================
+
+model SkillAnalytics {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sector          Sector
+
+  // Overall scores (0-100)
+  overallScore    Float    @default(0)
+  careerReadiness Float    @default(0)
+  industryAlignment Float  @default(0)
+
+  // Skill gaps and strengths (JSON)
+  skillGaps       Json
+  strengths       Json
+
+  // Recommendations (JSON)
+  recommendations Json
+
+  // Career insights
+  suggestedRoles  String[]
+  marketDemand    Json?
+
+  // Calculation metadata
+  calculatedAt    DateTime @default(now())
+  dataPoints      Int      @default(0)
+
+  @@index([userId, sector])
+  @@index([calculatedAt])
 }

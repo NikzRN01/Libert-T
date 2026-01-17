@@ -1,9 +1,6 @@
-type SupabaseClientLike = {
-  from: (table: string) => unknown;
-};
+import { createClient } from '@supabase/supabase-js';
 
-export function getSupabaseClient(): SupabaseClientLike {
-  throw new Error(
-    "Supabase client not configured yet. Install @supabase/supabase-js and wire env vars."
-  );
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

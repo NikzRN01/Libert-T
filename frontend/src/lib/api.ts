@@ -1,10 +1,35 @@
-export function apiUrl(path: string) {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export async function apiClient(endpoint: string, options: RequestInit = {}) {
+    const url = `${API_URL}${endpoint}`;
+
+    const config: RequestInit = {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
+    };
+
+    try {
+        const response = await fetch(url, config);
+
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+    }
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(apiUrl(path), { cache: "no-store" });
-  if (!res.ok) throw new Error(`API GET ${path} failed: ${res.status}`);
-  return (await res.json()) as T;
-}
+export const api = {
+    get: (endpoint: string) => apiClient(endpoint, { method: 'GET' }),
+    post: (endpoint: string, data: any) =>
+        apiClient(endpoint, { method: 'POST', body: JSON.stringify(data) }),
+    put: (endpoint: string, data: any) =>
+        apiClient(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (endpoint: string) => apiClient(endpoint, { method: 'DELETE' }),
+};
