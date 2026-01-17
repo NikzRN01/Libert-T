@@ -26,15 +26,7 @@ export default function HealthcareDashboard() {
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
 
-<<<<<<< HEAD
-    useEffect(() => {
-        fetchHealthcareData();
-    }, []);
-
-    const fetchHealthcareData = async () => {
-=======
     const fetchHealthcareStats = useCallback(async () => {
->>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
         try {
             const token = localStorage.getItem("token");
             const headers = {

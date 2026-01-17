@@ -1,19 +1,11 @@
 "use client";
 
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw } from "lucide-react";
 
 interface SectorAnalytics {
-    overallScore: number;
-    careerReadiness: number;
-    industryAlignment: number;
+    [key: string]: any;
 }
-=======
-import { useCallback, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Target, Award, Brain } from "lucide-react";
->>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
-
 interface CrossSectorAnalytics {
     overall: {
         totalSkills: number;
