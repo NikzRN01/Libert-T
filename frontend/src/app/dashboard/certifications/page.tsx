@@ -203,13 +203,15 @@ export default function CertificationsPage() {
                             : "All your professional certifications"}
                     </p>
                 </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-                >
-                    <Plus className="h-5 w-5" />
-                    <span>Add Certification</span>
-                </button>
+                {certifications.length > 0 && (
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                    >
+                        <Plus className="h-5 w-5" />
+                        <span>Add Certification</span>
+                    </button>
+                )}
             </div>
 
             {/* Filters */}
@@ -467,42 +469,27 @@ export default function CertificationsPage() {
 
             {/* Add Certification Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-border flex items-center justify-between">
-                            <h2 className="text-xl font-bold">Add Certification</h2>
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/10">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Add Certification</h2>
                             <button
                                 onClick={() => setShowAddModal(false)}
-                                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                             >
-                                <X className="h-5 w-5" />
+                                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleAddCertification} className="p-6 space-y-4">
-                            {/* Sector */}
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Sector *</label>
-                                <select
-                                    value={formSector}
-                                    onChange={(e) => setFormSector(e.target.value)}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                                    required
-                                >
-                                    <option value="HEALTHCARE">Healthcare</option>
-                                    <option value="AGRICULTURE">Agriculture</option>
-                                    <option value="URBAN">Urban</option>
-                                </select>
-                            </div>
-
+                        <form onSubmit={handleAddCertification} className="p-6 space-y-4 bg-white dark:bg-gray-900">
                             {/* Name */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Certification Name *</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Certification Name *</label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
                                     placeholder="e.g., CPHIMS, AWS Certified"
                                     required
                                 />
@@ -510,12 +497,12 @@ export default function CertificationsPage() {
 
                             {/* Issuing Organization */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Issuing Organization *</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Issuing Organization *</label>
                                 <input
                                     type="text"
                                     value={formData.issuingOrg}
                                     onChange={(e) => setFormData({ ...formData, issuingOrg: e.target.value })}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
                                     placeholder="e.g., HIMSS, Amazon Web Services"
                                     required
                                 />
@@ -523,36 +510,36 @@ export default function CertificationsPage() {
 
                             {/* Credential ID */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Credential ID</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Credential ID</label>
                                 <input
                                     type="text"
                                     value={formData.credentialId}
                                     onChange={(e) => setFormData({ ...formData, credentialId: e.target.value })}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
                                     placeholder="Optional"
                                 />
                             </div>
 
                             {/* Credential URL */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Credential URL</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Credential URL</label>
                                 <input
                                     type="url"
                                     value={formData.credentialUrl}
                                     onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
                                     placeholder="https://..."
                                 />
                             </div>
 
                             {/* Issue Date */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Issue Date *</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Issue Date *</label>
                                 <input
                                     type="date"
                                     value={formData.issueDate}
                                     onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     required
                                 />
                             </div>
@@ -564,9 +551,9 @@ export default function CertificationsPage() {
                                     id="neverExpires"
                                     checked={formData.neverExpires}
                                     onChange={(e) => setFormData({ ...formData, neverExpires: e.target.checked })}
-                                    className="h-4 w-4"
+                                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600"
                                 />
-                                <label htmlFor="neverExpires" className="text-sm font-medium">
+                                <label htmlFor="neverExpires" className="text-sm font-medium text-gray-900 dark:text-gray-200">
                                     This certification never expires
                                 </label>
                             </div>
@@ -574,32 +561,32 @@ export default function CertificationsPage() {
                             {/* Expiry Date */}
                             {!formData.neverExpires && (
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Expiry Date</label>
+                                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Expiry Date</label>
                                     <input
                                         type="date"
                                         value={formData.expiryDate}
                                         onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     />
                                 </div>
                             )}
 
                             {/* Skills */}
                             <div>
-                                <label className="block text-sm font-medium mb-2">Related Skills</label>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Related Skills</label>
                                 <div className="flex gap-2 mb-2">
                                     <input
                                         type="text"
                                         value={skillInput}
                                         onChange={(e) => setSkillInput(e.target.value)}
                                         onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-                                        className="flex-1 px-4 py-2 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
+                                        className="flex-1 px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
                                         placeholder="Add a skill"
                                     />
                                     <button
                                         type="button"
                                         onClick={addSkill}
-                                        className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-medium"
+                                        className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary/90"
                                     >
                                         Add
                                     </button>
@@ -608,13 +595,13 @@ export default function CertificationsPage() {
                                     {formData.skills.map((skill, index) => (
                                         <span
                                             key={index}
-                                            className="flex items-center gap-1 px-3 py-1 bg-muted text-muted-foreground rounded-lg text-sm"
+                                            className="flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg text-sm border border-gray-300 dark:border-gray-700"
                                         >
                                             {skill}
                                             <button
                                                 type="button"
                                                 onClick={() => removeSkill(skill)}
-                                                className="hover:text-destructive"
+                                                className="hover:text-red-600 dark:hover:text-red-400"
                                             >
                                                 <X className="h-3 w-3" />
                                             </button>
@@ -628,14 +615,14 @@ export default function CertificationsPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowAddModal(false)}
-                                    className="flex-1 px-4 py-3 border-2 border-border rounded-xl font-medium hover:bg-muted transition-colors"
+                                    className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-medium disabled:opacity-50"
+                                    className="flex-1 px-4 py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 hover:bg-primary/90"
                                 >
                                     {submitting ? "Adding..." : "Add Certification"}
                                 </button>

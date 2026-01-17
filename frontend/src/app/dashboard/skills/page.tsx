@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, Pencil } from "lucide-react";
 
 interface Skill {
     id: string;
@@ -119,13 +119,15 @@ export default function SkillsPage() {
                 <h1 className="text-3xl font-bold text-foreground">
                     My Skills
                 </h1>
-                <Link
-                    href="/dashboard/skills/add"
-                    className="flex items-center space-x-2 px-5 py-2.5 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-                >
-                    <Plus className="h-5 w-5" />
-                    <span>Add Skill</span>
-                </Link>
+                {skills.length > 0 && (
+                    <Link
+                        href="/dashboard/skills/add"
+                        className="flex items-center space-x-2 px-5 py-2.5 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                    >
+                        <Plus className="h-5 w-5" />
+                        <span>Add Skill</span>
+                    </Link>
+                )}
             </div>
 
             {/* Filters */}
@@ -179,6 +181,13 @@ export default function SkillsPage() {
                                             Verified
                                         </span>
                                     )}
+                                    <Link
+                                        href={`/dashboard/skills/edit/${skill.id}`}
+                                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                        title="Edit skill"
+                                    >
+                                        <Pencil className="h-4 w-4" />
+                                    </Link>
                                     <button
                                         onClick={() => handleDeleteSkill(skill.id)}
                                         className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"

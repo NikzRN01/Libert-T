@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default function AddSkillPage() {
+export default function EditSkillPage() {
     const router = useRouter();
+    const params = useParams();
+    const skillId = params.id as string;
+
     const [formData, setFormData] = useState({
         name: "",
         category: "",
@@ -18,36 +21,79 @@ export default function AddSkillPage() {
     });
     const [monthsOfExperience, setMonthsOfExperience] = useState(0);
     const [tagInput, setTagInput] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        fetchSkillData();
+    }, [skillId]);
+
+    const fetchSkillData = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${skillId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                const skill = data.skill;
+                setFormData({
+                    name: skill.name,
+                    category: skill.category,
+                    sector: skill.sector,
+                    proficiencyLevel: skill.proficiencyLevel,
+                    description: skill.description || "",
+                    tags: skill.tags || [],
+                    yearsOfExperience: skill.yearsOfExperience || 0,
+                });
+                setMonthsOfExperience((skill.yearsOfExperience || 0) * 12);
+            } else {
+                setError("Failed to load skill data");
+            }
+        } catch (err) {
+            setError("Failed to load skill data");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        setLoading(true);
+        setSubmitting(true);
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(formData),
-            });
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${skillId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(formData),
+                }
+            );
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to add skill");
+                throw new Error(data.message || "Failed to update skill");
             }
 
             router.push("/dashboard/skills");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to add skill");
+            setError(err instanceof Error ? err.message : "Failed to update skill");
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
@@ -112,6 +158,17 @@ export default function AddSkillPage() {
         ...crossSectorCategories,
     ];
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-muted-foreground font-medium">Loading skill...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-3xl">
             {/* Header */}
@@ -124,7 +181,7 @@ export default function AddSkillPage() {
                     <span>Back to Skills</span>
                 </Link>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Add New Skill
+                    Edit Skill
                 </h1>
             </div>
 
@@ -299,10 +356,10 @@ export default function AddSkillPage() {
                     </Link>
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={submitting}
                         className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors"
                     >
-                        {loading ? "Adding..." : "Add Skill"}
+                        {submitting ? "Updating..." : "Update Skill"}
                     </button>
                 </div>
             </form>

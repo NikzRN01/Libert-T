@@ -285,13 +285,15 @@ export default function ProjectsPage() {
                             : "All your professional projects"}
                     </p>
                 </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-secondary to-secondary/80 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-                >
-                    <Plus className="h-5 w-5" />
-                    <span>Add Project</span>
-                </button>
+                {projects.length > 0 && (
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-secondary to-secondary/80 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                    >
+                        <Plus className="h-5 w-5" />
+                        <span>Add Project</span>
+                    </button>
+                )}
             </div>
 
             {/* Filters */}
@@ -468,24 +470,6 @@ export default function ProjectsPage() {
                         </div>
 
                         <form onSubmit={handleAddProject} className="p-6 space-y-4">
-                            {/* Sector */}
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Sector *</label>
-                                <select
-                                    value={formSector}
-                                    onChange={(e) => {
-                                        setFormSector(e.target.value);
-                                        setFormData({ ...formData, category: "" });
-                                    }}
-                                    className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                                    required
-                                >
-                                    <option value="HEALTHCARE">Healthcare</option>
-                                    <option value="AGRICULTURE">Agriculture</option>
-                                    <option value="URBAN">Urban</option>
-                                </select>
-                            </div>
-
                             {/* Title */}
                             <div>
                                 <label className="block text-sm font-medium mb-2">Project Title *</label>

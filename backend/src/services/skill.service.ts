@@ -100,6 +100,29 @@ export async function getUserSkills(userId: string, filters?: SkillFilters) {
 }
 
 /**
+ * Get a single skill by ID
+ */
+export async function getSkillById(skillId: string, userId: string) {
+    const skill = await prisma.skill.findFirst({
+        where: {
+            id: skillId,
+            userId: userId,
+        },
+    });
+
+    if (!skill) {
+        throw new Error('Skill not found');
+    }
+
+    return {
+        ...skill,
+        tags: skill.tags ? JSON.parse(skill.tags) : [],
+        sector: skill.sector as Sector,
+        category: skill.category as SkillCategory
+    };
+}
+
+/**
  * Create a new skill for a user
  */
 export async function createSkill(userId: string, data: CreateSkillData) {
