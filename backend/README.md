@@ -9,6 +9,7 @@ Express.js (TypeScript) API for SkillXIntell.
 2. Create your env file:
 	- Copy `.env.example` to `.env`
 	- Fill in values (at minimum: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `JWT_SECRET`)
+	- For avatar uploads, create a Supabase Storage bucket (default: `avatars`) or set `SUPABASE_AVATAR_BUCKET` to an existing bucket
 3. Start the API:
 	- `npm run dev`
 

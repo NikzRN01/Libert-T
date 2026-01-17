@@ -16,6 +16,7 @@ export default function AddSkillPage() {
         tags: [] as string[],
         yearsOfExperience: 0,
     });
+    const [monthsOfExperience, setMonthsOfExperience] = useState(0);
     const [tagInput, setTagInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -225,24 +226,31 @@ export default function AddSkillPage() {
                         </div>
                     </div>
 
-                    {/* Years of Experience */}
+                    {/* Months/Years of Experience */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Years of Experience
+                            Months of Experience
                         </label>
                         <input
                             type="number"
                             min="0"
-                            max="50"
-                            value={formData.yearsOfExperience}
-                            onChange={(e) =>
+                            value={monthsOfExperience === 0 ? "" : monthsOfExperience}
+                            onChange={(e) => {
+                                const months = parseInt(e.target.value) || 0;
+                                setMonthsOfExperience(months);
                                 setFormData({
                                     ...formData,
-                                    yearsOfExperience: parseInt(e.target.value) || 0,
-                                })
-                            }
+                                    yearsOfExperience: Math.floor(months / 12),
+                                });
+                            }}
                             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            placeholder="Enter months of experience"
                         />
+                        {monthsOfExperience >= 12 && (
+                            <p className="mt-1 text-sm text-green-600 dark:text-green-400 font-medium">
+                                = {Math.floor(monthsOfExperience / 12)} year{Math.floor(monthsOfExperience / 12) !== 1 ? 's' : ''} {monthsOfExperience % 12 > 0 ? `and ${monthsOfExperience % 12} month${monthsOfExperience % 12 !== 1 ? 's' : ''}` : ''}
+                            </p>
+                        )}
                     </div>
 
                     {/* Description */}

@@ -142,20 +142,6 @@ export default function SkillsPage() {
                             className="w-full pl-12 pr-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground font-medium"
                         />
                     </div>
-
-                    {/* Sector Filter */}
-                    <div className="sm:w-48">
-                        <select
-                            value={sectorFilter}
-                            onChange={(e) => setSectorFilter(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground font-medium"
-                        >
-                            <option value="">All Sectors</option>
-                            <option value="HEALTHCARE">Healthcare</option>
-                            <option value="AGRICULTURE">Agriculture</option>
-                            <option value="URBAN">Urban</option>
-                        </select>
-                    </div>
                 </div>
             </div>
 

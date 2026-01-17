@@ -14,6 +14,7 @@ export const config = {
         url: process.env.SUPABASE_URL!,
         anonKey: process.env.SUPABASE_ANON_KEY!,
         serviceKey: process.env.SUPABASE_SERVICE_KEY!,
+        avatarBucket: process.env.SUPABASE_AVATAR_BUCKET || 'avatars',
     },
 
     jwt: {

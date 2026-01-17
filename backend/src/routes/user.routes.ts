@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
 import { requireAuth } from '../middleware/auth.middleware';
+import { avatarUpload } from '../middleware/upload.middleware';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.put('/profile', requireAuth, userController.updateProfile);
  * @desc    Update user avatar
  * @access  Private
  */
-router.patch('/avatar', requireAuth, userController.uploadAvatar);
+router.patch('/avatar', requireAuth, avatarUpload.single('avatar'), userController.uploadAvatar);
 
 /**
  * @route   PATCH /api/users/basic-info
