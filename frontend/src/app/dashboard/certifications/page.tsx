@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Award, Plus, Calendar, ExternalLink, Trash2, Edit, X } from "lucide-react";
+import { TrendingUp, Award, Briefcase, Target, Sprout, Plus, Calendar, ExternalLink, X, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 interface Certification {
     id: string;
@@ -29,12 +29,11 @@ interface AddCertificationForm {
 }
 
 export default function CertificationsPage() {
-    const searchParams = useSearchParams();
     const [certifications, setCertifications] = useState<Certification[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sectorFilter, setSectorFilter] = useState(searchParams.get("sector") || "");
+    const [sectorFilter, setSectorFilter] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
-    const [formSector, setFormSector] = useState(searchParams.get("sector") || "HEALTHCARE");
+    const [formSector, setFormSector] = useState("HEALTHCARE");
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState<AddCertificationForm>({
         name: "",
@@ -48,7 +47,101 @@ export default function CertificationsPage() {
     });
     const [skillInput, setSkillInput] = useState("");
 
-    const fetchCertifications = useCallback(async () => {
+    const getSectorColor = (sector: string) => {
+        switch (sector) {
+            case "HEALTHCARE":
+                return "bg-healthcare/10 text-healthcare border-healthcare/30";
+            case "AGRICULTURE":
+                return "bg-agriculture/10 text-agriculture border-agriculture/30";
+            case "URBAN":
+                return "bg-urban/10 text-urban border-urban/30";
+            default:
+                return "bg-gray-100 text-gray-700 border-gray-300";
+        }
+    };
+
+    const isExpired = (expiryDate?: string) => {
+        if (!expiryDate) return false;
+        return new Date(expiryDate) < new Date();
+    };
+
+    const addSkill = () => {
+        if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
+            setFormData({ ...formData, skills: [...formData.skills, skillInput.trim()] });
+            setSkillInput("");
+        }
+    };
+
+    const removeSkill = (skillToRemove: string) => {
+        setFormData({
+            ...formData,
+            skills: formData.skills.filter((s) => s !== skillToRemove),
+        });
+    };
+
+    const handleAddCertification = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${formSector.toLowerCase()}/certifications`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(formData),
+                }
+            );
+
+            if (response.ok) {
+                setShowAddModal(false);
+                setFormData({
+                    name: "",
+                    issuingOrg: "",
+                    credentialId: "",
+                    credentialUrl: "",
+                    issueDate: "",
+                    expiryDate: "",
+                    neverExpires: false,
+                    skills: [],
+                });
+                fetchAgricultureStats();
+            }
+        } catch (error) {
+            console.error("Failed to add certification:", error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleDeleteCertification = async (id: string, sector: string) => {
+        if (!confirm("Are you sure you want to delete this certification?")) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${sector.toLowerCase()}/certifications/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                fetchAgricultureStats();
+            }
+        } catch (error) {
+            console.error("Failed to delete certification:", error);
+        }
+    };
+
+    const fetchAgricultureStats = useCallback(async () => {
         try {
             setLoading(true);
             const token = localStorage.getItem("token");
@@ -81,116 +174,16 @@ export default function CertificationsPage() {
         } finally {
             setLoading(false);
         }
-    }, [sectorFilter]);
+    }, []);
 
     useEffect(() => {
-        fetchCertifications();
-    }, [fetchCertifications]);
-
-    const handleAddCertification = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitting(true);
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${formSector.toLowerCase()}/certifications`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                }
-            );
-
-            if (response.ok) {
-                setShowAddModal(false);
-                setFormData({
-                    name: "",
-                    issuingOrg: "",
-                    credentialId: "",
-                    credentialUrl: "",
-                    issueDate: "",
-                    expiryDate: "",
-                    neverExpires: false,
-                    skills: [],
-                });
-                fetchCertifications();
-            }
-        } catch (error) {
-            console.error("Failed to add certification:", error);
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const handleDeleteCertification = async (id: string, sector: string) => {
-        if (!confirm("Are you sure you want to delete this certification?")) return;
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${sector.toLowerCase()}/certifications/${id}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.ok) {
-                fetchCertifications();
-            }
-        } catch (error) {
-            console.error("Failed to delete certification:", error);
-        }
-    };
-
-    const addSkill = () => {
-        if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
-            setFormData({
-                ...formData,
-                skills: [...formData.skills, skillInput.trim()],
-            });
-            setSkillInput("");
-        }
-    };
-
-    const removeSkill = (skill: string) => {
-        setFormData({
-            ...formData,
-            skills: formData.skills.filter((s) => s !== skill),
-        });
-    };
-
-    const isExpired = (expiryDate?: string) => {
-        if (!expiryDate) return false;
-        return new Date(expiryDate) < new Date();
-    };
-
-    const getSectorColor = (sector: string) => {
-        switch (sector) {
-            case "HEALTHCARE":
-                return "bg-primary/20 text-primary border-primary/30";
-            case "AGRICULTURE":
-                return "bg-secondary/20 text-secondary border-secondary/30";
-            case "URBAN":
-                return "bg-accent/20 text-accent border-accent/30";
-            default:
-                return "bg-muted text-muted-foreground";
-        }
-    };
+        fetchAgricultureStats();
+    }, [fetchAgricultureStats]);
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-muted-foreground font-medium">Loading certifications...</p>
-                </div>
+            <div className="flex items-center justify-center min-h-100">
+                <div className="text-muted-foreground">Loading agriculture data...</div>
             </div>
         );
     }
@@ -198,7 +191,10 @@ export default function CertificationsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 bg-linear-to-r from-secondary/10 to-secondary/5 p-6 rounded-2xl border-2 border-border shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg">
+                    <Sprout className="h-8 w-8 text-white" />
+                </div>
                 <div>
                     <h1 className="text-3xl font-bold text-foreground">Certifications</h1>
                     <p className="text-muted-foreground font-medium">
@@ -248,7 +244,7 @@ export default function CertificationsPage() {
                     </p>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                        className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         Add Your First Certification
                     </button>
@@ -353,6 +349,121 @@ export default function CertificationsPage() {
                     ))}
                 </div>
             )}
+
+            {/* Quick Actions */}
+            <div className="grid md:grid-cols-3 gap-6">
+                <Link
+                    href="/dashboard/skills?sector=AGRICULTURE"
+                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-secondary/50 transition-all transform hover:-translate-y-1 group"
+                >
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Target className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground">Skills Tracker</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                        Manage your agritech skills and proficiency levels
+                    </p>
+                </Link>
+
+                <Link
+                    href="/dashboard/certifications?sector=AGRICULTURE"
+                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
+                >
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Award className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground">Certifications</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                        Track precision farming and sustainability certs
+                    </p>
+                </Link>
+
+                <Link
+                    href="/dashboard/projects?sector=AGRICULTURE"
+                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
+                >
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Briefcase className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground">Projects</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                        Showcase your agricultural technology projects
+                    </p>
+                </Link>
+            </div>
+
+            {/* Career Pathways */}
+            <div className="p-6 rounded-xl border border-border bg-card">
+                <h2 className="text-xl font-semibold mb-4">Recommended Career Pathways</h2>
+                <div className="space-y-3">
+                    <div className="p-4 rounded-lg bg-muted/50">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-semibold">Precision Agriculture Specialist</h3>
+                            <span className="text-sm font-medium text-agriculture">82% Match</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Implement technology-driven farming solutions
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>💰 $55,000 - $85,000</span>
+                            <span>•</span>
+                            <span>📈 High Demand</span>
+                        </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-muted/50">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-semibold">Sustainable Farming Consultant</h3>
+                            <span className="text-sm font-medium text-agriculture">75% Match</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Advise on sustainable agricultural practices
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>💰 $60,000 - $90,000</span>
+                            <span>•</span>
+                            <span>📈 Very High Demand</span>
+                        </div>
+                    </div>
+                </div>
+                <Link
+                    href="/dashboard/agriculture/career-pathways"
+                    className="mt-4 inline-block text-sm text-agriculture hover:underline"
+                >
+                    View all career pathways →
+                </Link>
+            </div>
+
+            {/* Innovation Readiness */}
+            <div className="p-6 rounded-xl border border-border bg-card">
+                <h2 className="text-xl font-semibold mb-4">Innovation Readiness Assessment</h2>
+                <div className="space-y-4">
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Overall Innovation Readiness</span>
+                            <span className="text-sm font-medium">0%</span>
+                        </div>
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-agriculture transition-all"
+                                style={{ width: '0%' }}
+                            />
+                        </div>
+                    </div>
+                    <Link
+                        href="/dashboard/agriculture/assessment"
+                        className="inline-block text-sm text-agriculture hover:underline"
+                    >
+                        Take assessment →
+                    </Link>
+                </div>
+            </div>
 
             {/* Add Certification Modal */}
             {showAddModal && (
