@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
+import { generateAIRecommendations } from '../services/ai-recommendation.service';
 
 // Generate or update skill analytics for a user
 export const generateSkillAnalytics = async (req: Request, res: Response) => {
@@ -296,3 +297,55 @@ function suggestCareerRoles(skills: any[], sector: string): string[] {
 
     return rolesBySector[sector] || [];
 }
+
+// Get AI-powered recommendations for a sector
+export const getAIRecommendations = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { sector } = req.params;
+        const score = parseInt(req.query.score as string) || 0;
+
+        if (!sector || !['HEALTHCARE', 'AGRICULTURE', 'URBAN'].includes(sector)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Valid sector required (HEALTHCARE, AGRICULTURE, or URBAN)',
+            });
+        }
+
+        // Get user's skills, projects, and certifications
+        const [skills, projects, certifications] = await Promise.all([
+            prisma.skill.findMany({
+                where: { userId, sector: sector as string },
+                select: { name: true },
+            }),
+            prisma.project.count({
+                where: { userId, sector: sector as string },
+            }),
+            prisma.certification.count({
+                where: { userId, sector: sector as string },
+            }),
+        ]);
+
+        const skillNames = skills.map((s) => s.name);
+
+        // Generate AI recommendations
+        const recommendations = await generateAIRecommendations({
+            sector,
+            competencyScore: score,
+            skills: skillNames,
+            projects,
+            certifications,
+        });
+
+        return res.json({
+            success: true,
+            recommendations,
+        });
+    } catch (error) {
+        console.error('Error getting AI recommendations:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to get recommendations',
+        });
+    }
+};
