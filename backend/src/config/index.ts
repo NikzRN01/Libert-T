@@ -1,3 +1,3 @@
-export * from "./env";
-export * from "./database";
-export * from "./supabase";
+export { config } from './env';
+export { default as prisma, connectDatabase } from './database';
+export { supabase, supabaseAdmin } from './supabase';

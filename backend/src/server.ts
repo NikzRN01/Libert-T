@@ -1,29 +1,71 @@
-import express from "express";
-import cors from "cors";
-import { env } from "./config/env";
-import { agricultureRouter } from "./routes/agriculture.routes";
-import { analyticsRouter } from "./routes/analytics.routes";
-import { healthcareRouter } from "./routes/healthcare.routes";
-import { skillRouter } from "./routes/skill.routes";
-import { urbanRouter } from "./routes/urban.routes";
-import { userRouter } from "./routes/user.routes";
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import { config, connectDatabase } from './config';
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
+import skillRoutes from './routes/skill.routes';
+import healthcareRoutes from './routes/healthcare.routes';
+import agricultureRoutes from './routes/agriculture.routes';
+import urbanRoutes from './routes/urban.routes';
+import analyticsRoutes from './routes/analytics.routes';
 
-const app = express();
-app.use(cors());
+const app: Application = express();
+
+// Middleware
+app.use(cors({
+    origin: config.cors.origin,
+    credentials: true,
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/health", (_req, res) => {
-  res.json({ ok: true });
+// Health check endpoint
+app.get('/health', (req: Request, res: Response) => {
+    res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        environment: config.nodeEnv,
+    });
 });
 
-app.use("/api/agriculture", agricultureRouter);
-app.use("/api/analytics", analyticsRouter);
-app.use("/api/healthcare", healthcareRouter);
-app.use("/api/skills", skillRouter);
-app.use("/api/urban", urbanRouter);
-app.use("/api/users", userRouter);
-
-app.listen(env.PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Backend listening on :${env.PORT}`);
+// Root endpoint
+app.get('/', (req: Request, res: Response) => {
+    res.json({
+        message: 'SkillXIntell API',
+        version: '1.0.0',
+        status: 'running',
+    });
 });
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/skills', skillRoutes);
+app.use('/api/healthcare', healthcareRoutes);
+app.use('/api/agriculture', agricultureRoutes);
+app.use('/api/urban', urbanRoutes);
+app.use('/api/analytics', analyticsRoutes);
+
+// Start server
+const PORT = config.port;
+
+async function startServer() {
+    try {
+        // Connect to database
+        await connectDatabase();
+
+        // Start listening
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`📊 Environment: ${config.nodeEnv}`);
+            console.log(`🔗 API: http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+startServer();
+
+export default app;

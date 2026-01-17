@@ -1,6 +1,35 @@
-# Backend environment variables
-PORT=4000
-DATABASE_URL=postgresql://user:password@localhost:5432/skillxintell
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-JWT_SECRET=change-me
+# ============================================
+# SERVER CONFIGURATION
+# ============================================
+NODE_ENV=development
+PORT=5000
+
+# ============================================
+# DATABASE (Supabase PostgreSQL)
+# ============================================
+# Get this from Supabase: Settings > Database > Connection String > URI
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
+
+# ============================================
+# SUPABASE
+# ============================================
+# Get these from Supabase: Settings > API
+SUPABASE_URL=https://[YOUR-PROJECT-REF].supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_KEY=your-service-role-key-here
+
+# ============================================
+# JWT AUTHENTICATION
+# ============================================
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-32-characters
+JWT_EXPIRES_IN=7d
+
+# ============================================
+# CORS
+# ============================================
+CORS_ORIGIN=http://localhost:3000
+
+# ============================================
+# OPTIONAL: REDIS (for caching)
+# ============================================
+# REDIS_URL=redis://localhost:6379

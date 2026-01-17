@@ -1,6 +1,25 @@
-import { Router } from "express";
-import { getAgricultureOverview } from "../controllers/agriculture.controller";
+import { Router } from 'express';
+import * as agricultureController from '../controllers/agriculture.controller';
+import { requireAuth } from '../middleware/auth.middleware';
 
-export const agricultureRouter = Router();
+const router = Router();
 
-agricultureRouter.get("/", getAgricultureOverview);
+// All routes require authentication
+router.use(requireAuth);
+
+// Agriculture skills
+router.get('/skills', agricultureController.getAgricultureSkills);
+
+// Agriculture certifications
+router.get('/certifications', agricultureController.getAgricultureCertifications);
+
+// Agriculture projects
+router.get('/projects', agricultureController.getAgricultureProjects);
+
+// Agriculture innovation readiness assessment
+router.get('/assessment', agricultureController.getAgricultureAssessment);
+
+// Agriculture career pathways
+router.get('/career-pathways', agricultureController.getAgricultureCareerPathways);
+
+export default router;
