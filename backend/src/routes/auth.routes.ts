@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as authController from '../controllers/auth.controller';
+import { requireAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -16,5 +17,12 @@ router.post('/register', authController.register);
  * @access  Public
  */
 router.post('/login', authController.login);
+
+/**
+ * @route   GET /api/auth/me
+ * @desc    Get current user info
+ * @access  Private
+ */
+router.get('/me', requireAuth, authController.getCurrentUser);
 
 export default router;

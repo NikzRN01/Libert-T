@@ -1,0 +1,71 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "backend: prisma generate",
+			"type": "shell",
+			"command": "cd \"backend\" && npx prisma generate",
+			"isBackground": false
+		},
+		{
+			"label": "backend: dev",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": true
+		},
+		{
+			"label": "backend: dev (foreground)",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": false
+		},
+		{
+			"label": "backend: install deps",
+			"type": "shell",
+			"command": "npm install -w backend",
+			"isBackground": false
+		},
+		{
+			"label": "backend: prisma generate (after deps)",
+			"type": "shell",
+			"command": "cd \"backend\" && npx prisma generate",
+			"isBackground": false
+		},
+		{
+			"label": "backend: dev",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": true
+		},
+		{
+			"label": "backend: dev (foreground)",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": false
+		},
+		{
+			"label": "backend: dev (foreground 2)",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": false
+		},
+		{
+			"label": "who uses 5000",
+			"type": "shell",
+			"command": "powershell -NoProfile -Command \"netstat -ano | findstr :5000\"",
+			"isBackground": false
+		},
+		{
+			"label": "kill port 5000 process",
+			"type": "shell",
+			"command": "taskkill /PID 24512 /F",
+			"isBackground": false
+		},
+		{
+			"label": "backend: dev (run)",
+			"type": "shell",
+			"command": "cd \"backend\" && npm run dev",
+			"isBackground": true
+		}
+	]
+}
