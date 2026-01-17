@@ -42,7 +42,7 @@
         "prisma": "^5.9.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.3.0"
-    }
+    },
   "name": "skillxintell-backend",
   "private": true,
   "version": "0.0.0",
