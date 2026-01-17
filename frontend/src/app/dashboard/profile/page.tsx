@@ -3,25 +3,41 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Mail, MapPin, Calendar, Edit } from "lucide-react";
+import { useStoredToken, useStoredUser } from "@/lib/auth";
+
+type UserProfile = {
+    location?: string;
+    bio?: string;
+    interests?: string[];
+    targetSectors?: string[];
+};
+
+type ProfileStats = {
+    totalSkills?: number;
+    totalProjects?: number;
+    totalCertifications?: number;
+};
+
+type ProfileResponse = {
+    profile?: UserProfile;
+    stats?: ProfileStats;
+};
 
 export default function ProfilePage() {
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const user = useStoredUser();
+    const token = useStoredToken();
+    const [profile, setProfile] = useState<ProfileResponse | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const userData = localStorage.getItem("user");
-        if (userData) {
-            setUser(JSON.parse(userData));
-        }
-
         // Fetch full profile from API
         fetchProfile();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token]);
 
     const fetchProfile = async () => {
         try {
-            const token = localStorage.getItem("token");
+            if (!token) return;
             const response = await fetch("http://localhost:5000/api/users/profile", {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -29,10 +45,10 @@ export default function ProfilePage() {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                setProfile(data.profile);
+                const data: unknown = await response.json();
+                setProfile(data as ProfileResponse);
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to fetch profile:", error);
         } finally {
             setLoading(false);

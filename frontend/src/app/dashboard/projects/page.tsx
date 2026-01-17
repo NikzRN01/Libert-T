@@ -32,7 +32,7 @@ export default function ProjectsPage() {
                     No Projects Found
                 </h3>
                 <p className="text-muted-foreground max-w-sm mx-auto mb-8 leading-relaxed">
-                    You haven't added any {sector.toLowerCase()} projects yet. Showcase your practical experience.
+                    You haven&apos;t added any {sector.toLowerCase()} projects yet. Showcase your practical experience.
                 </p>
                 <button className="px-6 py-3 bg-gradient-to-r from-secondary to-secondary/80 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
                     Add Your First Project

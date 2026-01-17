@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Brain, User, Award, LayoutDashboard, LogOut } from "lucide-react";
+import { clearAuthStorage, useStoredToken, useStoredUser } from "@/lib/auth";
 
 export default function DashboardLayout({
     children,
@@ -11,24 +12,18 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
-    const [user, setUser] = useState<any>(null);
+    const user = useStoredUser();
+    const token = useStoredToken();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const userData = localStorage.getItem("user");
-
-        if (!token || !userData) {
-            router.push("/login");
-            return;
+        if (!token || !user) {
+            router.replace("/login");
         }
-
-        setUser(JSON.parse(userData));
-    }, [router]);
+    }, [router, token, user]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        router.push("/login");
+        clearAuthStorage();
+        router.replace("/login");
     };
 
     if (!user) {

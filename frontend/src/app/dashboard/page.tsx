@@ -1,30 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { clearAuthStorage, useStoredToken, useStoredUser } from "@/lib/auth";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const [user, setUser] = useState<any>(null);
+    const user = useStoredUser();
+    const token = useStoredToken();
 
     useEffect(() => {
-        // Check if user is logged in
-        const token = localStorage.getItem("token");
-        const userData = localStorage.getItem("user");
-
-        if (!token || !userData) {
-            router.push("/login");
-            return;
+        if (!token || !user) {
+            router.replace("/login");
         }
-
-        setUser(JSON.parse(userData));
-    }, [router]);
+    }, [router, token, user]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        router.push("/login");
+        clearAuthStorage();
+        router.replace("/login");
     };
 
     if (!user) {

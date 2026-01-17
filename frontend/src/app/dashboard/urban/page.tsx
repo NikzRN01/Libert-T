@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Filter, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 interface Skill {
     id: string;
@@ -24,12 +24,9 @@ export default function SkillsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [sectorFilter, setSectorFilter] = useState(searchParams.get("sector") || "");
 
-    useEffect(() => {
-        fetchSkills();
-    }, [sectorFilter]);
-
-    const fetchSkills = async () => {
+    const fetchSkills = useCallback(async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem("token");
             const params = new URLSearchParams();
             if (sectorFilter) params.append("sector", sectorFilter);
@@ -52,7 +49,11 @@ export default function SkillsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [sectorFilter]);
+
+    useEffect(() => {
+        fetchSkills();
+    }, [fetchSkills]);
 
     const filteredSkills = skills.filter((skill) =>
         skill.name.toLowerCase().includes(searchTerm.toLowerCase())
