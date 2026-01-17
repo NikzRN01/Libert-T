@@ -1,11 +1,41 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const env = {
-  PORT: Number(process.env.PORT ?? 4000),
-  DATABASE_URL: process.env.DATABASE_URL ?? "",
-  SUPABASE_URL: process.env.SUPABASE_URL ?? "",
-  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? "",
-  JWT_SECRET: process.env.JWT_SECRET ?? "change-me"
+export const config = {
+    port: process.env.PORT || 5000,
+    nodeEnv: process.env.NODE_ENV || 'development',
+
+    database: {
+        url: process.env.DATABASE_URL!,
+    },
+
+    supabase: {
+        url: process.env.SUPABASE_URL!,
+        anonKey: process.env.SUPABASE_ANON_KEY!,
+        serviceKey: process.env.SUPABASE_SERVICE_KEY!,
+    },
+
+    jwt: {
+        secret: process.env.JWT_SECRET!,
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    },
+
+    cors: {
+        origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    },
 };
+
+// Validate required environment variables
+const requiredEnvVars = [
+    'DATABASE_URL',
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY',
+    'JWT_SECRET',
+];
+
+for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+        throw new Error(`Missing required environment variable: ${envVar}`);
+    }
+}
