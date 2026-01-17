@@ -18,6 +18,7 @@ interface Skill {
 interface SkillForm {
     name: string;
     category: string;
+    customCategory?: string;
     proficiencyLevel: number;
     tags: string[];
     description: string;
@@ -25,16 +26,29 @@ interface SkillForm {
 
 const SECTOR = "AGRICULTURE";
 
+const AGRICULTURE_CATEGORIES = [
+    "CROP_MANAGEMENT",
+    "SOIL_HEALTH",
+    "PRECISION_FARMING",
+    "LIVESTOCK_MANAGEMENT",
+    "AGRICULTURAL_TECHNOLOGY",
+    "FARM_BUSINESS_MANAGEMENT",
+    "SUSTAINABLE_FARMING",
+    "IRRIGATION_MANAGEMENT",
+];
+
 export default function AgricultureSkillsPage() {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState<SkillForm>({
         name: "",
         category: "",
+        customCategory: "",
         proficiencyLevel: 1,
         tags: [],
         description: "",
@@ -124,7 +138,10 @@ export default function AgricultureSkillsPage() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
                 }
             );
 
@@ -134,6 +151,7 @@ export default function AgricultureSkillsPage() {
                 setFormData({
                     name: "",
                     category: "",
+                    customCategory: "",
                     proficiencyLevel: 1,
                     tags: [],
                     description: "",
@@ -142,6 +160,47 @@ export default function AgricultureSkillsPage() {
             }
         } catch (error) {
             console.error("Failed to update skill:", error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleAddSkill = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        setSubmitting(true);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        ...formData,
+                        sector: SECTOR,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                setShowAddModal(false);
+                setFormData({
+                    name: "",
+                    category: "",
+                    customCategory: "",
+                    proficiencyLevel: 1,
+                    tags: [],
+                    description: "",
+                });
+                fetchSkills();
+            }
+        } catch (error) {
+            console.error("Failed to add skill:", error);
         } finally {
             setSubmitting(false);
         }
@@ -201,13 +260,13 @@ export default function AgricultureSkillsPage() {
                     Agriculture Skills
                 </h1>
                 {skills.length > 0 && (
-                    <Link
-                        href="/dashboard/skills/add"
+                    <button
+                        onClick={() => setShowAddModal(true)}
                         className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
                         <span>Add Skill</span>
-                    </Link>
+                    </button>
                 )}
             </div>
 
@@ -231,13 +290,13 @@ export default function AgricultureSkillsPage() {
                     <p className="text-muted-foreground mb-6 text-lg">
                         {searchTerm ? "No skills found matching your search" : "You haven't added any skills yet"}
                     </p>
-                    <Link
-                        href="/dashboard/skills/add"
+                    <button
+                        onClick={() => setShowAddModal(true)}
                         className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
                         <span>Add Your First Skill</span>
-                    </Link>
+                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -343,15 +402,35 @@ export default function AgricultureSkillsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <input
-                                    type="text"
+                                <select
                                     required
                                     value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })}
                                     className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                    placeholder="e.g., Programming Languages"
-                                />
+                                >
+                                    <option value="">Select a category</option>
+                                    {AGRICULTURE_CATEGORIES.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat.replace(/_/g, " ")}
+                                        </option>
+                                    ))}
+                                    <option value="OTHER">Other</option>
+                                </select>
                             </div>
+
+                            {formData.category === "OTHER" && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Custom Category *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter custom category"
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                        required
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">
@@ -440,6 +519,184 @@ export default function AgricultureSkillsPage() {
                                     className="flex-1 px-4 py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 hover:bg-primary/90"
                                 >
                                     {submitting ? "Updating..." : "Update Skill"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Skill Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Add Skill</h2>
+                            <button
+                                onClick={() => {
+                                    setShowAddModal(false);
+                                    setFormData({
+                                        name: "",
+                                        category: "",
+                                        customCategory: "",
+                                        proficiencyLevel: 1,
+                                        tags: [],
+                                        description: "",
+                                    });
+                                }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                            >
+                                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddSkill} className="p-6 space-y-4 bg-white dark:bg-gray-900">
+                            {/* Skill Name */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Skill Name *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    placeholder="e.g., Python Programming"
+                                />
+                            </div>
+
+                            {/* Category */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
+                                <select
+                                    required
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                >
+                                    <option value="">Select a category</option>
+                                    {AGRICULTURE_CATEGORIES.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat.replace(/_/g, " ")}
+                                        </option>
+                                    ))}
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+
+                            {/* Custom Category (if "Other" selected) */}
+                            {formData.category === "OTHER" && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Custom Category *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter custom category"
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                        required
+                                    />
+                                </div>
+                            )}
+
+                            {/* Proficiency Level */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">
+                                    Proficiency Level: {getProficiencyLabel(formData.proficiencyLevel)}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="5"
+                                    value={formData.proficiencyLevel}
+                                    onChange={(e) => setFormData({ ...formData, proficiencyLevel: parseInt(e.target.value) })}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span>Beginner</span>
+                                    <span>Intermediate</span>
+                                    <span>Advanced</span>
+                                    <span>Expert</span>
+                                    <span>Master</span>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Description</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-h-[80px]"
+                                    placeholder="Describe your proficiency..."
+                                />
+                            </div>
+
+                            {/* Tags */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Tags</label>
+                                <div className="flex gap-2 mb-2">
+                                    <input
+                                        type="text"
+                                        value={tagInput}
+                                        onChange={(e) => setTagInput(e.target.value)}
+                                        onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                                        placeholder="Add a tag and press Enter"
+                                        className="flex-1 px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={addTag}
+                                        className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary/90"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                                {formData.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {formData.tags.map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                                            >
+                                                {tag}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeTag(tag)}
+                                                    className="text-primary hover:text-primary/80"
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Form Actions */}
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowAddModal(false);
+                                        setFormData({
+                                            name: "",
+                                            category: "",
+                                            customCategory: "",
+                                            proficiencyLevel: 1,
+                                            tags: [],
+                                            description: "",
+                                        });
+                                    }}
+                                    className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1 px-4 py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 hover:bg-primary/90"
+                                >
+                                    {submitting ? "Adding..." : "Add Skill"}
                                 </button>
                             </div>
                         </form>

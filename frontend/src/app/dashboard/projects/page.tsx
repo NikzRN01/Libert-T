@@ -574,6 +574,21 @@ export default function ProjectsPage() {
                                 />
                             </div>
 
+                            {/* Sector */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Sector *</label>
+                                <select
+                                    value={formSector}
+                                    onChange={(e) => setFormSector(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    required
+                                >
+                                    <option value="HEALTHCARE">Healthcare</option>
+                                    <option value="AGRICULTURE">Agriculture</option>
+                                    <option value="URBAN">Urban</option>
+                                </select>
+                            </div>
+
                             {/* Description */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Description *</label>
@@ -589,19 +604,14 @@ export default function ProjectsPage() {
                             {/* Category */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <select
+                                <input
+                                    type="text"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    placeholder="e.g., Web Development, Data Science, Mobile App"
                                     className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     required
-                                >
-                                    <option value="">Select a category</option>
-                                    {categories[formSector as keyof typeof categories]?.map((cat) => (
-                                        <option key={cat} value={cat}>
-                                            {cat.replace(/_/g, " ")}
-                                        </option>
-                                    ))}
-                                </select>
+                                />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -865,19 +875,14 @@ export default function ProjectsPage() {
                             {/* Category */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <select
+                                <input
+                                    type="text"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    placeholder="e.g., Web Development, Data Science, Mobile App"
                                     className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     required
-                                >
-                                    <option value="">Select a category</option>
-                                    {categories[editingProject.sector as keyof typeof categories]?.map((cat) => (
-                                        <option key={cat} value={cat}>
-                                            {cat.replace(/_/g, " ")}
-                                        </option>
-                                    ))}
-                                </select>
+                                />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

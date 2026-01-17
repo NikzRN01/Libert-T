@@ -312,10 +312,10 @@ export default function UrbanDashboard() {
                         You haven&apos;t added any skills yet
                     </p>
                     <Link
-                        href="/dashboard/skills/add"
+                        href="/dashboard/urban/skills"
                         className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
-                        View detailed assessment →
+                        Add your first skill →
                     </Link>
                 </div>
             ) : (
@@ -429,6 +429,32 @@ export default function UrbanDashboard() {
                             Expert Level
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Competency Assessment */}
+            <div className="p-6 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-lg">
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Competency Assessment</h2>
+                <div className="space-y-4">
+                    <div>
+                        <div className="flex items-center justify-between mb-2 text-sm font-semibold text-slate-600">
+                            <span>Overall Competency</span>
+                            <span>{stats?.readinessScore || 0}%</span>
+                        </div>
+                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full bg-gradient-to-r from-cyan-600 via-teal-500 to-emerald-500 transition-all"
+                                style={{ width: `${stats?.readinessScore || 0}%` }}
+                            />
+                        </div>
+                    </div>
+                    <Link
+                        href="/dashboard/urban/assessment"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 hover:text-cyan-800"
+                    >
+                        View detailed assessment
+                        <span className="translate-x-0 group-hover:translate-x-1 transition-transform">→</span>
+                    </Link>
                 </div>
             </div>
         </div>

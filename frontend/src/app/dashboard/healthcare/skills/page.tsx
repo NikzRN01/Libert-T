@@ -18,6 +18,7 @@ interface Skill {
 interface SkillForm {
     name: string;
     category: string;
+    customCategory?: string;
     proficiencyLevel: number;
     tags: string[];
     description: string;
@@ -25,16 +26,29 @@ interface SkillForm {
 
 const SECTOR = "HEALTHCARE";
 
+const HEALTHCARE_CATEGORIES = [
+    "CLINICAL_INFORMATICS",
+    "EHR_SYSTEMS",
+    "HEALTH_DATA_ANALYTICS",
+    "MEDICAL_CODING",
+    "TELEMEDICINE",
+    "CYBERSECURITY",
+    "HEALTHCARE_IT_SUPPORT",
+    "HEALTH_COMPLIANCE",
+];
+
 export default function HealthcareSkillsPage() {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState<SkillForm>({
         name: "",
         category: "",
+        customCategory: "",
         proficiencyLevel: 1,
         tags: [],
         description: "",
@@ -102,11 +116,54 @@ export default function HealthcareSkillsPage() {
         setFormData({
             name: skill.name,
             category: skill.category,
+            customCategory: "",
             proficiencyLevel: skill.proficiencyLevel,
             tags: skill.tags || [],
             description: skill.description || "",
         });
         setShowEditModal(true);
+    };
+
+    const handleAddSkill = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        try {
+            const token = localStorage.getItem("token");
+            const submitData = {
+                ...formData,
+                sector: SECTOR,
+                category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+            };
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(submitData),
+                }
+            );
+
+            if (response.ok) {
+                setShowAddModal(false);
+                setFormData({
+                    name: "",
+                    category: "",
+                    customCategory: "",
+                    proficiencyLevel: 1,
+                    tags: [],
+                    description: "",
+                });
+                fetchSkills();
+            }
+        } catch (error) {
+            console.error("Failed to add skill:", error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const handleUpdateSkill = async (e: React.FormEvent) => {
@@ -116,6 +173,10 @@ export default function HealthcareSkillsPage() {
         setSubmitting(true);
         try {
             const token = localStorage.getItem("token");
+            const submitData = {
+                ...formData,
+                category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+            };
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${editingSkill.id}`,
                 {
@@ -124,7 +185,7 @@ export default function HealthcareSkillsPage() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify(submitData),
                 }
             );
 
@@ -134,6 +195,7 @@ export default function HealthcareSkillsPage() {
                 setFormData({
                     name: "",
                     category: "",
+                    customCategory: "",
                     proficiencyLevel: 1,
                     tags: [],
                     description: "",
@@ -201,13 +263,13 @@ export default function HealthcareSkillsPage() {
                     Healthcare Skills
                 </h1>
                 {skills.length > 0 && (
-                    <Link
-                        href="/dashboard/skills/add"
+                    <button
+                        onClick={() => setShowAddModal(true)}
                         className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
                         <span>Add Skill</span>
-                    </Link>
+                    </button>
                 )}
             </div>
 
@@ -343,14 +405,28 @@ export default function HealthcareSkillsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <input
-                                    type="text"
+                                <select
                                     required
                                     value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })}
                                     className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                    placeholder="e.g., Programming Languages"
-                                />
+                                >
+                                    <option value="">Select a category</option>
+                                    {HEALTHCARE_CATEGORIES.map((cat) => (
+                                        <option key={cat} value={cat}>{cat.replace(/_/g, " ")}</option>
+                                    ))}
+                                    <option value="OTHER">Other</option>
+                                </select>
+                                {formData.category === "OTHER" && (
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        placeholder="Enter custom category"
+                                        className="w-full mt-2 px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    />
+                                )}
                             </div>
 
                             <div>
@@ -440,6 +516,149 @@ export default function HealthcareSkillsPage() {
                                     className="flex-1 px-4 py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 hover:bg-primary/90"
                                 >
                                     {submitting ? "Updating..." : "Update Skill"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/10">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Add Skill</h2>
+                            <button
+                                onClick={() => setShowAddModal(false)}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                            >
+                                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddSkill} className="p-6 space-y-4 bg-white dark:bg-gray-900">
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Skill Name *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    placeholder="e.g., Python Programming"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
+                                <select
+                                    required
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                >
+                                    <option value="">Select a category</option>
+                                    {HEALTHCARE_CATEGORIES.map((cat) => (
+                                        <option key={cat} value={cat}>{cat.replace(/_/g, " ")}</option>
+                                    ))}
+                                    <option value="OTHER">Other</option>
+                                </select>
+                                {formData.category === "OTHER" && (
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        placeholder="Enter custom category"
+                                        className="w-full mt-2 px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                    />
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">
+                                    Proficiency Level: {getProficiencyLabel(formData.proficiencyLevel)}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="5"
+                                    value={formData.proficiencyLevel}
+                                    onChange={(e) => setFormData({ ...formData, proficiencyLevel: parseInt(e.target.value) })}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span>Beginner</span>
+                                    <span>Intermediate</span>
+                                    <span>Advanced</span>
+                                    <span>Expert</span>
+                                    <span>Master</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Description</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                    placeholder="Describe your experience with this skill..."
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Tags</label>
+                                <div className="flex gap-2 mb-2">
+                                    <input
+                                        type="text"
+                                        value={tagInput}
+                                        onChange={(e) => setTagInput(e.target.value)}
+                                        onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                                        className="flex-1 px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                        placeholder="Add a tag"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={addTag}
+                                        className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary/90"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {formData.tags.map((tag, index) => (
+                                        <span
+                                            key={index}
+                                            className="flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg text-sm border border-gray-300 dark:border-gray-700"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTag(tag)}
+                                                className="hover:text-red-600 dark:hover:text-red-400"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1 px-4 py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 hover:bg-primary/90"
+                                >
+                                    {submitting ? "Adding..." : "Add Skill"}
                                 </button>
                             </div>
                         </form>
