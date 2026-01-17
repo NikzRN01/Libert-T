@@ -105,130 +105,150 @@ export default function HealthcareDashboard() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-100">
-                <div className="text-muted-foreground">Loading healthcare data...</div>
+            <div className="flex items-center justify-center min-h-[220px]">
+                <div className="text-slate-500">Loading healthcare data...</div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-4 bg-linear-to-r from-primary/10 to-primary/5 p-6 rounded-2xl border-2 border-border shadow-lg">
-                <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg">
-                    <Activity className="h-8 w-8 text-white" />
+        <div className="space-y-8">
+            {/* Hero */}
+            <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-2xl backdrop-blur-xl p-6 md:p-8">
+                <div className="absolute inset-0 pointer-events-none" aria-hidden>
+                    <div
+                        className="absolute inset-0 opacity-70"
+                        style={{
+                            backgroundImage:
+                                "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.12), transparent 38%), radial-gradient(circle at 80% 0%, rgba(168,85,247,0.12), transparent 36%), radial-gradient(circle at 45% 110%, rgba(16,185,129,0.14), transparent 40%)",
+                        }}
+                    ></div>
+                    <div
+                        className="absolute inset-0 opacity-35"
+                        style={{
+                            backgroundImage:
+                                "linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(180deg, rgba(15,23,42,0.05) 1px, transparent 1px)",
+                            backgroundSize: "22px 22px",
+                        }}
+                    ></div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-bold text-foreground">Healthcare Informatics</h1>
-                    <p className="text-muted-foreground font-medium">
-                        Track your healthcare IT skills and career progress
-                    </p>
+                <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200/60">
+                            <Activity className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Sector</p>
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+                                Healthcare Informatics
+                            </h1>
+                            <p className="text-slate-600 font-medium">Skills, credentials, and readiness</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <span className="px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-100">
+                            {stats?.competencyScore || 0}% competency
+                        </span>
+                        <span className="px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold border border-emerald-100">
+                            {stats?.verifiedSkills || 0} verified skills
+                        </span>
+                    </div>
                 </div>
             </div>
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Total Skills</span>
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <Target className="h-5 w-5 text-primary" />
+                {[{
+                    title: "Total Skills",
+                    value: stats?.totalSkills || 0,
+                    hint: `${stats?.verifiedSkills || 0} verified`,
+                    icon: <Target className="h-5 w-5 text-blue-600" />,
+                    color: "blue",
+                }, {
+                    title: "Certifications",
+                    value: stats?.activeCertifications || 0,
+                    hint: "Active credentials",
+                    icon: <Award className="h-5 w-5 text-indigo-600" />,
+                    color: "indigo",
+                }, {
+                    title: "Projects",
+                    value: stats?.completedProjects || 0,
+                    hint: "Completed",
+                    icon: <Briefcase className="h-5 w-5 text-emerald-600" />,
+                    color: "emerald",
+                }, {
+                    title: "Competency",
+                    value: `${stats?.competencyScore || 0}%`,
+                    hint: `Avg proficiency ${stats?.averageProficiency || "0"}/5`,
+                    icon: <TrendingUp className="h-5 w-5 text-amber-600" />,
+                    color: "amber",
+                }].map((card) => (
+                    <div
+                        key={card.title}
+                        className="relative p-6 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                    >
+                        <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.65), rgba(99,102,241,0.65))" }}></div>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm text-slate-500 font-semibold">{card.title}</span>
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shadow-inner">
+                                {card.icon}
+                            </div>
                         </div>
+                        <div className="text-4xl font-black text-slate-900 tracking-tight">{card.value}</div>
+                        <p className="text-sm text-slate-600 mt-2 font-medium">{card.hint}</p>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.totalSkills || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">
-                        {stats?.verifiedSkills || 0} verified
-                    </p>
-                </div>
-
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Certifications</span>
-                        <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                            <Award className="h-5 w-5 text-secondary" />
-                        </div>
-                    </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.activeCertifications || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Active credentials</p>
-                </div>
-
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Projects</span>
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <Briefcase className="h-5 w-5 text-accent" />
-                        </div>
-                    </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.completedProjects || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Completed</p>
-                </div>
-
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Competency Score</span>
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <TrendingUp className="h-5 w-5 text-primary" />
-                        </div>
-                    </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.competencyScore || 0}%</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">
-                        Avg proficiency: {stats?.averageProficiency || "0"}/5
-                    </p>
-                </div>
+                ))}
             </div>
 
             {/* Quick Actions */}
             <div className="grid md:grid-cols-3 gap-6">
-                <Link
-                    href="/dashboard/skills?sector=HEALTHCARE"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Target className="h-6 w-6 text-white" />
+                {[{
+                    href: "/dashboard/skills?sector=HEALTHCARE",
+                    icon: <Target className="h-6 w-6 text-blue-600" />,
+                    title: "Skills Tracker",
+                    copy: "Manage healthcare IT skills, proficiencies, and gaps.",
+                    accent: "blue",
+                }, {
+                    href: "/dashboard/certifications?sector=HEALTHCARE",
+                    icon: <Award className="h-6 w-6 text-indigo-600" />,
+                    title: "Certifications",
+                    copy: "Track CPHIMS, CAHIMS, and compliance credentials.",
+                    accent: "indigo",
+                }, {
+                    href: "/dashboard/projects?sector=HEALTHCARE",
+                    icon: <Briefcase className="h-6 w-6 text-emerald-600" />,
+                    title: "Projects",
+                    copy: "Showcase healthcare informatics and integration projects.",
+                    accent: "emerald",
+                }].map((item) => (
+                    <Link
+                        key={item.title}
+                        href={item.href}
+                        className="group relative p-8 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                    >
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundImage: "radial-gradient(circle at 80% 0%, rgba(59,130,246,0.12), transparent 45%)" }}></div>
+                        <div className="relative flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shadow-inner">
+                                {item.icon}
+                            </div>
+                            <h3 className="font-bold text-lg text-slate-900 tracking-tight">{item.title}</h3>
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Skills Tracker</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                        Manage your healthcare IT skills and proficiency levels
-                    </p>
-                </Link>
-
-                <Link
-                    href="/dashboard/certifications?sector=HEALTHCARE"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-secondary/50 transition-all transform hover:-translate-y-1 group"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Award className="h-6 w-6 text-white" />
-                        </div>
-                        <h3 className="font-bold text-lg text-foreground">Certifications</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                        Track CPHIMS, CAHIMS, and other healthcare certifications
-                    </p>
-                </Link>
-
-                <Link
-                    href="/dashboard/projects?sector=HEALTHCARE"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Briefcase className="h-6 w-6 text-white" />
-                        </div>
-                        <h3 className="font-semibold">Projects</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                        Showcase your healthcare informatics projects
-                    </p>
-                </Link>
+                        <p className="relative text-sm text-slate-600 leading-relaxed">
+                            {item.copy}
+                        </p>
+                        <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                            Open
+                            <span className="transition-transform group-hover:translate-x-1">→</span>
+                        </span>
+                    </Link>
+                ))}
             </div>
 
             {/* Recommended Courses Section */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Recommended Courses</h2>
+                    <h2 className="text-2xl font-bold text-slate-900">Recommended Courses</h2>
+                    <span className="text-sm text-slate-500">Personalized from your pathways</span>
                 </div>
 
                 {pathways.length > 0 && pathways.some(p => p.courses && p.courses.length > 0) ? (
@@ -244,33 +264,34 @@ export default function HealthcareDashboard() {
                         })()}
                     </div>
                 ) : (
-                    <div className="p-8 rounded-xl border border-border bg-card text-center">
-                        <p className="text-muted-foreground">No courses available. Add more skills to get personalized recommendations.</p>
+                    <div className="p-8 rounded-xl border border-slate-200 bg-white/80 backdrop-blur text-center shadow-sm">
+                        <p className="text-slate-600">No courses available. Add more skills to get personalized recommendations.</p>
                     </div>
                 )}
             </div>
 
             {/* Competency Assessment */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-4">Competency Assessment</h2>
+            <div className="p-6 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-lg">
+                <h2 className="text-xl font-bold text-slate-900 mb-4">Competency Assessment</h2>
                 <div className="space-y-4">
                     <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium">Overall Competency</span>
-                            <span className="text-sm font-medium">{stats?.competencyScore || 0}%</span>
+                        <div className="flex items-center justify-between mb-2 text-sm font-semibold text-slate-600">
+                            <span>Overall Competency</span>
+                            <span>{stats?.competencyScore || 0}%</span>
                         </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-healthcare transition-all"
+                                className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-500 transition-all"
                                 style={{ width: `${stats?.competencyScore || 0}%` }}
                             />
                         </div>
                     </div>
                     <Link
                         href="/dashboard/healthcare/assessment"
-                        className="inline-block text-sm text-healthcare hover:underline"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-800"
                     >
-                        View detailed assessment →
+                        View detailed assessment
+                        <span className="translate-x-0 group-hover:translate-x-1 transition-transform">→</span>
                     </Link>
                 </div>
             </div>

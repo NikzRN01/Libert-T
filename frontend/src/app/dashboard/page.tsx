@@ -9,6 +9,7 @@ export default function DashboardPage() {
     const router = useRouter();
     const user = useStoredUser();
     const token = useStoredToken();
+    const typingChars = Math.min(40, Math.max(18, (user?.name?.length || 6) + 8));
 
     useEffect(() => {
         if (!token || !user) {
@@ -49,12 +50,13 @@ export default function DashboardPage() {
                     ></div>
                 </div>
                 <div className="relative">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-slate-900 text-white text-sm font-semibold shadow-lg shadow-blue-200/60">
-                        <Sparkles className="h-4 w-4 text-yellow-400" />
-                        <span>Dashboard</span>
-                    </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-1 drop-shadow-sm">
-                        <span className="typewriter">Hi, {user.name}</span>
+                        <span
+                            className="typewriter"
+                            style={{ ["--typing-chars" as any]: typingChars, ["--typing-duration" as any]: "3.6s" }}
+                        >
+                            Hi, {user.name}!
+                        </span>
                     </h1>
                 </div>
             </div>
@@ -62,14 +64,17 @@ export default function DashboardPage() {
             <style jsx>{`
                 .typewriter {
                     display: inline-block;
+                    font-family: "SFMono-Regular", ui-monospace, "Roboto Mono", monospace;
                     overflow: hidden;
                     white-space: nowrap;
                     border-right: 3px solid #0f172a;
-                    animation: typing 1.6s steps(12) forwards, caret 0.7s step-end 3 forwards;
+                    animation:
+                        typing var(--typing-duration, 3.6s) steps(var(--typing-chars, 20)) forwards,
+                        caret 0.9s step-end 2 var(--typing-duration, 3.6s) forwards;
                 }
                 @keyframes typing {
                     from { width: 0; }
-                    to { width: 12ch; }
+                    to { width: calc(var(--typing-chars, 20) * 1ch); }
                 }
                 @keyframes caret {
                     0% { border-color: #0f172a; }
@@ -87,7 +92,6 @@ export default function DashboardPage() {
                         onClick={() => router.push('/dashboard/healthcare')}
                         className="group relative bg-white/85 rounded-2xl p-8 border border-blue-100 hover:border-blue-300 hover:shadow-[0_25px_60px_-25px_rgba(59,130,246,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
                     >
-                        <div className="absolute top-2 right-3 text-xs font-semibold text-blue-500 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">Live</div>
                         <div className="relative">
                             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-blue-600 text-white">
                                 <Activity className="h-8 w-8" />
@@ -108,7 +112,6 @@ export default function DashboardPage() {
                         onClick={() => router.push('/dashboard/agriculture')}
                         className="group relative bg-white/85 rounded-2xl p-8 border border-green-100 hover:border-green-300 hover:shadow-[0_25px_60px_-25px_rgba(34,197,94,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
                     >
-                        <div className="absolute top-2 right-3 text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-100">Insights</div>
                         <div className="relative">
                             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-green-600 text-white">
                                 <TrendingUp className="h-8 w-8" />
@@ -129,7 +132,6 @@ export default function DashboardPage() {
                         onClick={() => router.push('/dashboard/urban')}
                         className="group relative bg-white/85 rounded-2xl p-8 border border-purple-100 hover:border-purple-300 hover:shadow-[0_25px_60px_-25px_rgba(147,51,234,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
                     >
-                        <div className="absolute top-2 right-3 text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full border border-purple-100">Preview</div>
                         <div className="relative">
                             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-purple-600 text-white">
                                 <Building2 className="h-8 w-8" />
@@ -150,7 +152,6 @@ export default function DashboardPage() {
                         onClick={() => router.push('/dashboard/analytics')}
                         className="group relative bg-white/85 rounded-2xl p-8 border border-orange-100 hover:border-orange-300 hover:shadow-[0_25px_60px_-25px_rgba(249,115,22,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
                     >
-                        <div className="absolute top-2 right-3 text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full border border-orange-100">Reports</div>
                         <div className="relative">
                             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-orange-600 text-white">
                                 <BarChart3 className="h-8 w-8" />
