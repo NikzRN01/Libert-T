@@ -12,26 +12,68 @@ interface AgricultureStats {
     averageProficiency: string;
 }
 
+interface CareerPathway {
+    role: string;
+    description: string;
+    matchScore: number;
+    salaryRange: string;
+    demand: string;
+}
+
 export default function AgricultureDashboard() {
     const [stats, setStats] = useState<AgricultureStats | null>(null);
+    const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchAgricultureStats = useCallback(async () => {
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/agriculture/assessment');
-            // const data = await response.json();
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
 
-            // Mock data
+            // Fetch assessment data
+            const assessmentRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/agriculture/assessment`,
+                { headers }
+            );
+
+            if (assessmentRes.ok) {
+                const assessmentData = await assessmentRes.json();
+                if (assessmentData.success) {
+                    setStats({
+                        totalSkills: assessmentData.data.totalSkills || 0,
+                        certifications: assessmentData.data.certifications || 0,
+                        completedProjects: assessmentData.data.completedProjects || 0,
+                        innovationScore: assessmentData.data.innovationScore || 0,
+                        averageProficiency: assessmentData.data.averageProficiency || "0",
+                    });
+                }
+            }
+
+            // Fetch career pathways
+            const pathwaysRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/agriculture/career-pathways`,
+                { headers }
+            );
+
+            if (pathwaysRes.ok) {
+                const pathwaysData = await pathwaysRes.json();
+                if (pathwaysData.success && pathwaysData.data.pathways) {
+                    setPathways(pathwaysData.data.pathways.slice(0, 2));
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching agriculture data:", error);
+            // Set default values on error
             setStats({
                 totalSkills: 0,
                 certifications: 0,
                 completedProjects: 0,
                 innovationScore: 0,
-                averageProficiency: "N/A",
+                averageProficiency: "0",
             });
-        } catch (error) {
-            console.error("Error fetching agriculture stats:", error);
         } finally {
             setLoading(false);
         }
@@ -165,39 +207,59 @@ export default function AgricultureDashboard() {
             <div className="p-6 rounded-xl border border-border bg-card">
                 <h2 className="text-xl font-semibold mb-4">Recommended Career Pathways</h2>
                 <div className="space-y-3">
-                    <div className="p-4 rounded-lg bg-muted/50">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold">Precision Agriculture Specialist</h3>
-                            <span className="text-sm font-medium text-agriculture">82% Match</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                            Implement technology-driven farming solutions
-                        </p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>💰 $55,000 - $85,000</span>
-                            <span>•</span>
-                            <span>📈 High Demand</span>
-                        </div>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-muted/50">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold">Sustainable Farming Consultant</h3>
-                            <span className="text-sm font-medium text-agriculture">75% Match</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                            Advise on sustainable agricultural practices
-                        </p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>💰 $60,000 - $90,000</span>
-                            <span>•</span>
-                            <span>📈 Very High Demand</span>
-                        </div>
-                    </div>
+                    {pathways.length > 0 ? (
+                        pathways.map((pathway, index) => (
+                            <div key={index} className="p-4 rounded-lg bg-muted/50">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold">{pathway.role}</h3>
+                                    <span className="text-sm font-medium text-secondary">{pathway.matchScore}% Match</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    {pathway.description}
+                                </p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>💰 {pathway.salaryRange}</span>
+                                    <span>•</span>
+                                    <span>📈 {pathway.demand}</span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold">Precision Agriculture Specialist</h3>
+                                    <span className="text-sm font-medium text-secondary">-- Match</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    Implement technology-driven farming solutions
+                                </p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>💰 $55,000 - $85,000</span>
+                                    <span>•</span>
+                                    <span>📈 High Demand</span>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold">Sustainable Farming Consultant</h3>
+                                    <span className="text-sm font-medium text-secondary">-- Match</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    Advise on sustainable agricultural practices
+                                </p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>💰 $60,000 - $90,000</span>
+                                    <span>•</span>
+                                    <span>📈 Very High Demand</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <Link
                     href="/dashboard/agriculture/career-pathways"
-                    className="mt-4 inline-block text-sm text-agriculture hover:underline"
+                    className="mt-4 inline-block text-sm text-secondary hover:underline"
                 >
                     View all career pathways →
                 </Link>

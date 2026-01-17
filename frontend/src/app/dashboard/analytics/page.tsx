@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Target, Award, Brain } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw } from "lucide-react";
 
+interface SectorAnalytics {
+    [key: string]: any;
+}
 interface CrossSectorAnalytics {
     overall: {
         totalSkills: number;
@@ -12,63 +15,77 @@ interface CrossSectorAnalytics {
         sectorsActive: number;
     };
     bySector: {
-        HEALTHCARE?: {
-            overallScore: number;
-            careerReadiness: number;
-            industryAlignment: number;
-        };
-        AGRICULTURE?: {
-            overallScore: number;
-            careerReadiness: number;
-            industryAlignment: number;
-        };
-        URBAN?: {
-            overallScore: number;
-            careerReadiness: number;
-            industryAlignment: number;
-        };
+        HEALTHCARE?: SectorAnalytics;
+        AGRICULTURE?: SectorAnalytics;
+        URBAN?: SectorAnalytics;
     };
 }
 
 export default function AnalyticsDashboard() {
     const [analytics, setAnalytics] = useState<CrossSectorAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
+    const [generating, setGenerating] = useState(false);
 
     const fetchAnalytics = useCallback(async () => {
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/analytics/cross-sector/overview');
-            // const data = await response.json();
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
 
-            // Mock data
-            setAnalytics({
-                overall: {
-                    totalSkills: 36,
-                    totalProjects: 15,
-                    totalCertifications: 9,
-                    averageReadiness: 75,
-                    sectorsActive: 3,
-                },
-                bySector: {
-                    HEALTHCARE: {
-                        overallScore: 75,
-                        careerReadiness: 78,
-                        industryAlignment: 72,
-                    },
-                    AGRICULTURE: {
-                        overallScore: 68,
-                        careerReadiness: 70,
-                        industryAlignment: 66,
-                    },
-                    URBAN: {
-                        overallScore: 80,
-                        careerReadiness: 82,
-                        industryAlignment: 78,
-                    },
-                },
-            });
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/analytics/cross-sector/overview`,
+                { headers }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    // Transform the data to match our interface
+                    const bySector: CrossSectorAnalytics["bySector"] = {};
+
+                    if (data.data.bySector.HEALTHCARE) {
+                        bySector.HEALTHCARE = {
+                            overallScore: data.data.bySector.HEALTHCARE.overallScore || 0,
+                            careerReadiness: data.data.bySector.HEALTHCARE.careerReadiness || 0,
+                            industryAlignment: data.data.bySector.HEALTHCARE.industryAlignment || 0,
+                        };
+                    }
+                    if (data.data.bySector.AGRICULTURE) {
+                        bySector.AGRICULTURE = {
+                            overallScore: data.data.bySector.AGRICULTURE.overallScore || 0,
+                            careerReadiness: data.data.bySector.AGRICULTURE.careerReadiness || 0,
+                            industryAlignment: data.data.bySector.AGRICULTURE.industryAlignment || 0,
+                        };
+                    }
+                    if (data.data.bySector.URBAN) {
+                        bySector.URBAN = {
+                            overallScore: data.data.bySector.URBAN.overallScore || 0,
+                            careerReadiness: data.data.bySector.URBAN.careerReadiness || 0,
+                            industryAlignment: data.data.bySector.URBAN.industryAlignment || 0,
+                        };
+                    }
+
+                    setAnalytics({
+                        overall: data.data.overall,
+                        bySector,
+                    });
+                }
+            }
         } catch (error) {
             console.error("Error fetching analytics:", error);
+            // Set default empty analytics
+            setAnalytics({
+                overall: {
+                    totalSkills: 0,
+                    totalProjects: 0,
+                    totalCertifications: 0,
+                    averageReadiness: 0,
+                    sectorsActive: 0,
+                },
+                bySector: {},
+            });
         } finally {
             setLoading(false);
         }
@@ -77,6 +94,35 @@ export default function AnalyticsDashboard() {
     useEffect(() => {
         fetchAnalytics();
     }, [fetchAnalytics]);
+
+    const generateAllAnalytics = async () => {
+        setGenerating(true);
+        try {
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
+
+            // Generate analytics for all sectors
+            const sectors = ["HEALTHCARE", "AGRICULTURE", "URBAN"];
+            await Promise.all(
+                sectors.map((sector) =>
+                    fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/analytics/generate/${sector}`,
+                        { method: "POST", headers }
+                    )
+                )
+            );
+
+            // Refetch the analytics
+            await fetchAnalytics();
+        } catch (error) {
+            console.error("Error generating analytics:", error);
+        } finally {
+            setGenerating(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -89,16 +135,26 @@ export default function AnalyticsDashboard() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <BarChart3 className="h-6 w-6 text-primary" />
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <BarChart3 className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold">Analytics & Insights</h1>
+                        <p className="text-muted-foreground">
+                            Cross-sector skill intelligence and career readiness
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-bold">Analytics & Insights</h1>
-                    <p className="text-muted-foreground">
-                        Cross-sector skill intelligence and career readiness
-                    </p>
-                </div>
+                <button
+                    onClick={generateAllAnalytics}
+                    disabled={generating}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all"
+                >
+                    <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} />
+                    {generating ? "Generating..." : "Refresh Analytics"}
+                </button>
             </div>
 
             {/* Overall Stats */}

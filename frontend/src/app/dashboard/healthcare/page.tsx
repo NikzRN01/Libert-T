@@ -13,27 +13,70 @@ interface HealthcareStats {
     averageProficiency: string;
 }
 
+interface CareerPathway {
+    role: string;
+    description: string;
+    matchScore: number;
+    salaryRange: string;
+    demand: string;
+}
+
 export default function HealthcareDashboard() {
     const [stats, setStats] = useState<HealthcareStats | null>(null);
+    const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchHealthcareStats = useCallback(async () => {
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/healthcare/assessment');
-            // const data = await response.json();
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
 
-            // Mock data for now
+            // Fetch assessment data
+            const assessmentRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/healthcare/assessment`,
+                { headers }
+            );
+
+            if (assessmentRes.ok) {
+                const assessmentData = await assessmentRes.json();
+                if (assessmentData.success) {
+                    setStats({
+                        totalSkills: assessmentData.data.totalSkills || 0,
+                        verifiedSkills: assessmentData.data.verifiedSkills || 0,
+                        activeCertifications: assessmentData.data.activeCertifications || 0,
+                        completedProjects: assessmentData.data.completedProjects || 0,
+                        competencyScore: assessmentData.data.competencyScore || 0,
+                        averageProficiency: assessmentData.data.averageProficiency || "0",
+                    });
+                }
+            }
+
+            // Fetch career pathways
+            const pathwaysRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/healthcare/career-pathways`,
+                { headers }
+            );
+
+            if (pathwaysRes.ok) {
+                const pathwaysData = await pathwaysRes.json();
+                if (pathwaysData.success && pathwaysData.data.pathways) {
+                    setPathways(pathwaysData.data.pathways.slice(0, 2));
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching healthcare data:", error);
+            // Set default values on error
             setStats({
                 totalSkills: 0,
                 verifiedSkills: 0,
                 activeCertifications: 0,
                 completedProjects: 0,
                 competencyScore: 0,
-                averageProficiency: "N/A",
+                averageProficiency: "0",
             });
-        } catch (error) {
-            console.error("Error fetching healthcare stats:", error);
         } finally {
             setLoading(false);
         }

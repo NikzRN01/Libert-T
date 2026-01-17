@@ -26,7 +26,8 @@
     "deploy:backend": "cd backend && vercel --prod",
     "deploy": "npm run deploy:backend && npm run deploy:frontend",
     "prisma:migrate": "cd backend && npx prisma migrate deploy",
-    "prisma:studio": "cd backend && npx prisma studio"
+    "prisma:studio": "cd backend && npx prisma studio",
+    "lint": "npm run lint --workspace=frontend"
   },
   "keywords": [
     "skill-intelligence",

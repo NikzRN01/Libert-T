@@ -27,7 +27,7 @@ export default function AddSkillPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/skills", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -166,8 +166,8 @@ export default function AddSkillPage() {
                                         setFormData({ ...formData, sector, category: "" })
                                     }
                                     className={`px-4 py-3 rounded-lg border-2 transition-colors ${formData.sector === sector
-                                            ? "border-blue-600 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                                            : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400"
+                                        ? "border-blue-600 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400"
                                         }`}
                                 >
                                     {sector}

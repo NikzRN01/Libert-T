@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
 
 interface Skill {
     id: string;
@@ -32,7 +32,7 @@ export default function SkillsPage() {
             if (sectorFilter) params.append("sector", sectorFilter);
 
             const response = await fetch(
-                `http://localhost:5000/api/skills?${params.toString()}`,
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills?${params.toString()}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -54,6 +54,31 @@ export default function SkillsPage() {
     useEffect(() => {
         fetchSkills();
     }, [fetchSkills]);
+
+    const handleDeleteSkill = async (skillId: string) => {
+        if (!confirm("Are you sure you want to delete this skill?")) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${skillId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                setSkills(skills.filter((s) => s.id !== skillId));
+            } else {
+                console.error("Failed to delete skill");
+            }
+        } catch (error) {
+            console.error("Error deleting skill:", error);
+        }
+    };
 
     const filteredSkills = skills.filter((skill) =>
         skill.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -162,11 +187,20 @@ export default function SkillsPage() {
                                 <h3 className="text-lg font-bold text-foreground">
                                     {skill.name}
                                 </h3>
-                                {skill.verified && (
-                                    <span className="px-3 py-1 bg-secondary/20 text-secondary text-xs rounded-xl font-semibold border border-secondary/30">
-                                        Verified
-                                    </span>
-                                )}
+                                <div className="flex items-center gap-2">
+                                    {skill.verified && (
+                                        <span className="px-3 py-1 bg-secondary/20 text-secondary text-xs rounded-xl font-semibold border border-secondary/30">
+                                            Verified
+                                        </span>
+                                    )}
+                                    <button
+                                        onClick={() => handleDeleteSkill(skill.id)}
+                                        className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                        title="Delete skill"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Category & Sector */}

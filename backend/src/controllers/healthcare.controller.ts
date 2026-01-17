@@ -347,6 +347,260 @@ function generateCareerPathways(skills: any[]) {
     return pathways.sort((a, b) => b.matchScore - a.matchScore);
 }
 
+// Update healthcare certification
+export const updateHealthcareCertification = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { id } = req.params;
+        const { name, issuingOrg, credentialId, credentialUrl, issueDate, expiryDate, neverExpires, skills } = req.body;
+
+        // Check if certification exists and belongs to user
+        const existing = await prisma.certification.findFirst({
+            where: { id, userId, sector: 'HEALTHCARE' },
+        });
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: 'Certification not found',
+            });
+        }
+
+        const certification = await prisma.certification.update({
+            where: { id },
+            data: {
+                name: name || existing.name,
+                issuingOrg: issuingOrg || existing.issuingOrg,
+                credentialId,
+                credentialUrl,
+                issueDate: issueDate ? new Date(issueDate) : existing.issueDate,
+                expiryDate: expiryDate ? new Date(expiryDate) : null,
+                neverExpires: neverExpires !== undefined ? neverExpires : existing.neverExpires,
+                skills: skills ? JSON.stringify(skills) : existing.skills,
+            },
+        });
+
+        return res.json({
+            success: true,
+            data: certification,
+            message: 'Healthcare certification updated successfully',
+        });
+    } catch (error) {
+        console.error('Error updating healthcare certification:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update healthcare certification',
+        });
+    }
+};
+
+// Delete healthcare certification
+export const deleteHealthcareCertification = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { id } = req.params;
+
+        // Check if certification exists and belongs to user
+        const existing = await prisma.certification.findFirst({
+            where: { id, userId, sector: 'HEALTHCARE' },
+        });
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: 'Certification not found',
+            });
+        }
+
+        await prisma.certification.delete({
+            where: { id },
+        });
+
+        return res.json({
+            success: true,
+            message: 'Healthcare certification deleted successfully',
+        });
+    } catch (error) {
+        console.error('Error deleting healthcare certification:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to delete healthcare certification',
+        });
+    }
+};
+
+// Add healthcare project
+export const addHealthcareProject = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const {
+            title,
+            description,
+            category,
+            skillsUsed,
+            technologies,
+            outcomes,
+            impact,
+            metrics,
+            startDate,
+            endDate,
+            status,
+            teamSize,
+            role,
+            repositoryUrl,
+            liveUrl,
+            isPublic,
+        } = req.body;
+
+        if (!title || !description || !category || !outcomes || !startDate) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title, description, category, outcomes, and start date are required',
+            });
+        }
+
+        const project = await prisma.project.create({
+            data: {
+                userId,
+                title,
+                description,
+                sector: 'HEALTHCARE',
+                category,
+                skillsUsed: skillsUsed ? JSON.stringify(skillsUsed) : "[]",
+                technologies: technologies ? JSON.stringify(technologies) : "[]",
+                outcomes,
+                impact,
+                metrics: metrics ? JSON.stringify(metrics) : null,
+                startDate: new Date(startDate),
+                endDate: endDate ? new Date(endDate) : null,
+                status: status || 'IN_PROGRESS',
+                teamSize,
+                role,
+                repositoryUrl,
+                liveUrl,
+                isPublic: isPublic !== undefined ? isPublic : true,
+            },
+        });
+
+        return res.status(201).json({
+            success: true,
+            data: project,
+            message: 'Healthcare project added successfully',
+        });
+    } catch (error) {
+        console.error('Error adding healthcare project:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to add healthcare project',
+        });
+    }
+};
+
+// Update healthcare project
+export const updateHealthcareProject = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { id } = req.params;
+        const {
+            title,
+            description,
+            category,
+            skillsUsed,
+            technologies,
+            outcomes,
+            impact,
+            metrics,
+            startDate,
+            endDate,
+            status,
+            teamSize,
+            role,
+            repositoryUrl,
+            liveUrl,
+            isPublic,
+        } = req.body;
+
+        const existing = await prisma.project.findFirst({
+            where: { id, userId, sector: 'HEALTHCARE' },
+        });
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: 'Project not found',
+            });
+        }
+
+        const project = await prisma.project.update({
+            where: { id },
+            data: {
+                title: title || existing.title,
+                description: description || existing.description,
+                category: category || existing.category,
+                skillsUsed: skillsUsed ? JSON.stringify(skillsUsed) : existing.skillsUsed,
+                technologies: technologies ? JSON.stringify(technologies) : existing.technologies,
+                outcomes: outcomes || existing.outcomes,
+                impact: impact !== undefined ? impact : existing.impact,
+                metrics: metrics ? JSON.stringify(metrics) : existing.metrics,
+                startDate: startDate ? new Date(startDate) : existing.startDate,
+                endDate: endDate ? new Date(endDate) : existing.endDate,
+                status: status || existing.status,
+                teamSize: teamSize !== undefined ? teamSize : existing.teamSize,
+                role: role !== undefined ? role : existing.role,
+                repositoryUrl: repositoryUrl !== undefined ? repositoryUrl : existing.repositoryUrl,
+                liveUrl: liveUrl !== undefined ? liveUrl : existing.liveUrl,
+                isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
+            },
+        });
+
+        return res.json({
+            success: true,
+            data: project,
+            message: 'Healthcare project updated successfully',
+        });
+    } catch (error) {
+        console.error('Error updating healthcare project:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update healthcare project',
+        });
+    }
+};
+
+// Delete healthcare project
+export const deleteHealthcareProject = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { id } = req.params;
+
+        const existing = await prisma.project.findFirst({
+            where: { id, userId, sector: 'HEALTHCARE' },
+        });
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: 'Project not found',
+            });
+        }
+
+        await prisma.project.delete({
+            where: { id },
+        });
+
+        return res.json({
+            success: true,
+            message: 'Healthcare project deleted successfully',
+        });
+    } catch (error) {
+        console.error('Error deleting healthcare project:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to delete healthcare project',
+        });
+    }
+};
+
 // Helper: Calculate match score
 function calculateMatchScore(userSkills: any[], requiredSkills: string[]): number {
     const matchedSkills = userSkills.filter(s => requiredSkills.includes(s.category));
