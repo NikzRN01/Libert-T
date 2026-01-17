@@ -3,12 +3,53 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "backend",
-    "shared"
+    "backend"
   ],
   "scripts": {
     "dev": "npm run dev --workspace frontend & npm run dev --workspace backend",
     "lint": "npm run lint --workspace frontend",
     "build": "npm run build --workspace frontend && npm run build --workspace backend"
+  }
+}
+
+{
+  "name": "skillxintell",
+  "version": "1.0.0",
+  "description": "Holistic Academic and Professional Skill Intelligence System for Emerging Sectors",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "deploy:frontend": "cd frontend && vercel --prod",
+    "deploy:backend": "cd backend && vercel --prod",
+    "deploy": "npm run deploy:backend && npm run deploy:frontend",
+    "prisma:migrate": "cd backend && npx prisma migrate deploy",
+    "prisma:studio": "cd backend && npx prisma studio"
+  },
+  "keywords": [
+    "skill-intelligence",
+    "healthcare",
+    "agriculture",
+    "urban-planning",
+    "education",
+    "career-development"
+  ],
+  "author": "SkillXIntell Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
