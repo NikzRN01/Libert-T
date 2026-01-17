@@ -1,13 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw, Activity, Sprout, Building2, Newspaper, Briefcase, Sparkles } from "lucide-react";
 
 interface SectorAnalytics {
     overallScore: number;
     careerReadiness: number;
     industryAlignment: number;
 }
+
+interface Recommendation {
+    type: "news" | "opportunity";
+    title: string;
+    description: string;
+    source?: string;
+    url?: string;
+    date?: string;
+}
+
 interface CrossSectorAnalytics {
     overall: {
         totalSkills: number;
@@ -27,6 +37,10 @@ export default function AnalyticsDashboard() {
     const [analytics, setAnalytics] = useState<CrossSectorAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
+    const [healthcareRecs, setHealthcareRecs] = useState<Recommendation[]>([]);
+    const [agricultureRecs, setAgricultureRecs] = useState<Recommendation[]>([]);
+    const [urbanRecs, setUrbanRecs] = useState<Recommendation[]>([]);
+    const [loadingRecs, setLoadingRecs] = useState<{[key: string]: boolean}>({});
 
     const fetchAnalytics = useCallback(async () => {
         try {
@@ -96,6 +110,48 @@ export default function AnalyticsDashboard() {
     useEffect(() => {
         fetchAnalytics();
     }, [fetchAnalytics]);
+
+    const fetchRecommendations = async (sector: string, score: number) => {
+        if (score === 0) return [];
+        
+        setLoadingRecs(prev => ({ ...prev, [sector]: true }));
+        try {
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/analytics/${sector}/recommendations?score=${score}`,
+                { headers }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.recommendations || [];
+            }
+        } catch (error) {
+            console.error(`Error fetching ${sector} recommendations:`, error);
+        } finally {
+            setLoadingRecs(prev => ({ ...prev, [sector]: false }));
+        }
+        return [];
+    };
+
+    useEffect(() => {
+        if (analytics) {
+            if (analytics.bySector.HEALTHCARE) {
+                fetchRecommendations("HEALTHCARE", analytics.bySector.HEALTHCARE.overallScore).then(setHealthcareRecs);
+            }
+            if (analytics.bySector.AGRICULTURE) {
+                fetchRecommendations("AGRICULTURE", analytics.bySector.AGRICULTURE.overallScore).then(setAgricultureRecs);
+            }
+            if (analytics.bySector.URBAN) {
+                fetchRecommendations("URBAN", analytics.bySector.URBAN.overallScore).then(setUrbanRecs);
+            }
+        }
+    }, [analytics]);
 
     const generateAllAnalytics = async () => {
         setGenerating(true);
@@ -393,44 +449,295 @@ export default function AnalyticsDashboard() {
                 </div>
             </div>
 
-            {/* Recommendations */}
-            <div className="p-6 md:p-8 rounded-2xl border border-orange-200/60 bg-white/70 backdrop-blur-xl shadow-xl">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900">AI-Powered Recommendations</h2>
-                <div className="space-y-4">
-                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                            <TrendingUp className="h-5 w-5 text-orange-500" />
+            {/* AI-Powered Recommendations by Sector */}
+            <div className="space-y-6">
+                {/* Healthcare Recommendations */}
+                {analytics?.bySector.HEALTHCARE && analytics.bySector.HEALTHCARE.overallScore > 0 && (
+                    <div className="p-6 md:p-8 rounded-2xl border border-blue-200/60 bg-white/70 backdrop-blur-xl shadow-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                    <Activity className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-900">Healthcare Informatics</h2>
+                                    <p className="text-sm text-slate-600">Competency Score: {analytics.bySector.HEALTHCARE.overallScore}%</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-bold mb-1 text-slate-900">Focus on Urban Development</h3>
-                            <p className="text-sm text-slate-600">
-                                Your urban sector shows the highest readiness (82%). Consider pursuing advanced smart city certifications to maximize this strength.
-                            </p>
-                        </div>
+
+                        {loadingRecs.HEALTHCARE ? (
+                            <div className="flex items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                            </div>
+                        ) : healthcareRecs.length === 0 ? (
+                            <div className="text-center py-12">
+                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {(() => {
+                                    const news = healthcareRecs.filter(r => r.type === "news").slice(0, 3);
+                                    const opportunities = healthcareRecs.filter(r => r.type === "opportunity").slice(0, 3);
+                                    const total = Math.min(news.length + opportunities.length, 5);
+                                    
+                                    return (
+                                        <>
+                                            {news.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Newspaper className="h-5 w-5 text-blue-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
+                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{news.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {news.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-blue-100 bg-blue-50/50 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            {opportunities.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Briefcase className="h-5 w-5 text-blue-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
+                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{opportunities.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {opportunities.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-blue-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="flex items-center justify-center text-xs text-slate-500 pt-2">
+                                                Showing {total} of {Math.min(healthcareRecs.length, 5)} recommendations
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                     </div>
-                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                            <Target className="h-5 w-5 text-orange-500" />
+                )}
+
+                {/* Agriculture Recommendations */}
+                {analytics?.bySector.AGRICULTURE && analytics.bySector.AGRICULTURE.overallScore > 0 && (
+                    <div className="p-6 md:p-8 rounded-2xl border border-green-200/60 bg-white/70 backdrop-blur-xl shadow-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                                    <Sprout className="h-5 w-5 text-green-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-900">Agricultural Technology</h2>
+                                    <p className="text-sm text-slate-600">Innovation Score: {analytics.bySector.AGRICULTURE.overallScore}%</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-bold mb-1 text-slate-900">Strengthen Agriculture Skills</h3>
-                            <p className="text-sm text-slate-600">
-                                Add 2-3 more AgriTech projects to boost your innovation readiness score from 68% to 75%+.
-                            </p>
-                        </div>
+
+                        {loadingRecs.AGRICULTURE ? (
+                            <div className="flex items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                            </div>
+                        ) : agricultureRecs.length === 0 ? (
+                            <div className="text-center py-12">
+                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {(() => {
+                                    const news = agricultureRecs.filter(r => r.type === "news").slice(0, 3);
+                                    const opportunities = agricultureRecs.filter(r => r.type === "opportunity").slice(0, 3);
+                                    const total = Math.min(news.length + opportunities.length, 5);
+                                    
+                                    return (
+                                        <>
+                                            {news.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Newspaper className="h-5 w-5 text-green-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
+                                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{news.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {news.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-green-100 bg-green-50/50 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            {opportunities.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Briefcase className="h-5 w-5 text-green-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
+                                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{opportunities.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {opportunities.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-green-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="flex items-center justify-center text-xs text-slate-500 pt-2">
+                                                Showing {total} of {Math.min(agricultureRecs.length, 5)} recommendations
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                     </div>
-                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                            <Award className="h-5 w-5 text-orange-500" />
+                )}
+
+                {/* Urban Recommendations */}
+                {analytics?.bySector.URBAN && analytics.bySector.URBAN.overallScore > 0 && (
+                    <div className="p-6 md:p-8 rounded-2xl border border-cyan-200/60 bg-white/70 backdrop-blur-xl shadow-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+                                    <Building2 className="h-5 w-5 text-cyan-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-900">Urban & Smart Cities</h2>
+                                    <p className="text-sm text-slate-600">Readiness Score: {analytics.bySector.URBAN.overallScore}%</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-bold mb-1 text-slate-900">Healthcare Certifications</h3>
-                            <p className="text-sm text-slate-600">
-                                Consider CPHIMS or CAHIMS certification to improve healthcare industry alignment from 72% to 85%+.
-                            </p>
-                        </div>
+
+                        {loadingRecs.URBAN ? (
+                            <div className="flex items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
+                            </div>
+                        ) : urbanRecs.length === 0 ? (
+                            <div className="text-center py-12">
+                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {(() => {
+                                    const news = urbanRecs.filter(r => r.type === "news").slice(0, 3);
+                                    const opportunities = urbanRecs.filter(r => r.type === "opportunity").slice(0, 3);
+                                    const total = Math.min(news.length + opportunities.length, 5);
+                                    
+                                    return (
+                                        <>
+                                            {news.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Newspaper className="h-5 w-5 text-cyan-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
+                                                        <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">{news.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {news.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-cyan-100 bg-cyan-50/50 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            {opportunities.length > 0 && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Briefcase className="h-5 w-5 text-cyan-600" />
+                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
+                                                        <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">{opportunities.length}</span>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        {opportunities.map((rec, index) => (
+                                                            <div key={index} className="p-4 rounded-xl border border-cyan-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
+                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
+                                                                {rec.source && (
+                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
+                                                                )}
+                                                                {rec.url && (
+                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-600 hover:underline mt-2 inline-block">
+                                                                        Learn more →
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="flex items-center justify-center text-xs text-slate-500 pt-2">
+                                                Showing {total} of {Math.min(urbanRecs.length, 5)} recommendations
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );
