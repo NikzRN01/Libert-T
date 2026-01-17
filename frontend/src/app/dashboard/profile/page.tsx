@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Mail, MapPin, Calendar, Edit } from "lucide-react";
 import { useStoredToken, useStoredUser } from "@/lib/auth";
@@ -29,13 +29,7 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Fetch full profile from API
-        fetchProfile();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
-
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         try {
             if (!token) return;
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/profile`, {
@@ -53,7 +47,12 @@ export default function ProfilePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        // Fetch full profile from API
+        fetchProfile();
+    }, [fetchProfile]);
 
     if (loading) {
         return (
@@ -74,7 +73,7 @@ export default function ProfilePage() {
                     <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                             {/* Avatar */}
-                            <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                            <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
                                 {user?.name?.charAt(0).toUpperCase()}
                             </div>
 

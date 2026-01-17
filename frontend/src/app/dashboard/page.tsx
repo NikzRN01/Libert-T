@@ -33,33 +33,15 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-300 via-blue-100 to-slate-200">
-            <nav className="bg-white shadow-lg border-b-2 border-blue-300">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-slate-900">
-                        SkillXIntell Dashboard
-                    </h1>
-                    <div className="flex items-center gap-4">
-                        <ThemeToggle />
-                        <button
-                            onClick={handleLogout}
-                            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
+        <div className="min-h-screen bg-linear-to-br from-slate-300 via-blue-100 to-slate-200">
+           
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 border-slate-300">
                     <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                        Welcome, {user.name}! 👋
+                        Welcome, {user.name}!!!
                     </h2>
                     <div className="flex gap-4">
-                        <span className="px-4 py-2 bg-slate-100 text-slate-900 rounded-xl text-sm font-bold shadow-md border-2 border-slate-300">
-                            Role: <span className="text-slate-700 font-bold">{user.role}</span>
-                        </span>
+
                         <span className="px-4 py-2 bg-green-100 text-green-900 rounded-xl text-sm font-bold shadow-md border-2 border-green-300">
                             Status: <span className="font-bold">Active</span>
                         </span>

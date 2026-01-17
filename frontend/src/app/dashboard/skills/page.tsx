@@ -121,7 +121,7 @@ export default function SkillsPage() {
                 </h1>
                 <Link
                     href="/dashboard/skills/add"
-                    className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                    className="flex items-center space-x-2 px-5 py-2.5 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                 >
                     <Plus className="h-5 w-5" />
                     <span>Add Skill</span>
@@ -165,11 +165,11 @@ export default function SkillsPage() {
                     <p className="text-muted-foreground mb-6 text-lg">
                         {searchTerm || sectorFilter
                             ? "No skills found matching your filters"
-                            : "You haven't added any skills yet"}
+                            : "You haven&apos;t added any skills yet"}
                     </p>
                     <Link
                         href="/dashboard/skills/add"
-                        className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                        className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
                         <span>Add Your First Skill</span>
@@ -229,7 +229,7 @@ export default function SkillsPage() {
                                 </div>
                                 <div className="w-full bg-muted rounded-full h-3 shadow-inner">
                                     <div
-                                        className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all shadow-md"
+                                        className="bg-linear-to-r from-primary to-accent h-3 rounded-full transition-all shadow-md"
                                         style={{ width: `${(skill.proficiencyLevel / 5) * 100}%` }}
                                     />
                                 </div>

@@ -74,7 +74,7 @@ export default function ProfilePage() {
                     <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                             {/* Avatar */}
-                            <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                            <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
                                 {user?.name?.charAt(0).toUpperCase()}
                             </div>
 

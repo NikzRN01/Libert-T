@@ -161,8 +161,13 @@ export default function UrbanDashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-3 gap-6">
                 <Link
+<<<<<<< HEAD
                     href="/dashboard/skills?sector=URBAN"
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
+=======
+                    href="/dashboard/skills/add"
+                    className="flex items-center space-x-2 px-5 py-2.5 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+>>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -268,6 +273,7 @@ export default function UrbanDashboard() {
                 </Link>
             </div>
 
+<<<<<<< HEAD
             {/* Transformation Readiness */}
             <div className="p-6 rounded-xl border border-border bg-card">
                 <h2 className="text-xl font-semibold mb-4">Transformation Readiness Assessment</h2>
@@ -287,10 +293,138 @@ export default function UrbanDashboard() {
                     <Link
                         href="/dashboard/urban/assessment"
                         className="inline-block text-sm text-accent hover:underline"
+=======
+            {/* Skills Grid */}
+            {filteredSkills.length === 0 ? (
+                <div className="bg-card rounded-2xl shadow-xl p-16 text-center border-2 border-dashed border-border">
+                    <p className="text-muted-foreground mb-6 text-lg">
+                        {searchTerm || sectorFilter
+                            ? "No skills found matching your filters"
+                            : "You haven&apos;t added any skills yet"}
+                    </p>
+                    <Link
+                        href="/dashboard/skills/add"
+                        className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+>>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
                     >
                         View detailed assessment →
                     </Link>
                 </div>
+<<<<<<< HEAD
+=======
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredSkills.map((skill) => (
+                        <div
+                            key={skill.id}
+                            className="bg-card rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 border-border"
+                        >
+                            {/* Skill Header */}
+                            <div className="flex items-start justify-between mb-4">
+                                <h3 className="text-lg font-bold text-foreground">
+                                    {skill.name}
+                                </h3>
+                                {skill.verified && (
+                                    <span className="px-3 py-1 bg-secondary/20 text-secondary text-xs rounded-xl font-semibold border border-secondary/30">
+                                        Verified
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Category & Sector */}
+                            <div className="space-y-2 mb-4">
+                                <p className="text-sm text-muted-foreground font-medium">
+                                    {skill.category.replace(/_/g, " ")}
+                                </p>
+                                <span className="inline-block px-3 py-1 bg-accent/20 text-accent text-xs rounded-xl font-semibold border border-accent/30">
+                                    {skill.sector}
+                                </span>
+                            </div>
+
+                            {/* Proficiency */}
+                            <div className="mb-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm text-muted-foreground font-semibold">
+                                        Proficiency
+                                    </span>
+                                    <span
+                                        className={`px-3 py-1 text-xs rounded-xl font-semibold ${getProficiencyColor(
+                                            skill.proficiencyLevel
+                                        )}`}
+                                    >
+                                        {getProficiencyLabel(skill.proficiencyLevel)}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-muted rounded-full h-3 shadow-inner">
+                                    <div
+                                        className="bg-linear-to-r from-primary to-accent h-3 rounded-full transition-all shadow-md"
+                                        style={{ width: `${(skill.proficiencyLevel / 5) * 100}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            {skill.description && (
+                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                                    {skill.description}
+                                </p>
+                            )}
+
+                            {/* Tags */}
+                            {skill.tags && skill.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {skill.tags.slice(0, 3).map((tag, index) => (
+                                        <span
+                                            key={index}
+                                            className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-lg font-medium"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                    {skill.tags.length > 3 && (
+                                        <span className="px-3 py-1 text-muted-foreground text-xs font-medium">
+                                            +{skill.tags.length - 3} more
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Stats */}
+            <div className="bg-card rounded-2xl shadow-lg p-8 border-2 border-border">
+                <h2 className="text-xl font-bold text-foreground mb-6">
+                    Skills Overview
+                </h2>
+                <div className="grid grid-cols-3 gap-6">
+                    <div className="text-center p-4 rounded-xl bg-primary/10 border-2 border-primary/20">
+                        <div className="text-4xl font-bold text-primary">
+                            {skills.length}
+                        </div>
+                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                            Total Skills
+                        </div>
+                    </div>
+                    <div className="text-center p-4 rounded-xl bg-secondary/10 border-2 border-secondary/20">
+                        <div className="text-4xl font-bold text-secondary">
+                            {skills.filter((s) => s.verified).length}
+                        </div>
+                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                            Verified
+                        </div>
+                    </div>
+                    <div className="text-center p-4 rounded-xl bg-accent/10 border-2 border-accent/20">
+                        <div className="text-4xl font-bold text-accent">
+                            {skills.filter((s) => s.proficiencyLevel >= 4).length}
+                        </div>
+                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                            Expert Level
+                        </div>
+                    </div>
+                </div>
+>>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
             </div>
         </div>
     );

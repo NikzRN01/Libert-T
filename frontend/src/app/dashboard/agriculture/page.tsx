@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TrendingUp, Award, Briefcase, Target, Sprout } from "lucide-react";
 import Link from "next/link";
 
@@ -25,11 +25,15 @@ export default function AgricultureDashboard() {
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
 
+<<<<<<< HEAD
     useEffect(() => {
         fetchAgricultureData();
     }, []);
 
     const fetchAgricultureData = async () => {
+=======
+    const fetchAgricultureStats = useCallback(async () => {
+>>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
         try {
             const token = localStorage.getItem("token");
             const headers = {
@@ -81,11 +85,15 @@ export default function AgricultureDashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchAgricultureStats();
+    }, [fetchAgricultureStats]);
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <div className="text-muted-foreground">Loading agriculture data...</div>
             </div>
         );
@@ -94,8 +102,8 @@ export default function AgricultureDashboard() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-4 bg-gradient-to-r from-secondary/10 to-secondary/5 p-6 rounded-2xl border-2 border-border shadow-lg">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg">
+            <div className="flex items-center gap-4 bg-linear-to-r from-secondary/10 to-secondary/5 p-6 rounded-2xl border-2 border-border shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg">
                     <Sprout className="h-8 w-8 text-white" />
                 </div>
                 <div>
@@ -162,7 +170,7 @@ export default function AgricultureDashboard() {
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-secondary/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Target className="h-6 w-6 text-white" />
                         </div>
                         <h3 className="font-bold text-lg text-foreground">Skills Tracker</h3>
@@ -177,7 +185,7 @@ export default function AgricultureDashboard() {
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Award className="h-6 w-6 text-white" />
                         </div>
                         <h3 className="font-bold text-lg text-foreground">Certifications</h3>
@@ -192,7 +200,7 @@ export default function AgricultureDashboard() {
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Briefcase className="h-6 w-6 text-white" />
                         </div>
                         <h3 className="font-bold text-lg text-foreground">Projects</h3>
