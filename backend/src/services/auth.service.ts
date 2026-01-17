@@ -1,5 +1,4 @@
-import bcrypt from 
-;
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import prisma from '../config/database';
