@@ -20,13 +20,19 @@ interface CareerPathway {
     demand: string;
 }
 
+interface UrbanSkill {}
+
 export default function UrbanDashboard() {
     const [stats, setStats] = useState<UrbanStats | null>(null);
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
+    const [skills, setSkills] = useState<UrbanSkill[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sectorFilter, setSectorFilter] = useState("");
 
     useEffect(() => {
         fetchUrbanData();
+        fetchSkills();
     }, []);
 
     const fetchUrbanData = async () => {
@@ -82,6 +88,36 @@ export default function UrbanDashboard() {
             setLoading(false);
         }
     };
+
+    const fetchSkills = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            };
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills`,
+                { headers }
+            );
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && data.data) {
+                    setSkills(data.data);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching skills:", error);
+        }
+    };
+
+    const filteredSkills = skills.filter((skill) => {
+        const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSector = !sectorFilter || skill.sector === sectorFilter;
+        return matchesSearch && matchesSector;
+    });
 
     if (loading) {
         return (
@@ -161,13 +197,8 @@ export default function UrbanDashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-3 gap-6">
                 <Link
-<<<<<<< HEAD
-                    href="/dashboard/skills?sector=URBAN"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
-=======
                     href="/dashboard/skills/add"
                     className="flex items-center space-x-2 px-5 py-2.5 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
->>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -273,27 +304,6 @@ export default function UrbanDashboard() {
                 </Link>
             </div>
 
-<<<<<<< HEAD
-            {/* Transformation Readiness */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-4">Transformation Readiness Assessment</h2>
-                <div className="space-y-4">
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium">Overall Transformation Readiness</span>
-                            <span className="text-sm font-medium">{stats?.readinessScore || 0}%</span>
-                        </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-accent transition-all"
-                                style={{ width: `${stats?.readinessScore || 0}%` }}
-                            />
-                        </div>
-                    </div>
-                    <Link
-                        href="/dashboard/urban/assessment"
-                        className="inline-block text-sm text-accent hover:underline"
-=======
             {/* Skills Grid */}
             {filteredSkills.length === 0 ? (
                 <div className="bg-card rounded-2xl shadow-xl p-16 text-center border-2 border-dashed border-border">
@@ -305,13 +315,10 @@ export default function UrbanDashboard() {
                     <Link
                         href="/dashboard/skills/add"
                         className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
->>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
                     >
                         View detailed assessment →
                     </Link>
                 </div>
-<<<<<<< HEAD
-=======
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredSkills.map((skill) => (
@@ -424,7 +431,6 @@ export default function UrbanDashboard() {
                         </div>
                     </div>
                 </div>
->>>>>>> fc34d720d476cf4400b3b08e82807125f23a1b1d
             </div>
         </div>
     );
