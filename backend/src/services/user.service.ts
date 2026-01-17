@@ -221,6 +221,8 @@ export async function uploadUserAvatar(userId: string, avatarUrl: string) {
             name: true,
             email: true,
             avatar: true,
+            role: true,
+            createdAt: true,
         },
     });
 

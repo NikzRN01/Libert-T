@@ -1,5 +1,29 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
+import { supabaseAdmin } from '../config/supabase';
+import { config } from '../config';
+
+async function ensureAvatarBucketExists(bucket: string) {
+    const existing = await supabaseAdmin.storage.getBucket(bucket);
+    if (!existing.error) return;
+
+    const msg = existing.error.message || '';
+    if (!msg.toLowerCase().includes('bucket not found')) {
+        throw new Error(existing.error.message);
+    }
+
+    const created = await supabaseAdmin.storage.createBucket(bucket, {
+        public: true,
+    });
+
+    if (created.error) {
+        // If another request created it concurrently, ignore.
+        const createMsg = created.error.message || '';
+        if (!createMsg.toLowerCase().includes('already exists')) {
+            throw new Error(created.error.message);
+        }
+    }
+}
 
 /**
  * Get current user's profile
@@ -138,23 +162,67 @@ export async function uploadAvatar(req: Request, res: Response): Promise<void> {
             return;
         }
 
-        const { avatarUrl } = req.body;
+        let finalAvatarUrl: string | undefined;
 
-        if (!avatarUrl) {
-            res.status(400).json({
-                error: 'Validation Error',
-                message: 'Avatar URL is required',
-            });
-            return;
+        // Option 1: multipart file upload
+        if (req.file && req.file.buffer) {
+            const bucket = config.supabase.avatarBucket;
+            const extension = req.file.originalname.split('.').pop() || 'png';
+            const objectPath = `users/${req.user.userId}/${Date.now()}.${extension}`;
+
+            // Avoid failing with "Bucket not found" (common during fresh setup)
+            await ensureAvatarBucketExists(bucket);
+
+            let uploadResult = await supabaseAdmin.storage
+                .from(bucket)
+                .upload(objectPath, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: true,
+                });
+
+            // Retry once if the bucket was missing and got created by another request
+            if (uploadResult.error && uploadResult.error.message.toLowerCase().includes('bucket not found')) {
+                await ensureAvatarBucketExists(bucket);
+                uploadResult = await supabaseAdmin.storage
+                    .from(bucket)
+                    .upload(objectPath, req.file.buffer, {
+                        contentType: req.file.mimetype,
+                        upsert: true,
+                    });
+            }
+
+            if (uploadResult.error) {
+                res.status(500).json({
+                    error: 'Upload Error',
+                    message:
+                        uploadResult.error.message.includes('Bucket not found')
+                            ? `Supabase Storage bucket "${bucket}" not found. Create it in Supabase Storage or set SUPABASE_AVATAR_BUCKET to an existing bucket.`
+                            : uploadResult.error.message,
+                });
+                return;
+            }
+
+            const publicUrl = supabaseAdmin.storage
+                .from(bucket)
+                .getPublicUrl(objectPath).data.publicUrl;
+
+            finalAvatarUrl = publicUrl;
         }
 
-        // TODO: In production, validate that the URL is from Supabase Storage
-        // and that the user has permission to use this URL
+        // Option 2: direct URL update (e.g., uploaded from client)
+        if (!finalAvatarUrl) {
+            const { avatarUrl } = req.body as { avatarUrl?: string };
+            if (!avatarUrl) {
+                res.status(400).json({
+                    error: 'Validation Error',
+                    message: 'Provide an avatar file (field "avatar") or an avatarUrl',
+                });
+                return;
+            }
+            finalAvatarUrl = avatarUrl;
+        }
 
-        const updatedUser = await userService.uploadUserAvatar(
-            req.user.userId,
-            avatarUrl
-        );
+        const updatedUser = await userService.uploadUserAvatar(req.user.userId, finalAvatarUrl);
 
         res.status(200).json({
             message: 'Avatar updated successfully',
@@ -162,9 +230,10 @@ export async function uploadAvatar(req: Request, res: Response): Promise<void> {
         });
     } catch (error) {
         console.error('Upload avatar error:', error);
+        const message = error instanceof Error ? error.message : 'Failed to upload avatar';
         res.status(500).json({
             error: 'Internal Server Error',
-            message: 'Failed to upload avatar',
+            message,
         });
     }
 }

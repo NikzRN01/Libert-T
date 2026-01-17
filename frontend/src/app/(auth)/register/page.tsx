@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, AlertCircle, Check, Eye, EyeOff, RefreshCw, Copy, CheckCircle2 } from "lucide-react";
+import { setAuthSession } from "@/lib/auth";
 
 interface PasswordStrength {
     score: number;
@@ -144,8 +145,7 @@ export default function RegisterPage() {
             const loginData = await loginRes.json();
 
             if (loginRes.ok) {
-                localStorage.setItem("token", loginData.token);
-                localStorage.setItem("user", JSON.stringify(loginData.user));
+                setAuthSession({ token: loginData.token, user: loginData.user });
                 router.push("/dashboard");
             } else {
                 router.push("/login");

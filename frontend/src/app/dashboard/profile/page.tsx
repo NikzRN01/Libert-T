@@ -2,31 +2,42 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Calendar, Edit } from "lucide-react";
-import { useStoredToken, useStoredUser } from "@/lib/auth";
+import { setAuthUser, useStoredToken, useStoredUser, type StoredUser } from "@/lib/auth";
 
-type UserProfile = {
-    location?: string;
-    bio?: string;
+type ApiProfileDetails = {
+    bio?: string | null;
+    location?: string | null;
     interests?: string[];
     targetSectors?: string[];
 };
 
-type ProfileStats = {
+type ApiStats = {
     totalSkills?: number;
     totalProjects?: number;
     totalCertifications?: number;
 };
 
-type ProfileResponse = {
-    profile?: UserProfile;
-    stats?: ProfileStats;
+type ApiUserProfile = {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    avatar?: string | null;
+    createdAt?: string;
+    profile?: ApiProfileDetails | null;
+    stats?: ApiStats;
+};
+
+type GetProfileResponse = {
+    profile: ApiUserProfile;
 };
 
 export default function ProfilePage() {
     const user = useStoredUser();
     const token = useStoredToken();
-    const [profile, setProfile] = useState<ProfileResponse | null>(null);
+    const [profile, setProfile] = useState<ApiUserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
     const fetchProfile = useCallback(async () => {
@@ -40,14 +51,27 @@ export default function ProfilePage() {
 
             if (response.ok) {
                 const data: unknown = await response.json();
-                setProfile(data as ProfileResponse);
+                const payload = data as GetProfileResponse;
+                setProfile(payload.profile);
+
+                // Keep local stored user in sync (e.g., avatar/name changes)
+                const nextUser: StoredUser = {
+                    ...(user ?? { name: payload.profile.name }),
+                    id: payload.profile.id,
+                    name: payload.profile.name,
+                    email: payload.profile.email,
+                    role: payload.profile.role,
+                    avatar: payload.profile.avatar ?? undefined,
+                    createdAt: payload.profile.createdAt,
+                };
+                setAuthUser(nextUser);
             }
         } catch (error: unknown) {
             console.error("Failed to fetch profile:", error);
         } finally {
             setLoading(false);
         }
-    }, [token]);
+    }, [token, user]);
 
     useEffect(() => {
         // Fetch full profile from API
@@ -73,17 +97,28 @@ export default function ProfilePage() {
                     <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                             {/* Avatar */}
-                            <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                                {user?.name?.charAt(0).toUpperCase()}
-                            </div>
+                            {(profile?.avatar || user?.avatar) ? (
+                                <Image
+                                    src={profile?.avatar || user?.avatar || ""}
+                                    alt="User avatar"
+                                    width={80}
+                                    height={80}
+                                    unoptimized
+                                    className="h-20 w-20 rounded-full object-cover border border-slate-200 dark:border-gray-700"
+                                />
+                            ) : (
+                                <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                                    {(profile?.name || user?.name)?.charAt(0).toUpperCase()}
+                                </div>
+                            )}
 
                             {/* User Info */}
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {user?.name}
+                                    {profile?.name || user?.name}
                                 </h1>
                                 <p className="text-gray-600 dark:text-gray-400 capitalize">
-                                    {user?.role?.toLowerCase()}
+                                    {(profile?.role || user?.role)?.toLowerCase()}
                                 </p>
                             </div>
                         </div>
@@ -110,7 +145,7 @@ export default function ProfilePage() {
                     <div className="space-y-4">
                         <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
                             <Mail className="h-5 w-5" />
-                            <span>{user?.email}</span>
+                            <span>{profile?.email || user?.email}</span>
                         </div>
 
                         {profile?.profile?.location && (
@@ -120,11 +155,11 @@ export default function ProfilePage() {
                             </div>
                         )}
 
-                        {user?.createdAt && (
+                        {(profile?.createdAt || user?.createdAt) && (
                             <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
                                 <Calendar className="h-5 w-5" />
                                 <span>
-                                    Joined {new Date(user.createdAt).toLocaleDateString()}
+                                    Joined {new Date((profile?.createdAt || user?.createdAt) as string).toLocaleDateString()}
                                 </span>
                             </div>
                         )}

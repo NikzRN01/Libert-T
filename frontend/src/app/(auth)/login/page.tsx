@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, AlertCircle } from "lucide-react";
+import { setAuthSession } from "@/lib/auth";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -34,9 +35,7 @@ export default function LoginPage() {
                 throw new Error(data.message || "Invalid credentials");
             }
 
-            // Store token
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
+            setAuthSession({ token: data.token, user: data.user });
 
             // Redirect to dashboard
             router.push("/dashboard");
