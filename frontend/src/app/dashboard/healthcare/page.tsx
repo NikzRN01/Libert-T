@@ -209,13 +209,13 @@ export default function HealthcareDashboard() {
                     copy: "Manage healthcare IT skills, proficiencies, and gaps.",
                     accent: "blue",
                 }, {
-                    href: "/dashboard/certifications?sector=HEALTHCARE",
+                    href: "/dashboard/healthcare/certifications",
                     icon: <Award className="h-6 w-6 text-indigo-600" />,
                     title: "Certifications",
                     copy: "Track CPHIMS, CAHIMS, and compliance credentials.",
                     accent: "indigo",
                 }, {
-                    href: "/dashboard/projects?sector=HEALTHCARE",
+                    href: "/dashboard/healthcare/projects",
                     icon: <Briefcase className="h-6 w-6 text-emerald-600" />,
                     title: "Projects",
                     copy: "Showcase healthcare informatics and integration projects.",

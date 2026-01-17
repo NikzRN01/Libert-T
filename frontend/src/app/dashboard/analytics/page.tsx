@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw, Lightbulb, Download } from "lucide-react";
 
 interface SectorAnalytics {
     overallScore: number;
@@ -135,81 +135,102 @@ export default function AnalyticsDashboard() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <BarChart3 className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-bold">Analytics & Insights</h1>
-                        <p className="text-muted-foreground">
-                            Cross-sector skill intelligence and career readiness
-                        </p>
-                    </div>
+        <div className="space-y-8">
+            {/* Hero */}
+            <div className="relative overflow-hidden rounded-2xl border border-orange-200/80 bg-white/80 shadow-2xl backdrop-blur-xl p-6 md:p-8 mb-2">
+                <div className="absolute inset-0 pointer-events-none" aria-hidden>
+                    <div
+                        className="absolute inset-0 opacity-70"
+                        style={{
+                            backgroundImage:
+                                "radial-gradient(circle at 18% 15%, rgba(251,146,60,0.13), transparent 40%), radial-gradient(circle at 82% 5%, rgba(251,191,36,0.13), transparent 36%), radial-gradient(circle at 45% 110%, rgba(251,113,133,0.12), transparent 42%)",
+                        }}
+                    ></div>
+                    <div
+                        className="absolute inset-0 opacity-35"
+                        style={{
+                            backgroundImage:
+                                "linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(180deg, rgba(15,23,42,0.05) 1px, transparent 1px)",
+                            backgroundSize: "22px 22px",
+                        }}
+                    ></div>
                 </div>
-                <button
-                    onClick={generateAllAnalytics}
-                    disabled={generating}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all"
-                >
-                    <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} />
-                    {generating ? "Generating..." : "Refresh Analytics"}
-                </button>
+                <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-2xl bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-200/60">
+                            <BarChart3 className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-orange-700 uppercase tracking-wide">Sector</p>
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+                                Analytics & Insights
+                            </h1>
+                            <p className="text-slate-600 font-medium">Cross-sector skill intelligence and career readiness</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={generateAllAnalytics}
+                        disabled={generating}
+                        className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-all font-semibold shadow-md"
+                    >
+                        <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} />
+                        {generating ? "Generating..." : "Refresh Analytics"}
+                    </button>
+                </div>
             </div>
 
             {/* Overall Stats */}
             <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div className="p-6 rounded-xl border border-border bg-card">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Total Skills</span>
-                        <Target className="h-4 w-4 text-primary" />
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 backdrop-blur-lg p-6 flex flex-col items-start shadow-lg relative overflow-hidden">
+                    <div className="absolute -top-4 -right-4 w-16 h-16 bg-orange-100/60 rounded-full blur-2xl opacity-60" />
+                    <div className="flex items-center justify-between w-full mb-2 z-10">
+                        <span className="text-sm text-orange-700 font-semibold">Total Skills</span>
+                        <Target className="h-4 w-4 text-orange-500" />
                     </div>
-                    <div className="text-3xl font-bold">{analytics?.overall.totalSkills || 0}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Across all sectors</p>
+                    <div className="text-3xl font-bold text-slate-900 z-10">{analytics?.overall.totalSkills || 0}</div>
+                    <p className="text-xs text-slate-500 mt-1 z-10">Across all sectors</p>
                 </div>
-
-                <div className="p-6 rounded-xl border border-border bg-card">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Projects</span>
-                        <TrendingUp className="h-4 w-4 text-primary" />
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 backdrop-blur-lg p-6 flex flex-col items-start shadow-lg relative overflow-hidden">
+                    <div className="absolute -top-4 -right-4 w-16 h-16 bg-orange-100/60 rounded-full blur-2xl opacity-60" />
+                    <div className="flex items-center justify-between w-full mb-2 z-10">
+                        <span className="text-sm text-orange-700 font-semibold">Projects</span>
+                        <TrendingUp className="h-4 w-4 text-orange-500" />
                     </div>
-                    <div className="text-3xl font-bold">{analytics?.overall.totalProjects || 0}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Completed</p>
+                    <div className="text-3xl font-bold text-slate-900 z-10">{analytics?.overall.totalProjects || 0}</div>
+                    <p className="text-xs text-slate-500 mt-1 z-10">Completed</p>
                 </div>
-
-                <div className="p-6 rounded-xl border border-border bg-card">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Certifications</span>
-                        <Award className="h-4 w-4 text-primary" />
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 backdrop-blur-lg p-6 flex flex-col items-start shadow-lg relative overflow-hidden">
+                    <div className="absolute -top-4 -right-4 w-16 h-16 bg-orange-100/60 rounded-full blur-2xl opacity-60" />
+                    <div className="flex items-center justify-between w-full mb-2 z-10">
+                        <span className="text-sm text-orange-700 font-semibold">Certifications</span>
+                        <Award className="h-4 w-4 text-orange-500" />
                     </div>
-                    <div className="text-3xl font-bold">{analytics?.overall.totalCertifications || 0}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Active</p>
+                    <div className="text-3xl font-bold text-slate-900 z-10">{analytics?.overall.totalCertifications || 0}</div>
+                    <p className="text-xs text-slate-500 mt-1 z-10">Active</p>
                 </div>
-
-                <div className="p-6 rounded-xl border border-border bg-card">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Avg Readiness</span>
-                        <Brain className="h-4 w-4 text-primary" />
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 backdrop-blur-lg p-6 flex flex-col items-start shadow-lg relative overflow-hidden">
+                    <div className="absolute -top-4 -right-4 w-16 h-16 bg-orange-100/60 rounded-full blur-2xl opacity-60" />
+                    <div className="flex items-center justify-between w-full mb-2 z-10">
+                        <span className="text-sm text-orange-700 font-semibold">Avg Readiness</span>
+                        <Brain className="h-4 w-4 text-orange-500" />
                     </div>
-                    <div className="text-3xl font-bold">{analytics?.overall.averageReadiness || 0}%</div>
-                    <p className="text-xs text-muted-foreground mt-1">Career ready</p>
+                    <div className="text-3xl font-bold text-slate-900 z-10">{analytics?.overall.averageReadiness || 0}%</div>
+                    <p className="text-xs text-slate-500 mt-1 z-10">Career ready</p>
                 </div>
-
-                <div className="p-6 rounded-xl border border-border bg-card">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Active Sectors</span>
-                        <BarChart3 className="h-4 w-4 text-primary" />
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 backdrop-blur-lg p-6 flex flex-col items-start shadow-lg relative overflow-hidden">
+                    <div className="absolute -top-4 -right-4 w-16 h-16 bg-orange-100/60 rounded-full blur-2xl opacity-60" />
+                    <div className="flex items-center justify-between w-full mb-2 z-10">
+                        <span className="text-sm text-orange-700 font-semibold">Active Sectors</span>
+                        <BarChart3 className="h-4 w-4 text-orange-500" />
                     </div>
-                    <div className="text-3xl font-bold">{analytics?.overall.sectorsActive || 0}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Of 3 total</p>
+                    <div className="text-3xl font-bold text-slate-900 z-10">{analytics?.overall.sectorsActive || 0}</div>
+                    <p className="text-xs text-slate-500 mt-1 z-10">Of 3 total</p>
                 </div>
             </div>
 
             {/* Sector Comparison */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-6">Sector Performance Comparison</h2>
+            <div className="p-6 md:p-8 rounded-2xl border border-orange-200/60 bg-white/70 backdrop-blur-xl shadow-xl mb-8">
+                <h2 className="text-2xl font-bold mb-6 text-slate-900">Sector Performance Comparison</h2>
                 <div className="space-y-6">
                     {/* Healthcare */}
                     {analytics?.bySector.HEALTHCARE && (
@@ -373,48 +394,40 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Recommendations */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-4">AI-Powered Recommendations</h2>
-                <div className="space-y-3">
-                    <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                        <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                <TrendingUp className="h-4 w-4 text-primary" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold mb-1">Focus on Urban Development</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Your urban sector shows the highest readiness (82%). Consider pursuing advanced smart city certifications to maximize this strength.
-                                </p>
-                            </div>
+            <div className="p-6 md:p-8 rounded-2xl border border-orange-200/60 bg-white/70 backdrop-blur-xl shadow-xl">
+                <h2 className="text-2xl font-bold mb-6 text-slate-900">AI-Powered Recommendations</h2>
+                <div className="space-y-4">
+                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                            <TrendingUp className="h-5 w-5 text-orange-500" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold mb-1 text-slate-900">Focus on Urban Development</h3>
+                            <p className="text-sm text-slate-600">
+                                Your urban sector shows the highest readiness (82%). Consider pursuing advanced smart city certifications to maximize this strength.
+                            </p>
                         </div>
                     </div>
-
-                    <div className="p-4 rounded-lg bg-agriculture/5 border border-agriculture/20">
-                        <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-agriculture/10 flex items-center justify-center shrink-0">
-                                <Target className="h-4 w-4 text-agriculture" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold mb-1">Strengthen Agriculture Skills</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Add 2-3 more AgriTech projects to boost your innovation readiness score from 68% to 75%+.
-                                </p>
-                            </div>
+                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                            <Target className="h-5 w-5 text-orange-500" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold mb-1 text-slate-900">Strengthen Agriculture Skills</h3>
+                            <p className="text-sm text-slate-600">
+                                Add 2-3 more AgriTech projects to boost your innovation readiness score from 68% to 75%+.
+                            </p>
                         </div>
                     </div>
-
-                    <div className="p-4 rounded-lg bg-healthcare/5 border border-healthcare/20">
-                        <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-healthcare/10 flex items-center justify-center shrink-0">
-                                <Award className="h-4 w-4 text-healthcare" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold mb-1">Healthcare Certifications</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Consider CPHIMS or CAHIMS certification to improve healthcare industry alignment from 72% to 85%+.
-                                </p>
-                            </div>
+                    <div className="p-5 rounded-2xl border border-orange-200/60 bg-white/80 shadow-md flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                            <Award className="h-5 w-5 text-orange-500" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold mb-1 text-slate-900">Healthcare Certifications</h3>
+                            <p className="text-sm text-slate-600">
+                                Consider CPHIMS or CAHIMS certification to improve healthcare industry alignment from 72% to 85%+.
+                            </p>
                         </div>
                     </div>
                 </div>

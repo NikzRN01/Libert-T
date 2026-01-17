@@ -130,17 +130,17 @@ export default function DashboardPage() {
                     {/* Urban */}
                     <button
                         onClick={() => router.push('/dashboard/urban')}
-                        className="group relative bg-white/85 rounded-2xl p-8 border border-purple-100 hover:border-purple-300 hover:shadow-[0_25px_60px_-25px_rgba(147,51,234,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
+                        className="group relative bg-white/85 rounded-2xl p-8 border border-cyan-100 hover:border-cyan-300 hover:shadow-[0_25px_60px_-25px_rgba(6,182,212,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
                     >
                         <div className="relative">
-                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-purple-600 text-white">
+                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-cyan-600 text-white">
                                 <Building2 className="h-8 w-8" />
                             </div>
                             <h3 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">Urban & Smart Cities</h3>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
                                 Mobility, GIS overlays, smart infrastructure, and readiness scores.
                             </p>
-                            <div className="flex items-center text-purple-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                            <div className="flex items-center text-cyan-700 font-semibold text-sm group-hover:gap-2 transition-all">
                                 <span>Open dashboard</span>
                                 <span className="group-hover:translate-x-1 transition-transform">→</span>
                             </div>

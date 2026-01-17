@@ -113,34 +113,34 @@ export default function AddSkillPage() {
     ];
 
     return (
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto">
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-8">
                 <Link
                     href="/dashboard/skills"
-                    className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+                    className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 font-semibold mb-4 transition-colors"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-5 w-5" />
                     <span>Back to Skills</span>
                 </Link>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-2">
                     Add New Skill
                 </h1>
             </div>
 
             {/* Error Message */}
             {error && (
-                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <p className="text-sm text-red-600">{error}</p>
                 </div>
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div className="p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="rounded-2xl border-2 border-blue-200/70 bg-white/80 backdrop-blur-xl shadow-2xl">
+                <div className="p-8 space-y-7">
                     {/* Skill Name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
                             Skill Name *
                         </label>
                         <input
@@ -148,14 +148,14 @@ export default function AddSkillPage() {
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-white text-slate-900"
                             placeholder="e.g., Python Programming, Data Analysis"
                         />
                     </div>
 
                     {/* Category */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
                             Category *
                         </label>
                         <select
@@ -164,7 +164,7 @@ export default function AddSkillPage() {
                             onChange={(e) =>
                                 setFormData({ ...formData, category: e.target.value })
                             }
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-white text-slate-900"
                         >
                             <option value="">Select a category</option>
                             {availableCategories.map((cat) => (
@@ -177,8 +177,8 @@ export default function AddSkillPage() {
 
                     {/* Proficiency Level */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Proficiency Level: {["", "Beginner", "Intermediate", "Advanced", "Expert", "Master"][formData.proficiencyLevel]}
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
+                            Proficiency Level: <span className="text-blue-800">{["", "Beginner", "Intermediate", "Advanced", "Expert", "Master"][formData.proficiencyLevel]}</span>
                         </label>
                         <input
                             type="range"
@@ -191,9 +191,9 @@ export default function AddSkillPage() {
                                     proficiencyLevel: parseInt(e.target.value),
                                 })
                             }
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                            className="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer"
                         />
-                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <div className="flex justify-between text-xs text-slate-700 mt-1 font-semibold">
                             <span>Beginner</span>
                             <span>Intermediate</span>
                             <span>Advanced</span>
@@ -204,7 +204,7 @@ export default function AddSkillPage() {
 
                     {/* Months/Years of Experience */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
                             Months of Experience
                         </label>
                         <input
@@ -219,11 +219,11 @@ export default function AddSkillPage() {
                                     yearsOfExperience: Math.floor(months / 12),
                                 });
                             }}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-white text-slate-900"
                             placeholder="Enter months of experience"
                         />
                         {monthsOfExperience >= 12 && (
-                            <p className="mt-1 text-sm text-green-600 dark:text-green-400 font-medium">
+                            <p className="mt-1 text-sm text-emerald-600 font-semibold">
                                 = {Math.floor(monthsOfExperience / 12)} year{Math.floor(monthsOfExperience / 12) !== 1 ? 's' : ''} {monthsOfExperience % 12 > 0 ? `and ${monthsOfExperience % 12} month${monthsOfExperience % 12 !== 1 ? 's' : ''}` : ''}
                             </p>
                         )}
@@ -231,7 +231,7 @@ export default function AddSkillPage() {
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
                             Description
                         </label>
                         <textarea
@@ -240,14 +240,14 @@ export default function AddSkillPage() {
                                 setFormData({ ...formData, description: e.target.value })
                             }
                             rows={4}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-white text-slate-900"
                             placeholder="Describe your experience with this skill..."
                         />
                     </div>
 
                     {/* Tags */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-slate-900 mb-2">
                             Tags
                         </label>
                         <div className="flex gap-2 mb-2">
@@ -258,13 +258,13 @@ export default function AddSkillPage() {
                                 onKeyPress={(e) =>
                                     e.key === "Enter" && (e.preventDefault(), addTag())
                                 }
-                                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="flex-1 px-4 py-2 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-white text-slate-900"
                                 placeholder="Add a tag..."
                             />
                             <button
                                 type="button"
                                 onClick={addTag}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-md transition-colors"
                             >
                                 Add
                             </button>
@@ -273,13 +273,13 @@ export default function AddSkillPage() {
                             {formData.tags.map((tag, index) => (
                                 <span
                                     key={index}
-                                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm flex items-center gap-2"
+                                    className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm flex items-center gap-2 font-bold"
                                 >
                                     {tag}
                                     <button
                                         type="button"
                                         onClick={() => removeTag(tag)}
-                                        className="hover:text-gray-900 dark:hover:text-white"
+                                        className="hover:text-blue-900"
                                     >
                                         ×
                                     </button>
@@ -290,17 +290,17 @@ export default function AddSkillPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg flex justify-end space-x-3">
+                <div className="px-8 py-5 bg-blue-50 rounded-b-2xl flex justify-end space-x-3 border-t border-blue-100">
                     <Link
                         href="/dashboard/skills"
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        className="px-4 py-2 border border-blue-200 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition-colors"
                     >
                         Cancel
                     </Link>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors"
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-black shadow-md transition-colors"
                     >
                         {loading ? "Adding..." : "Add Skill"}
                     </button>

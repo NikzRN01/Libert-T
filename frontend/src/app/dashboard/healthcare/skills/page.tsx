@@ -23,6 +23,8 @@ interface SkillForm {
     description: string;
 }
 
+const SECTOR = "HEALTHCARE";
+
 export default function HealthcareSkillsPage() {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ export default function HealthcareSkillsPage() {
             setLoading(true);
             const token = localStorage.getItem("token");
             const params = new URLSearchParams();
-            params.append("sector", "HEALTHCARE");
+            params.append("sector", SECTOR);
 
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills?${params.toString()}`,
@@ -200,7 +202,7 @@ export default function HealthcareSkillsPage() {
                 </h1>
                 {skills.length > 0 && (
                     <Link
-                        href="/dashboard/skills/add?sector=HEALTHCARE"
+                        href="/dashboard/skills/add"
                         className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
@@ -209,7 +211,7 @@ export default function HealthcareSkillsPage() {
                 )}
             </div>
 
-            {/* Search (No Sector Filter) */}
+            {/* Search */}
             <div className="bg-card rounded-2xl shadow-lg p-6 border-2 border-border">
                 <div className="flex-1 relative">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -217,7 +219,7 @@ export default function HealthcareSkillsPage() {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search healthcare skills..."
+                        placeholder="Search skills..."
                         className="w-full pl-12 pr-4 py-3 border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground font-medium"
                     />
                 </div>
@@ -227,16 +229,14 @@ export default function HealthcareSkillsPage() {
             {filteredSkills.length === 0 ? (
                 <div className="bg-card rounded-2xl shadow-xl p-16 text-center border-2 border-dashed border-border">
                     <p className="text-muted-foreground mb-6 text-lg">
-                        {searchTerm
-                            ? "No healthcare skills found matching your search"
-                            : "You haven't added any healthcare skills yet"}
+                        {searchTerm ? "No skills found matching your search" : "You haven't added any skills yet"}
                     </p>
                     <Link
-                        href="/dashboard/skills/add?sector=HEALTHCARE"
+                        href="/dashboard/skills/add"
                         className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         <Plus className="h-5 w-5" />
-                        <span>Add Your First Healthcare Skill</span>
+                        <span>Add Your First Skill</span>
                     </Link>
                 </div>
             ) : (
@@ -246,11 +246,8 @@ export default function HealthcareSkillsPage() {
                             key={skill.id}
                             className="bg-card rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 border-border"
                         >
-                            {/* Skill Header */}
                             <div className="flex items-start justify-between mb-4">
-                                <h3 className="text-lg font-bold text-foreground">
-                                    {skill.name}
-                                </h3>
+                                <h3 className="text-lg font-bold text-foreground">{skill.name}</h3>
                                 <div className="flex items-center gap-2">
                                     {skill.verified && (
                                         <span className="px-3 py-1 bg-secondary/20 text-secondary text-xs rounded-xl font-semibold border border-secondary/30">
@@ -274,57 +271,38 @@ export default function HealthcareSkillsPage() {
                                 </div>
                             </div>
 
-                            {/* Category */}
                             <div className="space-y-2 mb-4">
-                                <p className="text-sm text-muted-foreground font-medium">
-                                    {skill.category.replace(/_/g, " ")}
-                                </p>
+                                <p className="text-sm text-muted-foreground font-medium">{skill.category.replace(/_/g, " ")}</p>
                             </div>
 
-                            {/* Proficiency */}
                             <div className="mb-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-muted-foreground font-semibold">
-                                        Proficiency
-                                    </span>
-                                    <span
-                                        className={`px-3 py-1 text-xs rounded-xl font-semibold ${getProficiencyColor(
-                                            skill.proficiencyLevel
-                                        )}`}
-                                    >
+                                    <span className="text-sm text-muted-foreground font-semibold">Proficiency</span>
+                                    <span className={`px-3 py-1 text-xs rounded-xl font-semibold ${getProficiencyColor(skill.proficiencyLevel)}`}>
                                         {getProficiencyLabel(skill.proficiencyLevel)}
                                     </span>
                                 </div>
                                 <div className="w-full bg-muted rounded-full h-3 shadow-inner">
                                     <div
-                                        className="bg-linear-to-r from-primary to-accent h-3 rounded-full transition-all shadow-md"
+                                        className="bg-gradient-to-r from-blue-600 to-indigo-600 h-3 rounded-full transition-all shadow-md"
                                         style={{ width: `${(skill.proficiencyLevel / 5) * 100}%` }}
                                     />
                                 </div>
                             </div>
 
-                            {/* Description */}
                             {skill.description && (
-                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-                                    {skill.description}
-                                </p>
+                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">{skill.description}</p>
                             )}
 
-                            {/* Tags */}
                             {skill.tags && skill.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {skill.tags.slice(0, 3).map((tag, index) => (
-                                        <span
-                                            key={index}
-                                            className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-lg font-medium"
-                                        >
+                                        <span key={index} className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-lg font-medium">
                                             {tag}
                                         </span>
                                     ))}
                                     {skill.tags.length > 3 && (
-                                        <span className="px-3 py-1 text-muted-foreground text-xs font-medium">
-                                            +{skill.tags.length - 3} more
-                                        </span>
+                                        <span className="px-3 py-1 text-muted-foreground text-xs font-medium">+{skill.tags.length - 3} more</span>
                                     )}
                                 </div>
                             )}
@@ -332,39 +310,6 @@ export default function HealthcareSkillsPage() {
                     ))}
                 </div>
             )}
-
-            {/* Stats */}
-            <div className="bg-card rounded-2xl shadow-lg p-8 border-2 border-border">
-                <h2 className="text-xl font-bold text-foreground mb-6">
-                    Healthcare Skills Overview
-                </h2>
-                <div className="grid grid-cols-3 gap-6">
-                    <div className="text-center p-4 rounded-xl bg-primary/10 border-2 border-primary/20">
-                        <div className="text-4xl font-bold text-primary">
-                            {skills.length}
-                        </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
-                            Total Skills
-                        </div>
-                    </div>
-                    <div className="text-center p-4 rounded-xl bg-secondary/10 border-2 border-secondary/20">
-                        <div className="text-4xl font-bold text-secondary">
-                            {skills.filter((s) => s.verified).length}
-                        </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
-                            Verified
-                        </div>
-                    </div>
-                    <div className="text-center p-4 rounded-xl bg-accent/10 border-2 border-accent/20">
-                        <div className="text-4xl font-bold text-accent">
-                            {skills.filter((s) => s.proficiencyLevel >= 4).length}
-                        </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
-                            Expert Level
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Edit Skill Modal */}
             {showEditModal && editingSkill && (
@@ -384,7 +329,6 @@ export default function HealthcareSkillsPage() {
                         </div>
 
                         <form onSubmit={handleUpdateSkill} className="p-6 space-y-4 bg-white dark:bg-gray-900">
-                            {/* Skill Name */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Skill Name *</label>
                                 <input
@@ -397,7 +341,6 @@ export default function HealthcareSkillsPage() {
                                 />
                             </div>
 
-                            {/* Category */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
                                 <input
@@ -410,7 +353,6 @@ export default function HealthcareSkillsPage() {
                                 />
                             </div>
 
-                            {/* Proficiency Level */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">
                                     Proficiency Level: {getProficiencyLabel(formData.proficiencyLevel)}
@@ -432,7 +374,6 @@ export default function HealthcareSkillsPage() {
                                 </div>
                             </div>
 
-                            {/* Description */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Description</label>
                                 <textarea
@@ -444,7 +385,6 @@ export default function HealthcareSkillsPage() {
                                 />
                             </div>
 
-                            {/* Tags */}
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Tags</label>
                                 <div className="flex gap-2 mb-2">
@@ -483,7 +423,6 @@ export default function HealthcareSkillsPage() {
                                 </div>
                             </div>
 
-                            {/* Submit */}
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"

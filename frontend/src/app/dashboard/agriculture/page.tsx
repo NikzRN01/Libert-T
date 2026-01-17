@@ -189,7 +189,7 @@ export default function AgricultureDashboard() {
                 </Link>
 
                 <Link
-                    href="/dashboard/certifications?sector=AGRICULTURE"
+                    href="/dashboard/agriculture/certifications"
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
@@ -204,7 +204,7 @@ export default function AgricultureDashboard() {
                 </Link>
 
                 <Link
-                    href="/dashboard/projects?sector=AGRICULTURE"
+                    href="/dashboard/agriculture/projects"
                     className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
