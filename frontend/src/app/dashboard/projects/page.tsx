@@ -73,30 +73,6 @@ export default function ProjectsPage() {
     const [skillInput, setSkillInput] = useState("");
     const [techInput, setTechInput] = useState("");
 
-    const categories = {
-        HEALTHCARE: [
-            "CLINICAL_INFORMATICS",
-            "HEALTH_DATA_ANALYTICS",
-            "EHR_SYSTEMS",
-            "TELEMEDICINE",
-            "MEDICAL_CODING",
-        ],
-        AGRICULTURE: [
-            "PRECISION_AGRICULTURE",
-            "FARM_MANAGEMENT_SOFTWARE",
-            "AGRICULTURAL_IOT",
-            "CROP_MONITORING",
-            "SUSTAINABLE_FARMING",
-        ],
-        URBAN: [
-            "URBAN_PLANNING",
-            "GIS_MAPPING",
-            "SMART_INFRASTRUCTURE",
-            "IOT_SENSORS",
-            "SUSTAINABLE_URBAN_DESIGN",
-        ],
-    };
-
     const fetchProjects = useCallback(async () => {
         try {
             setLoading(true);

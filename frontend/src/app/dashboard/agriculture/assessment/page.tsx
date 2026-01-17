@@ -12,6 +12,31 @@ interface AssessmentItem {
     category?: string;
 }
 
+type SkillLike = {
+    name: string;
+    proficiencyLevel: number;
+    verified?: boolean;
+    category?: string;
+};
+
+type ProjectLike = {
+    title: string;
+    status?: string;
+    isPublic?: boolean;
+    category?: string;
+};
+
+type CertificationLike = {
+    status?: string;
+    expiryDate?: string;
+    name?: string;
+    title?: string;
+    certificationName?: string;
+    issuingOrganization?: string;
+    organization?: string;
+    issuer?: string;
+};
+
 export default function AgricultureAssessmentPage() {
     const router = useRouter();
     const [assessmentData, setAssessmentData] = useState<AssessmentItem[]>([]);
@@ -71,10 +96,18 @@ export default function AgricultureAssessmentPage() {
                 );
 
                 if (skillRes.ok) {
-                    const skillData = await skillRes.json();
-                    let skillsArray = Array.isArray(skillData) ? skillData : skillData.data || skillData.skills || [];
-                    
-                    skillsArray.forEach((skill: any) => {
+                    const skillData: unknown = await skillRes.json();
+                    const skillsArray = (
+                        Array.isArray(skillData)
+                            ? skillData
+                            : typeof skillData === "object" && skillData !== null && Array.isArray((skillData as { data?: unknown }).data)
+                                ? (skillData as { data: unknown[] }).data
+                                : typeof skillData === "object" && skillData !== null && Array.isArray((skillData as { skills?: unknown }).skills)
+                                    ? (skillData as { skills: unknown[] }).skills
+                                    : []
+                    ) as SkillLike[];
+
+                    skillsArray.forEach((skill) => {
                         const proficiencyScore = skill.proficiencyLevel * WEIGHTS.skill.proficiencyMultiplier;
                         const verifiedBonus = skill.verified ? WEIGHTS.skill.verifiedBonus : 0;
                         const rawScore = WEIGHTS.skill.base + proficiencyScore + verifiedBonus;
@@ -100,10 +133,18 @@ export default function AgricultureAssessmentPage() {
                 );
 
                 if (projectRes.ok) {
-                    const projectData = await projectRes.json();
-                    let projectsArray = Array.isArray(projectData) ? projectData : projectData.data || projectData.projects || [];
-                    
-                    projectsArray.forEach((project: any) => {
+                    const projectData: unknown = await projectRes.json();
+                    const projectsArray = (
+                        Array.isArray(projectData)
+                            ? projectData
+                            : typeof projectData === "object" && projectData !== null && Array.isArray((projectData as { data?: unknown }).data)
+                                ? (projectData as { data: unknown[] }).data
+                                : typeof projectData === "object" && projectData !== null && Array.isArray((projectData as { projects?: unknown }).projects)
+                                    ? (projectData as { projects: unknown[] }).projects
+                                    : []
+                    ) as ProjectLike[];
+
+                    projectsArray.forEach((project) => {
                         let statusMultiplier = 0.5;
                         if (project.status === "COMPLETED") statusMultiplier = WEIGHTS.project.completedMultiplier;
                         else if (project.status === "IN_PROGRESS") statusMultiplier = WEIGHTS.project.inProgressMultiplier;
@@ -134,21 +175,22 @@ export default function AgricultureAssessmentPage() {
                 console.log("Certification response status:", certRes.status);
                 
                 if (certRes.ok) {
-                    const certData = await certRes.json();
+                    const certData: unknown = await certRes.json();
                     console.log("Raw certification data:", certData);
-                    
-                    let certificationsArray = [];
-                    if (Array.isArray(certData)) {
-                        certificationsArray = certData;
-                    } else if (certData.certifications) {
-                        certificationsArray = certData.certifications;
-                    } else if (certData.data) {
-                        certificationsArray = Array.isArray(certData.data) ? certData.data : [];
-                    }
+
+                    const certificationsArray = (
+                        Array.isArray(certData)
+                            ? certData
+                            : typeof certData === "object" && certData !== null && Array.isArray((certData as { certifications?: unknown }).certifications)
+                                ? (certData as { certifications: unknown[] }).certifications
+                                : typeof certData === "object" && certData !== null && Array.isArray((certData as { data?: unknown }).data)
+                                    ? (certData as { data: unknown[] }).data
+                                    : []
+                    ) as CertificationLike[];
                     
                     console.log("Parsed certifications array:", certificationsArray);
-                    
-                    certificationsArray.forEach((cert: any) => {
+
+                    certificationsArray.forEach((cert) => {
                         const isActive = cert.status === "ACTIVE" || !cert.expiryDate || new Date(cert.expiryDate) > new Date();
                         const activeMultiplier = isActive ? WEIGHTS.certification.activeMultiplier : 0.7;
                         const rawScore = WEIGHTS.certification.base * activeMultiplier;
@@ -187,7 +229,6 @@ export default function AgricultureAssessmentPage() {
 
     const skillsCount = filteredData.filter((item) => item.type === "skill").length;
     const projectsCount = filteredData.filter((item) => item.type === "project").length;
-    const certificationsCount = filteredData.filter((item) => item.type === "certification").length;
 
     return (
         <div className="space-y-6">

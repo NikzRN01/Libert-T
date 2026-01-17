@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Plus, Search, Trash2, Pencil, X } from "lucide-react";
 
 interface Skill {

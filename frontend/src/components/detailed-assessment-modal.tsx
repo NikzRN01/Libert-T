@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { X, Search, TrendingUp } from "lucide-react";
 
 interface AssessmentItem {
@@ -10,6 +10,30 @@ interface AssessmentItem {
     sector?: string;
     category?: string;
 }
+
+type SkillLike = {
+    name: string;
+    proficiencyLevel: number;
+    verified?: boolean;
+    category?: string;
+};
+
+type ProjectLike = {
+    title: string;
+    status?: string;
+    isPublic?: boolean;
+    category?: string;
+};
+
+type CertificationLike = {
+    status?: string;
+    expiryDate?: string;
+    name?: string;
+    title?: string;
+    sector?: string;
+    issuingOrganization?: string;
+    organization?: string;
+};
 
 interface DetailedAssessmentModalProps {
     isOpen: boolean;
@@ -24,12 +48,207 @@ export function DetailedAssessmentModal({ isOpen, onClose, sector }: DetailedAss
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState<"all" | "skill" | "project" | "certification">("all");
 
+    const fetchAssessmentData = useCallback(async () => {
+        try {
+            setLoading(true);
+
+            // Get authentication token
+            const token = localStorage.getItem("token");
+            const headers = {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            };
+
+            // Fetch skills from specified sector or all sectors
+            const sectors = sector ? [sector] : ["HEALTHCARE", "AGRICULTURE", "URBAN"];
+            const allItems: AssessmentItem[] = [];
+
+            // Define weights for contribution calculation
+            const WEIGHTS = {
+                skill: {
+                    base: 50, // Base weight for a skill
+                    proficiencyMultiplier: 1.5, // Multiplier based on proficiency (1-10)
+                    verifiedBonus: 20, // Bonus for verified skills
+                },
+                project: {
+                    base: 80, // Base weight for a project (higher impact)
+                    completedMultiplier: 1.5, // Multiplier for completed projects
+                    inProgressMultiplier: 0.8, // Multiplier for in-progress projects
+                    publicBonus: 15, // Bonus for public projects
+                },
+                certification: {
+                    base: 100, // Base weight for certification (highest impact)
+                    activeMultiplier: 1.2, // Multiplier for active certifications
+                },
+            };
+
+            // Fetch skills from each sector
+            for (const currentSector of sectors) {
+                try {
+                    const skillRes = await fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills?sector=${currentSector}`,
+                        {
+                            method: "GET",
+                            headers,
+                        }
+                    );
+
+                    if (skillRes.ok) {
+                        const skillData: unknown = await skillRes.json();
+
+                        const skillsArray = (
+                            Array.isArray(skillData)
+                                ? skillData
+                                : typeof skillData === "object" && skillData !== null && Array.isArray((skillData as { data?: unknown }).data)
+                                    ? (skillData as { data: unknown[] }).data
+                                    : typeof skillData === "object" && skillData !== null && Array.isArray((skillData as { skills?: unknown }).skills)
+                                        ? (skillData as { skills: unknown[] }).skills
+                                        : []
+                        ) as SkillLike[];
+
+                        skillsArray.forEach((skill) => {
+                            // Calculate skill contribution: base + (proficiency * multiplier) + verified bonus
+                            const proficiencyScore = skill.proficiencyLevel * WEIGHTS.skill.proficiencyMultiplier;
+                            const verifiedBonus = skill.verified ? WEIGHTS.skill.verifiedBonus : 0;
+                            const rawScore = WEIGHTS.skill.base + proficiencyScore + verifiedBonus;
+
+                            allItems.push({
+                                type: "skill",
+                                name: skill.name,
+                                percentage: rawScore,
+                                sector: currentSector,
+                                category: skill.category,
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Error fetching skills for ${currentSector}:`, error);
+                }
+            }
+
+            // Fetch projects from all sectors
+            for (const currentSector of sectors) {
+                try {
+                    const projectRes = await fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/projects?sector=${currentSector}`,
+                        {
+                            method: "GET",
+                            headers,
+                        }
+                    );
+
+                    if (projectRes.ok) {
+                        const projectData: unknown = await projectRes.json();
+
+                        const projectsArray = (
+                            Array.isArray(projectData)
+                                ? projectData
+                                : typeof projectData === "object" && projectData !== null && Array.isArray((projectData as { data?: unknown }).data)
+                                    ? (projectData as { data: unknown[] }).data
+                                    : typeof projectData === "object" && projectData !== null && Array.isArray((projectData as { projects?: unknown }).projects)
+                                        ? (projectData as { projects: unknown[] }).projects
+                                        : []
+                        ) as ProjectLike[];
+
+                        projectsArray.forEach((project) => {
+                            // Calculate project contribution based on status
+                            let statusMultiplier = 0.5; // Default for PLANNED
+                            if (project.status === "COMPLETED") {
+                                statusMultiplier = WEIGHTS.project.completedMultiplier;
+                            } else if (project.status === "IN_PROGRESS") {
+                                statusMultiplier = WEIGHTS.project.inProgressMultiplier;
+                            }
+
+                            const publicBonus = project.isPublic ? WEIGHTS.project.publicBonus : 0;
+                            const rawScore = (WEIGHTS.project.base * statusMultiplier) + publicBonus;
+
+                            allItems.push({
+                                type: "project",
+                                name: project.title,
+                                percentage: rawScore,
+                                sector: currentSector,
+                                category: project.category,
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Error fetching projects for ${currentSector}:`, error);
+                }
+            }
+
+            // Fetch certifications (from sector-specific or general endpoint)
+            try {
+                const certEndpoint = sector
+                    ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/certifications?sector=${sector}`
+                    : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/certifications`;
+
+                const certRes = await fetch(certEndpoint, {
+                    method: "GET",
+                    headers,
+                });
+
+                if (certRes.ok) {
+                    const certData: unknown = await certRes.json();
+
+                    const certificationsArray = (
+                        Array.isArray(certData)
+                            ? certData
+                            : typeof certData === "object" && certData !== null && (certData as { success?: unknown }).success && (certData as { data?: unknown }).data
+                                ? Array.isArray((certData as { data?: unknown }).data)
+                                    ? (certData as { data: unknown[] }).data
+                                    : [(certData as { data: unknown }).data]
+                                : typeof certData === "object" && certData !== null && Array.isArray((certData as { data?: unknown }).data)
+                                    ? (certData as { data: unknown[] }).data
+                                    : typeof certData === "object" && certData !== null && Array.isArray((certData as { certifications?: unknown }).certifications)
+                                        ? (certData as { certifications: unknown[] }).certifications
+                                        : []
+                    ) as CertificationLike[];
+
+                    certificationsArray.forEach((cert) => {
+                        // Calculate certification contribution
+                        const isActive =
+                            cert.status === "ACTIVE" ||
+                            !cert.expiryDate ||
+                            new Date(cert.expiryDate) > new Date();
+                        const activeMultiplier = isActive ? WEIGHTS.certification.activeMultiplier : 0.7;
+                        const rawScore = WEIGHTS.certification.base * activeMultiplier;
+
+                        allItems.push({
+                            type: "certification",
+                            name: cert.name || cert.title || "Certification",
+                            percentage: rawScore,
+                            sector: cert.sector || sector || "GENERAL",
+                            category: cert.issuingOrganization || cert.organization || "Certification",
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching certifications:", error);
+            }
+
+            // Calculate total raw score and normalize to percentages
+            const totalRawScore = allItems.reduce((sum, item) => sum + item.percentage, 0);
+            if (totalRawScore > 0) {
+                allItems.forEach((item) => {
+                    // Convert raw score to percentage contribution
+                    item.percentage = Math.round((item.percentage / totalRawScore) * 100 * 10) / 10;
+                });
+            }
+
+            setAssessmentData(allItems);
+        } catch (error) {
+            console.error("Error fetching assessment data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [sector]);
+
     // Fetch assessment data from all sectors
     useEffect(() => {
         if (isOpen) {
             fetchAssessmentData();
         }
-    }, [isOpen]);
+    }, [isOpen, fetchAssessmentData]);
 
     // Filter data based on search and type
     useEffect(() => {
@@ -55,213 +274,10 @@ export function DetailedAssessmentModal({ isOpen, onClose, sector }: DetailedAss
         setFilteredData(filtered);
     }, [searchTerm, assessmentData, filter]);
 
-    const fetchAssessmentData = async () => {
-        try {
-            setLoading(true);
-
-            // Get authentication token
-            const token = localStorage.getItem("token");
-            const headers = {
-                "Content-Type": "application/json",
-                ...(token && { Authorization: `Bearer ${token}` }),
-            };
-
-            // Fetch skills from specified sector or all sectors
-            const sectors = sector ? [sector] : ["HEALTHCARE", "AGRICULTURE", "URBAN"];
-            const allItems: AssessmentItem[] = [];
-            
-            // Define weights for contribution calculation
-            const WEIGHTS = {
-                skill: {
-                    base: 50, // Base weight for a skill
-                    proficiencyMultiplier: 1.5, // Multiplier based on proficiency (1-10)
-                    verifiedBonus: 20, // Bonus for verified skills
-                },
-                project: {
-                    base: 80, // Base weight for a project (higher impact)
-                    completedMultiplier: 1.5, // Multiplier for completed projects
-                    inProgressMultiplier: 0.8, // Multiplier for in-progress projects
-                    publicBonus: 15, // Bonus for public projects
-                },
-                certification: {
-                    base: 100, // Base weight for certification (highest impact)
-                    activeMultiplier: 1.2, // Multiplier for active certifications
-                },
-            };
-
-            // Fetch skills from each sector
-            for (const sector of sectors) {
-                try {
-                    const skillRes = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills?sector=${sector}`,
-                        {
-                            method: "GET",
-                            headers,
-                        }
-                    );
-
-                    if (skillRes.ok) {
-                        const skillData = await skillRes.json();
-                        console.log(`Skills data for ${sector}:`, skillData);
-                        
-                        // Handle different response formats
-                        let skillsArray = [];
-                        if (Array.isArray(skillData)) {
-                            skillsArray = skillData;
-                        } else if (skillData.data && Array.isArray(skillData.data)) {
-                            skillsArray = skillData.data;
-                        } else if (skillData.skills && Array.isArray(skillData.skills)) {
-                            skillsArray = skillData.skills;
-                        }
-                        
-                        skillsArray.forEach((skill: any) => {
-                            // Calculate skill contribution: base + (proficiency * multiplier) + verified bonus
-                            const proficiencyScore = skill.proficiencyLevel * WEIGHTS.skill.proficiencyMultiplier;
-                            const verifiedBonus = skill.verified ? WEIGHTS.skill.verifiedBonus : 0;
-                            const rawScore = WEIGHTS.skill.base + proficiencyScore + verifiedBonus;
-                            
-                            allItems.push({
-                                type: "skill",
-                                name: skill.name,
-                                percentage: rawScore,
-                                sector: sector,
-                                category: skill.category,
-                            });
-                        });
-                    }
-                } catch (error) {
-                    console.error(`Error fetching skills for ${sector}:`, error);
-                }
-            }
-
-            // Fetch projects from all sectors
-            for (const sector of sectors) {
-                try {
-                    const projectRes = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/projects?sector=${sector}`,
-                        {
-                            method: "GET",
-                            headers,
-                        }
-                    );
-
-                    if (projectRes.ok) {
-                        const projectData = await projectRes.json();
-                        console.log(`Projects data for ${sector}:`, projectData);
-                        
-                        // Handle different response formats
-                        let projectsArray = [];
-                        if (Array.isArray(projectData)) {
-                            projectsArray = projectData;
-                        } else if (projectData.data && Array.isArray(projectData.data)) {
-                            projectsArray = projectData.data;
-                        } else if (projectData.projects && Array.isArray(projectData.projects)) {
-                            projectsArray = projectData.projects;
-                        }
-                        
-                        projectsArray.forEach((project: any) => {
-                            // Calculate project contribution based on status
-                            let statusMultiplier = 0.5; // Default for PLANNED
-                            if (project.status === "COMPLETED") {
-                                statusMultiplier = WEIGHTS.project.completedMultiplier;
-                            } else if (project.status === "IN_PROGRESS") {
-                                statusMultiplier = WEIGHTS.project.inProgressMultiplier;
-                            }
-                            
-                            const publicBonus = project.isPublic ? WEIGHTS.project.publicBonus : 0;
-                            const rawScore = (WEIGHTS.project.base * statusMultiplier) + publicBonus;
-                            
-                            allItems.push({
-                                type: "project",
-                                name: project.title,
-                                percentage: rawScore,
-                                sector: sector,
-                                category: project.category,
-                            });
-                        });
-                    }
-                } catch (error) {
-                    console.error(`Error fetching projects for ${sector}:`, error);
-                }
-            }
-
-            // Fetch certifications (from sector-specific or general endpoint)
-            try {
-                const certEndpoint = sector 
-                    ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/certifications?sector=${sector}`
-                    : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/certifications`;
-                    
-                const certRes = await fetch(certEndpoint, {
-                    method: "GET",
-                    headers,
-                });
-
-                console.log("Certifications response status:", certRes.status);
-                
-                if (certRes.ok) {
-                    const certData = await certRes.json();
-                    console.log("Certifications raw data:", certData);
-                    
-                    // Handle different response formats
-                    let certificationsArray = [];
-                    if (Array.isArray(certData)) {
-                        certificationsArray = certData;
-                    } else if (certData.success && certData.data) {
-                        // Handle {success: true, data: [...]} format
-                        certificationsArray = Array.isArray(certData.data) ? certData.data : [certData.data];
-                    } else if (certData.data && Array.isArray(certData.data)) {
-                        certificationsArray = certData.data;
-                    } else if (certData.certifications && Array.isArray(certData.certifications)) {
-                        certificationsArray = certData.certifications;
-                    }
-                    
-                    console.log("Parsed certifications array:", certificationsArray);
-                    
-                    certificationsArray.forEach((cert: any) => {
-                        // Calculate certification contribution
-                        const isActive = cert.status === "ACTIVE" || !cert.expiryDate || new Date(cert.expiryDate) > new Date();
-                        const activeMultiplier = isActive ? WEIGHTS.certification.activeMultiplier : 0.7;
-                        const rawScore = WEIGHTS.certification.base * activeMultiplier;
-                        
-                        allItems.push({
-                            type: "certification",
-                            name: cert.name || cert.title,
-                            percentage: rawScore,
-                            sector: cert.sector || sector || "GENERAL",
-                            category: cert.issuingOrganization || cert.organization || "Certification",
-                        });
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching certifications:", error);
-            }
-
-            console.log("Total items collected:", allItems.length);
-            console.log("All items:", allItems);
-
-            // Calculate total raw score and normalize to percentages
-            const totalRawScore = allItems.reduce((sum, item) => sum + item.percentage, 0);
-            if (totalRawScore > 0) {
-                allItems.forEach((item) => {
-                    // Convert raw score to percentage contribution
-                    item.percentage = Math.round((item.percentage / totalRawScore) * 100 * 10) / 10;
-                });
-            }
-
-            setAssessmentData(allItems);
-        } catch (error) {
-            console.error("Error fetching assessment data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     if (!isOpen) return null;
 
-    const totalPercentage = filteredData.reduce((sum, item) => sum + item.percentage, 0);
     const skillsCount = filteredData.filter((item) => item.type === "skill").length;
     const projectsCount = filteredData.filter((item) => item.type === "project").length;
-    const certificationsCount = filteredData.filter((item) => item.type === "certification").length;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
