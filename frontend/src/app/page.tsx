@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, TrendingUp, Target, Brain, Menu, X, ArrowRight, CheckCircle2, Users, Zap, Shield, Award, Briefcase } from "lucide-react";
+import { Activity, TrendingUp, Target, Brain, Menu, X, ArrowRight, CheckCircle2, Zap, Award, Briefcase } from "lucide-react";
 import SiteFooter from "@/components/layout/site-footer";
 import { useState } from "react";
 

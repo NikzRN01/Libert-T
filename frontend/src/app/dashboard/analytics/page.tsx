@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw, Lightbulb, Download } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award, Brain, RefreshCw } from "lucide-react";
 
 interface SectorAnalytics {
     overallScore: number;

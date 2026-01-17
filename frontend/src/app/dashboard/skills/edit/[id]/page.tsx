@@ -26,43 +26,43 @@ export default function EditSkillPage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
+        const fetchSkillData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${skillId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const skill = data.skill;
+                    setFormData({
+                        name: skill.name,
+                        category: skill.category,
+                        sector: skill.sector,
+                        proficiencyLevel: skill.proficiencyLevel,
+                        description: skill.description || "",
+                        tags: skill.tags || [],
+                        yearsOfExperience: skill.yearsOfExperience || 0,
+                    });
+                    setMonthsOfExperience((skill.yearsOfExperience || 0) * 12);
+                } else {
+                    setError("Failed to load skill data");
+                }
+            } catch {
+                setError("Failed to load skill data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchSkillData();
     }, [skillId]);
-
-    const fetchSkillData = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/skills/${skillId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                const skill = data.skill;
-                setFormData({
-                    name: skill.name,
-                    category: skill.category,
-                    sector: skill.sector,
-                    proficiencyLevel: skill.proficiencyLevel,
-                    description: skill.description || "",
-                    tags: skill.tags || [],
-                    yearsOfExperience: skill.yearsOfExperience || 0,
-                });
-                setMonthsOfExperience((skill.yearsOfExperience || 0) * 12);
-            } else {
-                setError("Failed to load skill data");
-            }
-        } catch (err) {
-            setError("Failed to load skill data");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

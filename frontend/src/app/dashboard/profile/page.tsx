@@ -3,12 +3,16 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Calendar, Edit } from "lucide-react";
+import { Mail, MapPin, Calendar, Edit, Phone, Linkedin, Github, Link2 } from "lucide-react";
 import { setAuthUser, useStoredToken, useStoredUser, type StoredUser } from "@/lib/auth";
 
 type ApiProfileDetails = {
     bio?: string | null;
     location?: string | null;
+    phone?: string | null;
+    linkedIn?: string | null;
+    github?: string | null;
+    portfolio?: string | null;
     interests?: string[];
     targetSectors?: string[];
 };
@@ -148,6 +152,13 @@ export default function ProfilePage() {
                             <span>{profile?.email || user?.email}</span>
                         </div>
 
+                        {profile?.profile?.phone && (
+                            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                                <Phone className="h-5 w-5" />
+                                <span>{profile.profile.phone}</span>
+                            </div>
+                        )}
+
                         {profile?.profile?.location && (
                             <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
                                 <MapPin className="h-5 w-5" />
@@ -215,6 +226,49 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         )}
+
+                    {(profile?.profile?.linkedIn || profile?.profile?.github || profile?.profile?.portfolio) && (
+                        <div className="mt-6">
+                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Social Links
+                            </h3>
+                            <div className="space-y-2">
+                                {profile?.profile?.linkedIn && (
+                                    <a
+                                        href={profile.profile.linkedIn}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-2 text-blue-700 dark:text-blue-300 hover:underline"
+                                    >
+                                        <Linkedin className="h-4 w-4" />
+                                        <span>LinkedIn</span>
+                                    </a>
+                                )}
+                                {profile?.profile?.github && (
+                                    <a
+                                        href={profile.profile.github}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:underline"
+                                    >
+                                        <Github className="h-4 w-4" />
+                                        <span>GitHub</span>
+                                    </a>
+                                )}
+                                {profile?.profile?.portfolio && (
+                                    <a
+                                        href={profile.profile.portfolio}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-2 text-purple-700 dark:text-purple-300 hover:underline"
+                                    >
+                                        <Link2 className="h-4 w-4" />
+                                        <span>Portfolio</span>
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

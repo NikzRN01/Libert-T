@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useStoredToken, useStoredUser } from "@/lib/auth";
-import { Activity, TrendingUp, Building2, BarChart3, Sparkles } from "lucide-react";
+import { Activity, TrendingUp, Building2, BarChart3 } from "lucide-react";
 
 export default function DashboardPage() {
     const router = useRouter();
     const user = useStoredUser();
     const token = useStoredToken();
     const typingChars = Math.min(40, Math.max(18, (user?.name?.length || 6) + 8));
+
+    const typewriterStyle: CSSProperties & Record<string, string | number> = {
+        "--typing-chars": typingChars,
+        "--typing-duration": "3.4s",
+    };
 
     useEffect(() => {
         if (!token || !user) {
@@ -53,9 +58,9 @@ export default function DashboardPage() {
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-1 drop-shadow-sm">
                         <span
                             className="typewriter"
-                            style={{ ["--typing-chars" as any]: typingChars, ["--typing-duration" as any]: "3.6s" }}
+                            style={typewriterStyle}
                         >
-                            Hi, {user.name}!
+                            Hi, {user.name}!!!
                         </span>
                     </h1>
                 </div>
@@ -98,7 +103,7 @@ export default function DashboardPage() {
                             </div>
                             <h3 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">Healthcare</h3>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                                Clinical informatics, EHR workflows, and care quality metrics.
+                                Patient care, health systems, and clinical workflows.
                             </p>
                             <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:gap-2 transition-all">
                                 <span>Open dashboard</span>
@@ -138,7 +143,7 @@ export default function DashboardPage() {
                             </div>
                             <h3 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">Urban & Smart Cities</h3>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                                Mobility, GIS overlays, smart infrastructure, and readiness scores.
+                                Mobility, City life, smart infrastructure, and readiness scores.
                             </p>
                             <div className="flex items-center text-cyan-700 font-semibold text-sm group-hover:gap-2 transition-all">
                                 <span>Open dashboard</span>

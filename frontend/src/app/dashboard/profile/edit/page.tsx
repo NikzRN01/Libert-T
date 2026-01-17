@@ -8,6 +8,10 @@ import { useStoredToken, useStoredUser, setAuthUser, type StoredUser } from "@/l
 type ApiProfileDetails = {
     bio?: string | null;
     location?: string | null;
+    phone?: string | null;
+    linkedIn?: string | null;
+    github?: string | null;
+    portfolio?: string | null;
     interests?: string[];
     targetSectors?: string[];
 };
@@ -48,9 +52,13 @@ export default function ProfileEditPage() {
     const [success, setSuccess] = useState<string | null>(null);
 
     const [name, setName] = useState(user?.name || "");
+    const [phone, setPhone] = useState<string>("");
     const [location, setLocation] = useState<string>("");
     const [bio, setBio] = useState<string>("");
     const [interestsText, setInterestsText] = useState<string>("");
+    const [linkedIn, setLinkedIn] = useState<string>("");
+    const [github, setGithub] = useState<string>("");
+    const [portfolio, setPortfolio] = useState<string>("");
     const [sectorHealthcare, setSectorHealthcare] = useState(false);
     const [sectorAgriculture, setSectorAgriculture] = useState(false);
     const [sectorUrban, setSectorUrban] = useState(false);
@@ -90,6 +98,10 @@ export default function ProfileEditPage() {
         setName(payload.profile.name || "");
         setLocation(payload.profile.profile?.location || "");
         setBio(payload.profile.profile?.bio || "");
+        setPhone(payload.profile.profile?.phone || "");
+        setLinkedIn(payload.profile.profile?.linkedIn || "");
+        setGithub(payload.profile.profile?.github || "");
+        setPortfolio(payload.profile.profile?.portfolio || "");
 
         const interests = payload.profile.profile?.interests || [];
         setInterestsText(interests.join(", "));
@@ -226,6 +238,12 @@ export default function ProfileEditPage() {
         }
     };
 
+    const toggleSector = (sector: "HEALTHCARE" | "AGRICULTURE" | "URBAN") => {
+        if (sector === "HEALTHCARE") setSectorHealthcare((v) => !v);
+        if (sector === "AGRICULTURE") setSectorAgriculture((v) => !v);
+        if (sector === "URBAN") setSectorUrban((v) => !v);
+    };
+
     const saveProfile = async () => {
         setError(null);
         setSuccess(null);
@@ -256,8 +274,12 @@ export default function ProfileEditPage() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
+                        phone: phone || undefined,
                         bio: bio || undefined,
                         location: location || undefined,
+                        linkedIn: linkedIn || undefined,
+                        github: github || undefined,
+                        portfolio: portfolio || undefined,
                         interests,
                         targetSectors,
                     }),
@@ -330,17 +352,6 @@ export default function ProfileEditPage() {
                     </div>
                 </div>
 
-                {error && (
-                    <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
-                        {error}
-                    </div>
-                )}
-                {success && (
-                    <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3">
-                        {success}
-                    </div>
-                )}
-
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                     Supported: images up to 5MB.
                 </p>
@@ -356,6 +367,17 @@ export default function ProfileEditPage() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                            disabled={isSaving}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone No.</label>
+                        <input
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                            placeholder="e.g., +91 98765 43210"
                             disabled={isSaving}
                         />
                     </div>
@@ -378,6 +400,15 @@ export default function ProfileEditPage() {
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50"
                     >
                         Save name
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={saveProfile}
+                        disabled={isSaving}
+                        className="px-4 py-2 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                        Save phone
                     </button>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                         Role: {(apiProfile?.role || user?.role || "").toLowerCase()}
@@ -423,19 +454,43 @@ export default function ProfileEditPage() {
 
                 <div className="space-y-2">
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Target Sectors</div>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-200">
-                        <label className="flex items-center gap-2">
-                            <input type="checkbox" checked={sectorHealthcare} onChange={(e) => setSectorHealthcare(e.target.checked)} />
+                    <div className="flex flex-wrap gap-3">
+                        <button
+                            type="button"
+                            onClick={() => toggleSector("HEALTHCARE")}
+                            className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                                sectorHealthcare
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-800"
+                            }`}
+                            disabled={isSaving}
+                        >
                             Healthcare
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input type="checkbox" checked={sectorAgriculture} onChange={(e) => setSectorAgriculture(e.target.checked)} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => toggleSector("AGRICULTURE")}
+                            className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                                sectorAgriculture
+                                    ? "bg-green-600 text-white border-green-600"
+                                    : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-800"
+                            }`}
+                            disabled={isSaving}
+                        >
                             Agriculture
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input type="checkbox" checked={sectorUrban} onChange={(e) => setSectorUrban(e.target.checked)} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => toggleSector("URBAN")}
+                            className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                                sectorUrban
+                                    ? "bg-purple-600 text-white border-purple-600"
+                                    : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-800"
+                            }`}
+                            disabled={isSaving}
+                        >
                             Urban
-                        </label>
+                        </button>
                     </div>
                 </div>
 
@@ -446,6 +501,54 @@ export default function ProfileEditPage() {
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50"
                 >
                     Save profile
+                </button>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Social Links</h2>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">LinkedIn</label>
+                        <input
+                            value={linkedIn}
+                            onChange={(e) => setLinkedIn(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                            placeholder="https://linkedin.com/in/..."
+                            disabled={isSaving}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">GitHub</label>
+                        <input
+                            value={github}
+                            onChange={(e) => setGithub(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                            placeholder="https://github.com/..."
+                            disabled={isSaving}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Portfolio</label>
+                        <input
+                            value={portfolio}
+                            onChange={(e) => setPortfolio(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                            placeholder="https://..."
+                            disabled={isSaving}
+                        />
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={saveProfile}
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                    Save social links
                 </button>
             </div>
 

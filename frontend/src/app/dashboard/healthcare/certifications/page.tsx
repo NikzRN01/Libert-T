@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Award, Plus, Calendar, ExternalLink, X, Trash2, Search, Pencil } from "lucide-react";
+import { Plus, Calendar, ExternalLink, X, Trash2, Search, Pencil } from "lucide-react";
 
 interface Certification {
     id: string;

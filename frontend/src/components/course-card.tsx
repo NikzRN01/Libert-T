@@ -1,5 +1,8 @@
 import { ExternalLink, Star, Users, Clock } from "lucide-react";
 import Link from "next/link";
+import Image, { type ImageLoaderProps } from "next/image";
+
+const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
 interface UdemyCourse {
     id: string;
@@ -25,10 +28,14 @@ export default function CourseCard({ course }: CourseCardProps) {
             {/* Course Image */}
             <div className="relative h-32 bg-muted">
                 {course.image && (
-                    <img
+                    <Image
+                        loader={passthroughImageLoader}
+                        unoptimized
                         src={course.image}
                         alt={course.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className="object-cover"
                     />
                 )}
                 {course.price === "Free" && (
