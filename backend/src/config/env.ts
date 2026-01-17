@@ -31,11 +31,16 @@ const requiredEnvVars = [
     'DATABASE_URL',
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_KEY',
     'JWT_SECRET',
 ];
 
-for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
-        throw new Error(`Missing required environment variable: ${envVar}`);
-    }
+const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+if (missingEnvVars.length > 0) {
+    throw new Error(
+        [
+            `Missing required environment variable(s): ${missingEnvVars.join(', ')}`,
+            'Create a backend/.env file (copy backend/.env.example) and fill in the values.',
+        ].join('\n')
+    );
 }

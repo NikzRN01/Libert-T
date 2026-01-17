@@ -1,5 +1,4 @@
-import bcrypt from 
-;
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import prisma from '../config/database';
@@ -43,9 +42,9 @@ export async function comparePassword(password: string, hash: string): Promise<b
  * Generate a JWT token for a user
  */
 export function generateToken(payload: TokenPayload): string {
-    return jwt.sign(payload as any, config.jwt.secret as any, {
+    return jwt.sign(payload, config.jwt.secret, {
         expiresIn: config.jwt.expiresIn,
-    } as any);
+    });
 }
 
 /**
