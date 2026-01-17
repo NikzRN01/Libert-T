@@ -51,6 +51,45 @@ export async function listSkills(req: Request, res: Response): Promise<void> {
 }
 
 /**
+ * Get a single skill by ID
+ * GET /api/skills/:id
+ */
+export async function getSkill(req: Request, res: Response): Promise<void> {
+    try {
+        if (!(req as any).user) {
+            res.status(401).json({
+                error: 'Unauthorized',
+                message: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { id } = req.params;
+
+        const skill = await skillService.getSkillById(id, (req as any).user.userId);
+
+        res.status(200).json({
+            skill,
+        });
+    } catch (error) {
+        console.error('Get skill error:', error);
+
+        if (error instanceof Error && error.message === 'Skill not found') {
+            res.status(404).json({
+                error: 'Not Found',
+                message: error.message,
+            });
+            return;
+        }
+
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: 'Failed to fetch skill',
+        });
+    }
+}
+
+/**
  * Add a new skill
  * POST /api/skills
  */
