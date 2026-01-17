@@ -17,7 +17,7 @@ interface Project {
     startDate: string;
     endDate?: string;
     status: string;
-    teamSize?: number;
+    teamSize?: string;
     role?: string;
     repositoryUrl?: string;
     liveUrl?: string;
@@ -35,7 +35,7 @@ interface AddProjectForm {
     startDate: string;
     endDate: string;
     status: string;
-    teamSize: number;
+    teamSize: string;
     role: string;
     repositoryUrl: string;
     liveUrl: string;
@@ -64,7 +64,7 @@ export default function ProjectsPage() {
         startDate: "",
         endDate: "",
         status: "IN_PROGRESS",
-        teamSize: 1,
+        teamSize: "",
         role: "",
         repositoryUrl: "",
         liveUrl: "",
@@ -143,7 +143,7 @@ export default function ProjectsPage() {
                     startDate: "",
                     endDate: "",
                     status: "IN_PROGRESS",
-                    teamSize: 1,
+                    teamSize: "",
                     role: "",
                     repositoryUrl: "",
                     liveUrl: "",
@@ -237,7 +237,7 @@ export default function ProjectsPage() {
                     startDate: "",
                     endDate: "",
                     status: "IN_PROGRESS",
-                    teamSize: 1,
+                    teamSize: "",
                     role: "",
                     repositoryUrl: "",
                     liveUrl: "",
@@ -635,10 +635,9 @@ export default function ProjectsPage() {
                                 <div>
                                     <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Team Size</label>
                                     <input
-                                        type="number"
-                                        min="1"
+                                        type="text"
                                         value={formData.teamSize}
-                                        onChange={(e) => setFormData({ ...formData, teamSize: parseInt(e.target.value) || 1 })}
+                                        onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
                                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     />
                                 </div>
@@ -900,10 +899,9 @@ export default function ProjectsPage() {
                                 <div>
                                     <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Team Size</label>
                                     <input
-                                        type="number"
-                                        min="1"
+                                        type="text"
                                         value={formData.teamSize}
-                                        onChange={(e) => setFormData({ ...formData, teamSize: parseInt(e.target.value) || 1 })}
+                                        onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
                                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                     />
                                 </div>

@@ -18,7 +18,7 @@ interface Project {
     startDate: string;
     endDate?: string;
     status: string;
-    teamSize?: number;
+    teamSize?: string;
     role?: string;
     repositoryUrl?: string;
     liveUrl?: string;
