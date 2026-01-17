@@ -29,6 +29,7 @@ interface AddProjectForm {
     title: string;
     description: string;
     category: string;
+    customCategory?: string;
     skillsUsed: string[];
     technologies: string[];
     outcomes: string;
@@ -65,6 +66,7 @@ export default function UrbanProjectsPage() {
         title: "",
         description: "",
         category: "",
+        customCategory: "",
         skillsUsed: [],
         technologies: [],
         outcomes: "",
@@ -126,7 +128,10 @@ export default function UrbanProjectsPage() {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
                 }
             );
 
@@ -136,6 +141,7 @@ export default function UrbanProjectsPage() {
                     title: "",
                     description: "",
                     category: "",
+                    customCategory: "",
                     skillsUsed: [],
                     technologies: [],
                     outcomes: "",
@@ -218,7 +224,10 @@ export default function UrbanProjectsPage() {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
                 }
             );
 
@@ -229,6 +238,7 @@ export default function UrbanProjectsPage() {
                     title: "",
                     description: "",
                     category: "",
+                    customCategory: "",
                     skillsUsed: [],
                     technologies: [],
                     outcomes: "",

@@ -29,6 +29,7 @@ interface AddProjectForm {
     title: string;
     description: string;
     category: string;
+    customCategory?: string;
     skillsUsed: string[];
     technologies: string[];
     outcomes: string;
@@ -65,6 +66,7 @@ export default function HealthcareProjectsPage() {
         title: "",
         description: "",
         category: "",
+        customCategory: "",
         skillsUsed: [],
         technologies: [],
         outcomes: "",
@@ -126,7 +128,10 @@ export default function HealthcareProjectsPage() {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
                 }
             );
 
@@ -136,6 +141,7 @@ export default function HealthcareProjectsPage() {
                     title: "",
                     description: "",
                     category: "",
+                    customCategory: "",
                     skillsUsed: [],
                     technologies: [],
                     outcomes: "",
@@ -218,7 +224,10 @@ export default function HealthcareProjectsPage() {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        category: formData.category === "OTHER" ? formData.customCategory : formData.category,
+                    }),
                 }
             );
 
@@ -229,6 +238,7 @@ export default function HealthcareProjectsPage() {
                     title: "",
                     description: "",
                     category: "",
+                    customCategory: "",
                     skillsUsed: [],
                     technologies: [],
                     outcomes: "",
@@ -472,13 +482,28 @@ export default function HealthcareProjectsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
+                                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
                                     <option value="">Select a category</option>
                                     {categories[SECTOR as keyof typeof categories]?.map((cat) => (
                                         <option key={cat} value={cat}>{cat.replace(/_/g, " ")}</option>
                                     ))}
+                                    <option value="OTHER">Other</option>
                                 </select>
                             </div>
+
+                            {formData.category === "OTHER" && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Custom Category *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter custom category"
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                        required
+                                    />
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -604,13 +629,28 @@ export default function HealthcareProjectsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Category *</label>
-                                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
+                                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value, customCategory: "" })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
                                     <option value="">Select a category</option>
                                     {categories[SECTOR as keyof typeof categories]?.map((cat) => (
                                         <option key={cat} value={cat}>{cat.replace(/_/g, " ")}</option>
                                     ))}
+                                    <option value="OTHER">Other</option>
                                 </select>
                             </div>
+
+                            {formData.category === "OTHER" && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-200">Custom Category *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter custom category"
+                                        value={formData.customCategory || ""}
+                                        onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500"
+                                        required
+                                    />
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
