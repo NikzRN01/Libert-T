@@ -206,6 +206,60 @@ export default function ProfileEditPage() {
         }
     };
 
+    const saveName = async () => {
+        setError(null);
+        setSuccess(null);
+
+        if (!token) {
+            setError("You must be logged in to update your name.");
+            return;
+        }
+
+        const trimmed = name.trim();
+        if (!trimmed) {
+            setError("Name is required.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/basic-info`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ name: trimmed }),
+                }
+            );
+
+            const data: unknown = await response.json();
+            if (!response.ok) {
+                const message = (data as { message?: string })?.message || "Failed to update name";
+                throw new Error(message);
+            }
+
+            const updatedUser = (data as { user?: Partial<StoredUser> })?.user;
+            if (updatedUser?.name) {
+                setAuthUser({
+                    ...(user ?? ({} as StoredUser)),
+                    ...updatedUser,
+                    name: updatedUser.name,
+                } as StoredUser);
+                setApiProfile((prev) => (prev ? { ...prev, name: updatedUser.name as string } : prev));
+                setName(updatedUser.name as string);
+            }
+
+            setSuccess("Name updated.");
+        } catch (e: unknown) {
+            setError(e instanceof Error ? e.message : "Failed to update name");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 py-8">
             <div className="max-w-3xl mx-auto space-y-8">

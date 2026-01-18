@@ -38,30 +38,30 @@ interface CareerPathway {
 }
 
 export default function HealthcareDashboard() {
-        // Quick actions array for dashboard links
-        const quickActions = [
-            {
-                href: "/dashboard/healthcare/skills",
-                icon: <Target className="h-6 w-6 text-blue-600" />,
-                title: "Skills Tracker",
-                copy: "Manage healthcare IT skills, proficiencies, and gaps.",
-                accent: "blue",
-            },
-            {
-                href: "/dashboard/healthcare/certifications",
-                icon: <Award className="h-6 w-6 text-blue-400" />,
-                title: "Certifications",
-                copy: "Track CPHIMS, CAHIMS, and compliance credentials.",
-                accent: "blue",
-            },
-            {
-                href: "/dashboard/healthcare/projects",
-                icon: <Briefcase className="h-6 w-6 text-blue-300" />,
-                title: "Projects",
-                copy: "Showcase healthcare informatics and integration projects.",
-                accent: "blue",
-            },
-        ];
+    // Quick actions array for dashboard links
+    const quickActions = [
+        {
+            href: "/dashboard/healthcare/skills",
+            icon: <Target className="h-6 w-6 text-blue-600" />,
+            title: "Skills Tracker",
+            copy: "Manage healthcare IT skills, proficiencies, and gaps.",
+            accent: "blue",
+        },
+        {
+            href: "/dashboard/healthcare/certifications",
+            icon: <Award className="h-6 w-6 text-blue-400" />,
+            title: "Certifications",
+            copy: "Track CPHIMS, CAHIMS, and compliance credentials.",
+            accent: "blue",
+        },
+        {
+            href: "/dashboard/healthcare/projects",
+            icon: <Briefcase className="h-6 w-6 text-blue-300" />,
+            title: "Projects",
+            copy: "Showcase healthcare informatics and integration projects.",
+            accent: "blue",
+        },
+    ];
     const [stats, setStats] = useState<HealthcareStats | null>(null);
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
@@ -170,15 +170,33 @@ export default function HealthcareDashboard() {
                             <p className="text-slate-600 font-medium">Skills, credentials, and readiness</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <span className="px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-100">
-                            {stats?.competencyScore || 0}% competency
-                        </span>
-                        <span className="px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold border border-blue-200">
-                            {stats?.verifiedSkills || 0} verified skills
-                        </span>
-                    </div>
                 </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid md:grid-cols-3 gap-6">
+                {quickActions.map((item) => (
+                    <Link
+                        key={item.title}
+                        href={item.href}
+                        className="group relative p-8 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                    >
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundImage: "radial-gradient(circle at 80% 0%, rgba(59,130,246,0.12), transparent 45%)" }}></div>
+                        <div className="relative flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-inner">
+                                {item.icon}
+                            </div>
+                            <h3 className="font-bold text-lg text-slate-900 tracking-tight">{item.title}</h3>
+                        </div>
+                        <p className="relative text-sm text-slate-600 leading-relaxed">
+                            {item.copy}
+                        </p>
+                        <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                            Open
+                            <span className="transition-transform group-hover:translate-x-1">→</span>
+                        </span>
+                    </Link>
+                ))}
             </div>
 
             {/* Progress Charts */}
@@ -206,13 +224,15 @@ export default function HealthcareDashboard() {
                     </div>
                 </div>
 
+
+
                 {/* Chart Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Skills Progress */}
                     <div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border border-blue-100">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-semibold text-slate-900">Skills Progress</h3>
-                            <Target className="h-5 w-5 text-blue-600" />
+                            <Target className="h-5 w-5 text-slate-600" />
                         </div>
                         <div className="space-y-3">
                             <div className="flex justify-between items-end">
@@ -391,75 +411,9 @@ export default function HealthcareDashboard() {
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[{
-                    title: "Total Skills",
-                    value: stats?.totalSkills || 0,
-                    hint: `${stats?.verifiedSkills || 0} verified`,
-                    icon: <Target className="h-5 w-5 text-blue-600" />,
-                    color: "blue",
-                }, {
-                    title: "Certifications",
-                    value: stats?.activeCertifications || 0,
-                    hint: "Active credentials",
-                    icon: <Award className="h-5 w-5 text-blue-400" />,
-                    color: "blue",
-                }, {
-                    title: "Projects",
-                    value: stats?.completedProjects || 0,
-                    hint: "Completed",
-                    icon: <Briefcase className="h-5 w-5 text-blue-300" />,
-                    color: "blue",
-                }, {
-                    title: "Competency",
-                    value: `${stats?.competencyScore || 0}%`,
-                    hint: `Avg proficiency ${stats?.averageProficiency || "0"}/5`,
-                    icon: <TrendingUp className="h-5 w-5 text-blue-200" />,
-                    color: "blue",
-                }].map((card) => (
-                    <div
-                        key={card.title}
-                        className="relative p-6 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-                    >
-                        <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.65), rgba(37,99,235,0.65))" }}></div>
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm text-slate-500 font-semibold">{card.title}</span>
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shadow-inner">
-                                {card.icon}
-                            </div>
-                        </div>
-                        <div className="text-4xl font-black text-slate-900 tracking-tight">{card.value}</div>
-                        <p className="text-sm text-slate-600 mt-2 font-medium">{card.hint}</p>
-                    </div>
-                ))}
-            </div>
 
-            {/* Quick Actions */}
-            <div className="grid md:grid-cols-3 gap-6">
-                {quickActions.map((item) => (
-                    <Link
-                        key={item.title}
-                        href={item.href}
-                        className="group relative p-8 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-                    >
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundImage: "radial-gradient(circle at 80% 0%, rgba(59,130,246,0.12), transparent 45%)" }}></div>
-                        <div className="relative flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-inner">
-                                {item.icon}
-                            </div>
-                            <h3 className="font-bold text-lg text-slate-900 tracking-tight">{item.title}</h3>
-                        </div>
-                        <p className="relative text-sm text-slate-600 leading-relaxed">
-                            {item.copy}
-                        </p>
-                        <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
-                            Open
-                            <span className="transition-transform group-hover:translate-x-1">→</span>
-                        </span>
-                    </Link>
-                ))}
-            </div>
+
+
 
             {/* Recommended Courses Section */}
             <div className="space-y-6">

@@ -115,7 +115,12 @@ export default function AgricultureDashboard() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg">
                     <Sprout className="h-8 w-8 text-white" />
                 </div>
-                <div>
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                        <Link href="/dashboard" className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors">
+                            ← Back to Dashboard
+                        </Link>
+                    </div>
                     <h1 className="text-3xl font-bold text-emerald-700">Agriculture</h1>
                     <p className="text-emerald-600 font-medium">
                         Track your agritech skills and innovation readiness

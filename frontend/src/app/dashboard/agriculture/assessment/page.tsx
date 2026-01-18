@@ -128,7 +128,7 @@ export default function AgricultureAssessmentPage() {
             // Fetch projects
             try {
                 const projectRes = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/projects?sector=${sector}`,
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${sector.toLowerCase()}/projects`,
                     { method: "GET", headers }
                 );
 
