@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Calendar, Edit, Phone, Linkedin, Github, Link2 } from "lucide-react";
+import { Mail, MapPin, Calendar, Edit, Phone, Linkedin, Github, Link2, User } from "lucide-react";
 import { setAuthUser, useStoredToken, useStoredUser, type StoredUser } from "@/lib/auth";
 
 type ApiProfileDetails = {
@@ -111,8 +111,8 @@ export default function ProfilePage() {
                                     className="h-20 w-20 rounded-full object-cover border border-slate-200 dark:border-gray-700"
                                 />
                             ) : (
-                                <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                                    {(profile?.name || user?.name)?.charAt(0).toUpperCase()}
+                                <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                                    <User className="h-10 w-10" aria-hidden="true" />
                                 </div>
                             )}
 

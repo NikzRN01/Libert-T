@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { User } from "lucide-react";
 import { useStoredToken, useStoredUser, setAuthUser, type StoredUser } from "@/lib/auth";
 
 type ApiProfileDetails = {
@@ -327,8 +328,8 @@ export default function ProfileEditPage() {
                             className="h-20 w-20 rounded-full object-cover border border-slate-200 dark:border-gray-700"
                         />
                     ) : (
-                        <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                            {user?.name?.charAt(0).toUpperCase()}
+                        <div className="h-20 w-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                            <User className="h-10 w-10" aria-hidden="true" />
                         </div>
                     )}
 
