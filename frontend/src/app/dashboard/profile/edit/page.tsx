@@ -1,9 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User } from "lucide-react";
 import { useStoredToken, useStoredUser, setAuthUser, type StoredUser } from "@/lib/auth";
 
 type ApiProfileDetails = {
@@ -24,7 +23,6 @@ type ApiUserProfile = {
     profile?: ApiProfileDetails | null;
 };
 
-type GetProfileResponse = { profile: ApiUserProfile };
 
 type PatchAvatarResponse = {
     user?: {
@@ -42,7 +40,7 @@ export default function ProfileEditPage() {
     const token = useStoredToken();
     const [apiProfile, setApiProfile] = useState<ApiUserProfile | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewUrl] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -59,61 +57,35 @@ export default function ProfileEditPage() {
 
     // Add missing state for interestsText
     const [interestsText, setInterestsText] = useState("");
-        // Add missing state for portfolio
-        const [portfolio, setPortfolio] = useState("");
+    // Add missing state for portfolio
+    const [portfolio, setPortfolio] = useState<string>("");
 
-    // Fix: define currentAvatarUrl before using it
-    const currentAvatarUrl = apiProfile?.avatar || user?.avatar || null;
-
-    useEffect(() => {
-        if (!selectedFile) {
-            setPreviewUrl(null);
-            return;
-        }
-        const url = URL.createObjectURL(selectedFile);
-        setPreviewUrl(url);
-        return () => URL.revokeObjectURL(url);
-    }, [selectedFile]);
-
-    const effectiveAvatar = useMemo(() => previewUrl || currentAvatarUrl, [previewUrl, currentAvatarUrl]);
-
-    const fetchProfile = useCallback(async () => {
+    // Fetch profile helper
+    const fetchProfile = async () => {
         if (!token) return;
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/profile`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error("Failed to fetch profile");
+            const data = await res.json();
+            setApiProfile(data.profile);
+            setName(data.profile?.name || "");
+            setPhone(data.profile?.profile?.phone || "");
+            setLocation(data.profile?.profile?.location || "");
+            setBio(data.profile?.profile?.bio || "");
+            setLinkedIn(data.profile?.profile?.linkedIn || "");
+            setGithub(data.profile?.profile?.github || "");
+            setPortfolio(data.profile?.profile?.portfolio || "");
+        } catch {
+            // ignore for now
+        }
+    };
 
-        if (!response.ok) return;
-
-        const data: unknown = await response.json();
-        const payload = data as GetProfileResponse;
-        setApiProfile(payload.profile);
-
-        setName(payload.profile.name || "");
-        setLocation(payload.profile.profile?.location || "");
-        setBio(payload.profile.profile?.bio || "");
-        setPhone(payload.profile.profile?.phone || "");
-        setLinkedIn(payload.profile.profile?.linkedIn || "");
-        setPortfolio(payload.profile.profile?.portfolio || "");
-
-        const interests = payload.profile.profile?.interests || [];
-        setInterestsText(interests.join(", "));
-
-        const sectors = payload.profile.profile?.targetSectors || [];
-        setSectorAgriculture(sectors.includes("AGRICULTURE"));
-        setSectorUrban(sectors.includes("URBAN"));
-
-    }, [token]);
-    useEffect(() => {
-        fetchProfile().catch(() => {
-            // ignore
-        });
-    }, [fetchProfile]);
+    // effectiveAvatar helper
+    const effectiveAvatar = useMemo(() => {
+        return previewUrl || apiProfile?.avatar || user?.avatar || null;
+    }, [previewUrl, apiProfile, user]);
 
     const handleUpload = async () => {
         setError(null);
@@ -164,67 +136,13 @@ export default function ProfileEditPage() {
 
             // Keep page state in sync
             setApiProfile((prev) => (prev ? { ...prev, avatar: apiUser.avatar ?? null } : prev));
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to update avatar");
+        } catch {
+            setError("Failed to update avatar");
         } finally {
             setIsSaving(false);
         }
     };
 
-    const saveName = async () => {
-        setSuccess(null);
-
-        if (!token) {
-            setError("You must be logged in to update your profile.");
-            return;
-        }
-
-        const trimmed = name.trim();
-        if (!trimmed) {
-            setError("Name cannot be empty.");
-        }
-
-        setIsSaving(true);
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/basic-info`,
-                {
-                    method: "PATCH",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ name: trimmed }),
-                }
-            );
-            const data: unknown = await response.json();
-            if (!response.ok) {
-                const message = (data as { message?: string })?.message || "Failed to update name";
-                throw new Error(message);
-            }
-
-            const apiUser = (data as { user?: { id: string; name: string; email: string; avatar?: string | null; role?: string; createdAt?: string } })?.user;
-            if (apiUser) {
-                const nextUser: StoredUser = {
-                    ...(user ?? { name: apiUser.name }),
-                    id: apiUser.id,
-                    name: apiUser.name,
-                    email: apiUser.email,
-                    role: apiUser.role ?? user?.role,
-                    createdAt: apiUser.createdAt ?? user?.createdAt,
-                    avatar: apiUser.avatar ?? user?.avatar,
-                };
-                setAuthUser(nextUser);
-                setApiProfile((prev) => (prev ? { ...prev, name: apiUser.name } : prev));
-            }
-
-            setSuccess("Name updated.");
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to update name");
-        } finally {
-            setIsSaving(false);
-        }
-    };
 
     const toggleSector = (sector: "HEALTHCARE" | "AGRICULTURE" | "URBAN") => {
         if (sector === "HEALTHCARE") setSectorHealthcare((v) => !v);
@@ -338,8 +256,8 @@ export default function ProfileEditPage() {
                             </button>
                         </div>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Supported: images up to 5MB.</p>
                 </div>
+            </div>
 
                 {/* Basic Info Card */}
                 <div className="bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-lg p-6 space-y-4 border border-slate-200/60">

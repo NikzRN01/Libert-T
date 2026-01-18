@@ -72,7 +72,6 @@ export default function UrbanDashboard() {
     const [loading, setLoading] = useState(true);
     const [skills, setSkills] = useState<UrbanSkill[]>([]);
     const [timeRange, setTimeRange] = useState<7 | 14 | 30>(7);
-    const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
     useEffect(() => {
         fetchUrbanData();
@@ -178,8 +177,8 @@ export default function UrbanDashboard() {
                     <Building2 className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Urban Technology</h1>
-                    <p className="text-muted-foreground font-medium">
+                    <h1 className="text-3xl font-bold text-cyan-700">Urban Technology</h1>
+                    <p className="text-cyan-600 font-medium">
                         Track your smart city skills and transformation readiness
                     </p>
                 </div>
@@ -397,48 +396,48 @@ export default function UrbanDashboard() {
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Total Skills</span>
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <Target className="h-5 w-5 text-accent" />
+                        <span className="text-sm text-cyan-700 font-semibold">Total Skills</span>
+                        <div className="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center">
+                            <Target className="h-5 w-5 text-cyan-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.totalSkills || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Urban tech competencies</p>
+                    <div className="text-4xl font-bold text-cyan-900">{stats?.totalSkills || 0}</div>
+                    <p className="text-sm text-cyan-600 mt-2 font-medium">Urban tech competencies</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Certifications</span>
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <Award className="h-5 w-5 text-primary" />
+                        <span className="text-sm text-cyan-700 font-semibold">Certifications</span>
+                        <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+                            <Award className="h-5 w-5 text-cyan-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.certifications || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Active credentials</p>
+                    <div className="text-4xl font-bold text-cyan-900">{stats?.certifications || 0}</div>
+                    <p className="text-sm text-cyan-600 mt-2 font-medium">Active credentials</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Projects</span>
-                        <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                            <Briefcase className="h-5 w-5 text-secondary" />
+                        <span className="text-sm text-cyan-700 font-semibold">Projects</span>
+                        <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+                            <Briefcase className="h-5 w-5 text-cyan-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.completedProjects || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Completed</p>
+                    <div className="text-4xl font-bold text-cyan-900">{stats?.completedProjects || 0}</div>
+                    <p className="text-sm text-cyan-600 mt-2 font-medium">Completed</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Readiness Score</span>
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <TrendingUp className="h-5 w-5 text-accent" />
+                        <span className="text-sm text-cyan-700 font-semibold">Readiness Score</span>
+                        <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+                            <TrendingUp className="h-5 w-5 text-cyan-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.readinessScore || 0}%</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">
+                    <div className="text-4xl font-bold text-cyan-900">{stats?.readinessScore || 0}%</div>
+                    <p className="text-sm text-cyan-600 mt-2 font-medium">
                         Avg proficiency: {stats?.averageProficiency || "0"}/5
                     </p>
                 </div>
@@ -448,45 +447,45 @@ export default function UrbanDashboard() {
             <div className="grid md:grid-cols-3 gap-6">
                 <Link
                     href="/dashboard/urban/skills"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-2xl hover:border-cyan-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Target className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Skills Tracker</h3>
+                        <h3 className="font-bold text-lg text-cyan-900">Skills Tracker</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-cyan-700 leading-relaxed">
                         Manage your urban tech skills and proficiency levels
                     </p>
                 </Link>
 
                 <Link
                     href="/dashboard/urban/certifications"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-2xl hover:border-cyan-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Award className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Certifications</h3>
+                        <h3 className="font-bold text-lg text-cyan-900">Certifications</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-cyan-700 leading-relaxed">
                         Track GIS, smart city, and urban planning certs
                     </p>
                 </Link>
 
                 <Link
                     href="/dashboard/urban/projects"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-secondary/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-cyan-200 bg-white/80 hover:shadow-2xl hover:border-cyan-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-300 to-cyan-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Briefcase className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Projects</h3>
+                        <h3 className="font-bold text-lg text-cyan-900">Projects</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-cyan-700 leading-relaxed">
                         Showcase your urban technology projects
                     </p>
                 </Link>
@@ -495,7 +494,7 @@ export default function UrbanDashboard() {
             {/* Recommended Courses */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Recommended Courses</h2>
+                    <h2 className="text-2xl font-bold text-cyan-800">Recommended Courses</h2>
                 </div>
 
                 {pathways.length > 0 && pathways.some(p => p.courses && p.courses.length > 0) ? (
@@ -506,26 +505,28 @@ export default function UrbanDashboard() {
                                 index === self.findIndex((c) => c.id === course.id)
                             );
                             return uniqueCourses.slice(0, 9).map((course) => (
-                                <CourseCard key={course.id} course={course} />
+                                <div key={course.id} className="rounded-xl border-2 border-cyan-200 bg-white/90 shadow hover:shadow-lg transition-all">
+                                    <CourseCard course={course} />
+                                </div>
                             ));
                         })()}
                     </div>
                 ) : (
-                    <div className="p-8 rounded-xl border border-border bg-card text-center">
-                        <p className="text-muted-foreground">No courses available. Add more skills to get personalized recommendations.</p>
+                    <div className="p-8 rounded-xl border-2 border-cyan-200 bg-white/90 text-center">
+                        <p className="text-cyan-700">No courses available. Add more skills to get personalized recommendations.</p>
                     </div>
                 )}
             </div>
 
             {/* Skills Grid */}
             {filteredSkills.length === 0 ? (
-                <div className="bg-card rounded-2xl shadow-xl p-16 text-center border-2 border-dashed border-border">
-                    <p className="text-muted-foreground mb-6 text-lg">
+                <div className="bg-white/80 rounded-2xl shadow-xl p-16 text-center border-2 border-dashed border-cyan-400">
+                    <p className="text-cyan-700 mb-6 text-lg">
                         You haven&apos;t added any skills yet
                     </p>
                     <Link
                         href="/dashboard/urban/skills"
-                        className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                        className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                     >
                         Add your first skill →
                     </Link>
@@ -613,31 +614,31 @@ export default function UrbanDashboard() {
 
             {/* Stats */}
             <div className="bg-card rounded-2xl shadow-lg p-8 border-2 border-border">
-                <h2 className="text-xl font-bold text-foreground mb-6">
+                <h2 className="text-xl font-bold text-cyan-900 mb-6">
                     Skills Overview
                 </h2>
                 <div className="grid grid-cols-3 gap-6">
-                    <div className="text-center p-4 rounded-xl bg-primary/10 border-2 border-primary/20">
-                        <div className="text-4xl font-bold text-primary">
+                    <div className="text-center p-4 rounded-xl bg-cyan-50 border-2 border-cyan-200">
+                        <div className="text-4xl font-bold text-cyan-600">
                             {skills.length}
                         </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                        <div className="text-sm text-cyan-700 font-semibold mt-2">
                             Total Skills
                         </div>
                     </div>
-                    <div className="text-center p-4 rounded-xl bg-secondary/10 border-2 border-secondary/20">
-                        <div className="text-4xl font-bold text-secondary">
+                    <div className="text-center p-4 rounded-xl bg-cyan-50 border-2 border-cyan-200">
+                        <div className="text-4xl font-bold text-cyan-600">
                             {skills.filter((s) => s.verified).length}
                         </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                        <div className="text-sm text-cyan-700 font-semibold mt-2">
                             Verified
                         </div>
                     </div>
-                    <div className="text-center p-4 rounded-xl bg-accent/10 border-2 border-accent/20">
-                        <div className="text-4xl font-bold text-accent">
+                    <div className="text-center p-4 rounded-xl bg-cyan-50 border-2 border-cyan-200">
+                        <div className="text-4xl font-bold text-cyan-600">
                             {skills.filter((s) => s.proficiencyLevel >= 4).length}
                         </div>
-                        <div className="text-sm text-muted-foreground font-semibold mt-2">
+                        <div className="text-sm text-cyan-700 font-semibold mt-2">
                             Expert Level
                         </div>
                     </div>
@@ -646,16 +647,16 @@ export default function UrbanDashboard() {
 
             {/* Competency Assessment */}
             <div className="p-6 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-lg">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">Competency Assessment</h2>
+                <h2 className="text-xl font-bold text-cyan-900 mb-4">Competency Assessment</h2>
                 <div className="space-y-4">
                     <div>
-                        <div className="flex items-center justify-between mb-2 text-sm font-semibold text-slate-600">
+                        <div className="flex items-center justify-between mb-2 text-sm font-semibold text-cyan-700">
                             <span>Overall Competency</span>
                             <span>{stats?.readinessScore || 0}%</span>
                         </div>
-                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="w-full h-2.5 bg-cyan-100 rounded-full overflow-hidden">
                             <div
-                                className="h-full rounded-full bg-gradient-to-r from-cyan-600 via-teal-500 to-emerald-500 transition-all"
+                                className="h-full rounded-full bg-gradient-to-r from-cyan-600 via-cyan-400 to-cyan-300 transition-all"
                                 style={{ width: `${stats?.readinessScore || 0}%` }}
                             />
                         </div>

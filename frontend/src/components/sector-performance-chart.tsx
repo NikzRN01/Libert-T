@@ -1,6 +1,8 @@
+
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import type { LabelProps } from 'recharts';
 
 interface SectorData {
     sector: string;
@@ -14,6 +16,7 @@ interface SectorPerformanceChartProps {
     height?: number;
 }
 
+
 // Orange color palette with different shades
 const ORANGE_PALETTE = {
     light: '#FED7AA',      // Light orange
@@ -21,45 +24,47 @@ const ORANGE_PALETTE = {
     dark: '#EA580C',       // Dark orange
 };
 
-// Custom tooltip component
-const CustomTooltip = ({ active, payload, label }: any) => {
+
+type CustomTooltipPayloadItem = {
+    color?: string;
+    name?: string;
+    value?: unknown;
+};
+
+type CustomTooltipProps = {
+    active?: boolean;
+    payload?: CustomTooltipPayloadItem[];
+    label?: string;
+};
+
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white/95 backdrop-blur-sm border border-orange-200 rounded-lg shadow-lg p-4 min-w-[220px]">
                 <p className="font-semibold text-slate-900 text-sm mb-2">{label}</p>
-                {payload.map((entry: any, index: number) => (
+                {payload.map((entry, index) => (
                     <p key={index} className="text-xs font-medium text-slate-700 mb-1">
-                        <span className="inline-block w-3 h-3 rounded mr-2" style={{ backgroundColor: entry.color }}></span>
-                        {entry.name}: <span className="font-bold text-orange-600">{entry.value}%</span>
+                        <span
+                            className="inline-block w-3 h-3 rounded mr-2"
+                            style={{ backgroundColor: entry.color ?? ORANGE_PALETTE.medium }}
+                        />
+                        {entry.name ?? "Value"}: <span className="font-bold text-orange-600">{String(entry.value)}%</span>
                     </p>
                 ))}
             </div>
         );
     }
     return null;
-};
-
-// Custom legend component
-const CustomLegend = (props: any) => {
-    const { payload } = props;
-    return (
-        <div className="flex flex-wrap justify-center gap-6 mt-6 pb-4">
-            {payload.map((entry: any, index: number) => (
-                <div key={index} className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: entry.color }}></div>
-                    <span className="text-sm font-medium text-slate-700">{entry.value}</span>
-                </div>
-            ))}
-        </div>
-    );
-};
+}
 
 export function SectorPerformanceChart({ data, height = 450 }: SectorPerformanceChartProps) {
     // Centered Y-axis label renderer
-    const renderYAxisLabel = ({ viewBox }: any) => {
-        const { x, y, width, height } = viewBox || {};
-        const cx = (x ?? 0) + 24; // nudge inside the chart for visibility
-        const cy = (y ?? 0) + (height ?? 0) / 2;
+    const renderYAxisLabel = ({ viewBox }: LabelProps) => {
+        if (!viewBox || typeof viewBox !== 'object') return null;
+        const { x = 0, y = 0, height = 0 } = viewBox as { x?: number; y?: number; height?: number; width?: number };
+        const cx = x + 24; // nudge inside the chart for visibility
+        const cy = y + height / 2;
         return (
             <text
                 x={cx}
@@ -135,7 +140,7 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                                 height={40}
                             />
                             <YAxis
-                                label={{ content: renderYAxisLabel }}
+                                label={renderYAxisLabel}
                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                 axisLine={{ stroke: '#fed7aa', strokeWidth: 1 }}
                                 tickLine={false}
@@ -146,6 +151,7 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                                 content={<CustomTooltip />}
                                 cursor={{ fill: 'rgba(249, 115, 22, 0.08)' }}
                             />
+                            <Legend wrapperStyle={{ paddingTop: 16 }} />
 
                             <Bar
                                 dataKey="careerReadiness"
@@ -171,13 +177,6 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-
-                {/* Legend */}
-                <CustomLegend payload={[
-                    { value: 'Career Readiness', color: ORANGE_PALETTE.light },
-                    { value: 'Industry Alignment', color: ORANGE_PALETTE.medium },
-                    { value: 'Overall Score', color: ORANGE_PALETTE.dark }
-                ]} />
             </div>
         </div>
     );

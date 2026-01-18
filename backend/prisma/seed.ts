@@ -31,37 +31,60 @@ async function main() {
             email: 'Employee@skillxintell.com',
             password: 'Employee@123',
             name: 'Employee Demo',
-            role: 'Employee',
+            role: 'EMPLOYEE',
         },
     ];
 
     for (const userData of testUsers) {
-        const existingUser = await prisma.user.findUnique({
-            where: { email: userData.email },
-        });
+        const passwordHash = await bcrypt.hash(userData.password, 10);
 
-        if (!existingUser) {
-            const passwordHash = await bcrypt.hash(userData.password, 10);
-            
-            const user = await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    passwordHash,
-                    role: userData.role,
-                    isActive: true,
-                    profile: {
-                        create: {
-                            bio: `This is a demo ${userData.role.toLowerCase()} account for testing SkillXIntell.`,
-                        },
+        const user = await prisma.user.upsert({
+            where: { email: userData.email },
+            create: {
+                email: userData.email,
+                name: userData.name,
+                passwordHash,
+                role: userData.role,
+                isActive: true,
+                profile: {
+                    create: {
+                        bio: `This is a demo ${userData.role.toLowerCase()} account for testing SkillXIntell.`,
+                        interests: '[]',
+                        targetSectors: '[]',
                     },
                 },
-            });
+            },
+            update: {
+                name: userData.name,
+                passwordHash,
+                role: userData.role,
+                isActive: true,
+            },
+        });
 
-            console.log(`✅ Created user: ${user.email}`);
-        } else {
-            console.log(`ℹ️  User already exists: ${userData.email}`);
+        // Auto-create an approved mentor profile for the demo educator
+        if (userData.role === 'EDUCATOR') {
+            await prisma.mentorProfile.upsert({
+                where: { userId: user.id },
+                create: {
+                    userId: user.id,
+                    sectors: JSON.stringify(['HEALTHCARE', 'AGRICULTURE', 'URBAN']),
+                    organization: 'SkillXIntell Demo Org',
+                    title: 'Educator / Mentor',
+                    bio: 'Demo mentor profile for verification workflows.',
+                    contactEmail: user.email,
+                    isApproved: true,
+                    approvedAt: new Date(),
+                },
+                update: {
+                    sectors: JSON.stringify(['HEALTHCARE', 'AGRICULTURE', 'URBAN']),
+                    isApproved: true,
+                    approvedAt: new Date(),
+                },
+            });
         }
+
+        console.log(`✅ Upserted user: ${user.email}`);
     }
 
     console.log('\n✅ Seed data created successfully!');

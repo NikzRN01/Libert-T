@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Brain, User, Award, LayoutDashboard, LogOut, Briefcase, Target } from "lucide-react";
+import { Brain, User, Award, LayoutDashboard, LogOut, Briefcase, Target, ShieldCheck } from "lucide-react";
 import { clearAuthStorage, useStoredToken, useStoredUser } from "@/lib/auth";
 
 export default function DashboardLayout({
@@ -135,6 +135,24 @@ export default function DashboardLayout({
                                     <User className={`h-5 w-5 ${pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "text-blue-600" : "text-slate-600"}`} />
                                     <span>Profile</span>
                                 </Link>
+
+                                {(user.role === "EDUCATOR" || user.role === "ADMIN") && (
+                                    <Link
+                                        href="/dashboard/verification"
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold ${
+                                            pathname === "/dashboard/verification"
+                                                ? "text-slate-900 bg-blue-50 border-l-4 border-l-blue-600"
+                                                : "text-slate-700 hover:bg-slate-50 border-l-4 border-l-transparent"
+                                        }`}
+                                    >
+                                        <ShieldCheck
+                                            className={`h-5 w-5 ${
+                                                pathname === "/dashboard/verification" ? "text-blue-600" : "text-slate-600"
+                                            }`}
+                                        />
+                                        <span>Verification</span>
+                                    </Link>
+                                )}
                             </nav>
                         </div>
                     </aside>

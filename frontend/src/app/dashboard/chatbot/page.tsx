@@ -128,25 +128,38 @@ export default function ChatbotPage() {
                 </div>
 
                 {/* Messages Container */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
                     {messages.map((message) => (
                         <div
                             key={message.id}
-                            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} gap-3`}
                         >
+                            {message.role === "assistant" && (
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <MessageCircle className="h-4 w-4 text-white" />
+                                </div>
+                            )}
                             <div
-                                className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
+                                className={`max-w-sm md:max-w-md lg:max-w-xl break-words ${
                                     message.role === "user"
-                                        ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-br-none"
-                                        : "bg-slate-100 text-slate-900 rounded-bl-none border border-slate-200/60"
+                                        ? "flex flex-col items-end"
+                                        : "flex flex-col items-start"
                                 }`}
                             >
-                                <p className="text-sm leading-relaxed">{message.content}</p>
-                                <p
-                                    className={`text-xs mt-1 ${
+                                <div
+                                    className={`px-5 py-4 rounded-2xl ${
                                         message.role === "user"
-                                            ? "text-blue-100"
-                                            : "text-slate-500"
+                                            ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-br-none shadow-md"
+                                            : "bg-white text-slate-900 rounded-bl-none border border-slate-200/80 shadow-sm"
+                                    }`}
+                                >
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                                </div>
+                                <p
+                                    className={`text-xs mt-2 px-1 ${
+                                        message.role === "user"
+                                            ? "text-slate-500"
+                                            : "text-slate-400"
                                     }`}
                                 >
                                     {message.timestamp.toLocaleTimeString([], {
@@ -155,11 +168,19 @@ export default function ChatbotPage() {
                                     })}
                                 </p>
                             </div>
+                            {message.role === "user" && (
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span className="text-xs text-white font-bold">You</span>
+                                </div>
+                            )}
                         </div>
                     ))}
                     {loading && (
-                        <div className="flex justify-start">
-                            <div className="bg-slate-100 text-slate-900 px-4 py-3 rounded-2xl rounded-bl-none border border-slate-200/60">
+                        <div className="flex justify-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center flex-shrink-0 mt-1">
+                                <MessageCircle className="h-4 w-4 text-white" />
+                            </div>
+                            <div className="bg-white text-slate-900 px-5 py-4 rounded-2xl rounded-bl-none border border-slate-200/80 shadow-sm">
                                 <div className="flex gap-2">
                                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
                                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>

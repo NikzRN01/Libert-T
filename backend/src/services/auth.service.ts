@@ -16,7 +16,16 @@ export interface RegisterData {
     email: string;
     password: string;
     name: string;
-    role?: 'STUDENT' | 'EDUCATOR' | 'Employee' | 'ADMIN';
+    role?: 'STUDENT' | 'EDUCATOR' | 'EMPLOYEE' | 'ADMIN';
+}
+
+const allowedRoles = ['STUDENT', 'EDUCATOR', 'EMPLOYEE', 'ADMIN'] as const;
+type AllowedRole = (typeof allowedRoles)[number];
+
+function normalizeRole(input: unknown): AllowedRole {
+    if (typeof input !== 'string') return 'STUDENT';
+    const upper = input.toUpperCase();
+    return (allowedRoles as readonly string[]).includes(upper) ? (upper as AllowedRole) : 'STUDENT';
 }
 
 export interface LoginData {
@@ -62,7 +71,8 @@ export function verifyToken(token: string): TokenPayload {
  * Create a new user with profile in a transaction
  */
 export async function createUserWithProfile(data: RegisterData) {
-    const { email, password, name, role = 'STUDENT' } = data;
+    const { email, password, name } = data;
+    const role = normalizeRole(data.role);
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
