@@ -97,7 +97,25 @@ export default function ProfilePage() {
         <div className="space-y-8">
             {/* Profile Header */}
             <div className="relative overflow-hidden rounded-2xl border border-blue-200/80 bg-white/80 shadow-2xl backdrop-blur-xl">
-                <div className="p-8">
+                {/* Lively background overlays */}
+                <div className="absolute inset-0 pointer-events-none" aria-hidden>
+                    <div
+                        className="absolute inset-0 opacity-70"
+                        style={{
+                            backgroundImage:
+                                "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.12), transparent 38%), radial-gradient(circle at 80% 0%, rgba(168,85,247,0.12), transparent 36%), radial-gradient(circle at 45% 110%, rgba(16,185,129,0.14), transparent 40%)",
+                        }}
+                    ></div>
+                    <div
+                        className="absolute inset-0 opacity-35"
+                        style={{
+                            backgroundImage:
+                                "linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(180deg, rgba(15,23,42,0.05) 1px, transparent 1px)",
+                            backgroundSize: "22px 22px",
+                        }}
+                    ></div>
+                </div>
+                <div className="relative p-8">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                             {/* Avatar */}
@@ -140,8 +158,18 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Details */}
-            <div className="rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-xl shadow-xl">
-                <div className="p-8">
+            <div className="relative rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-xl shadow-xl overflow-hidden">
+                {/* Lively background overlays */}
+                <div className="absolute inset-0 pointer-events-none" aria-hidden>
+                    <div
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                            backgroundImage:
+                                "radial-gradient(circle at 80% 80%, rgba(168,85,247,0.10), transparent 45%)",
+                        }}
+                    ></div>
+                </div>
+                <div className="relative p-8">
                     <h2 className="text-2xl font-bold text-slate-900 mb-6">
                         Profile Information
                     </h2>
@@ -275,7 +303,8 @@ export default function ProfilePage() {
             {/* Stats */}
             {profile?.stats && (
                 <div className="grid grid-cols-3 gap-6">
-                    <div className="rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                    <div className="relative rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                        <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.65), rgba(139,92,246,0.65))" }}></div>
                         <div className="text-4xl font-black text-blue-600">
                             {profile.stats.totalSkills || 0}
                         </div>
@@ -283,7 +312,8 @@ export default function ProfilePage() {
                             Skills
                         </div>
                     </div>
-                    <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                    <div className="relative rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                        <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, rgba(16,185,129,0.65), rgba(34,197,94,0.65))" }}></div>
                         <div className="text-4xl font-black text-emerald-600">
                             {profile.stats.totalProjects || 0}
                         </div>
@@ -291,7 +321,8 @@ export default function ProfilePage() {
                             Projects
                         </div>
                     </div>
-                    <div className="rounded-2xl border border-purple-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                    <div className="relative rounded-2xl border border-purple-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                        <div className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, rgba(168,85,247,0.65), rgba(139,92,246,0.65))" }}></div>
                         <div className="text-4xl font-black text-purple-600">
                             {profile.stats.totalCertifications || 0}
                         </div>
