@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Search, Trash2, Pencil, X } from "lucide-react";
 
@@ -254,10 +255,18 @@ export default function UrbanSkillsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-foreground">
-                    Urban Skills
-                </h1>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/dashboard/urban"
+                        className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                    >
+                        ← Back to Urban
+                    </Link>
+                    <h1 className="text-3xl font-bold text-foreground">
+                        Urban Skills
+                    </h1>
+                </div>
                 {skills.length > 0 && (
                     <button
                         onClick={() => setShowAddModal(true)}

@@ -162,7 +162,8 @@ export default function HealthcareDashboard() {
                         <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200/60">
                             <Activity className="h-8 w-8" />
                         </div>
-                        <div>   
+                        <div>
+                            <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Sector</p>
                             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 leading-tight">
                                 Healthcare Informatics
                             </h1>

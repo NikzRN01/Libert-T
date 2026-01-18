@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Calendar, Trash2, Github, Globe, X, Users, Search, Pencil } from "lucide-react";
 
@@ -326,8 +327,16 @@ export default function HealthcareProjectsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-foreground">Healthcare Projects</h1>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/dashboard/healthcare"
+                        className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                    >
+                        ← Back to Healthcare
+                    </Link>
+                    <h1 className="text-3xl font-bold text-foreground">Healthcare Projects</h1>
+                </div>
                 {projects.length > 0 && (
                     <button
                         onClick={() => setShowAddModal(true)}

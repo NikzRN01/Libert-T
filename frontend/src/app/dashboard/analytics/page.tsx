@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
     Activity,
@@ -208,7 +208,7 @@ export default function AnalyticsPage() {
 
     const overall = data?.overall;
 
-    const recsBySector: Array<{ sector: Sector; icon: JSX.Element; recs: Recommendation[] }> = [
+    const recsBySector: Array<{ sector: Sector; icon: React.ReactElement; recs: Recommendation[] }> = [
         { sector: "HEALTHCARE", icon: <Activity className="w-5 h-5 text-orange-600" />, recs: healthcareRecs },
         { sector: "AGRICULTURE", icon: <Sprout className="w-5 h-5 text-orange-600" />, recs: agricultureRecs },
         { sector: "URBAN", icon: <Building2 className="w-5 h-5 text-orange-600" />, recs: urbanRecs },
@@ -224,10 +224,10 @@ export default function AnalyticsPage() {
         <div className="space-y-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                         <BarChart3 className="w-6 h-6 text-orange-600" /> Analytics &amp; Insights
                     </h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="text-sm text-slate-600">
                         Cross-sector performance overview and AI-powered recommendations.
                     </p>
                 </div>
@@ -257,42 +257,42 @@ export default function AnalyticsPage() {
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-4">
-                <div className="rounded-2xl border border-orange-200/70 bg-white/80 dark:bg-gray-900/60 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <div className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60 transition-shadow hover:shadow-xl hover:shadow-orange-300/80">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                         <Target className="w-4 h-4 text-orange-600" /> Total Skills
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{overall?.totalSkills ?? 0}</div>
+                    <div className="mt-2 text-2xl font-bold text-slate-900">{overall?.totalSkills ?? 0}</div>
                 </div>
-                <div className="rounded-2xl border border-orange-200/70 bg-white/80 dark:bg-gray-900/60 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <div className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60 transition-shadow hover:shadow-xl hover:shadow-orange-300/80">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                         <Award className="w-4 h-4 text-orange-600" /> Certifications
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
+                    <div className="mt-2 text-2xl font-bold text-slate-900">
                         {overall?.totalCertifications ?? 0}
                     </div>
                 </div>
-                <div className="rounded-2xl border border-orange-200/70 bg-white/80 dark:bg-gray-900/60 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <div className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60 transition-shadow hover:shadow-xl hover:shadow-orange-300/80">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                         <Briefcase className="w-4 h-4 text-orange-600" /> Projects
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{overall?.totalProjects ?? 0}</div>
+                    <div className="mt-2 text-2xl font-bold text-slate-900">{overall?.totalProjects ?? 0}</div>
                 </div>
-                <div className="rounded-2xl border border-orange-200/70 bg-white/80 dark:bg-gray-900/60 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <div className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60 transition-shadow hover:shadow-xl hover:shadow-orange-300/80">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                         <TrendingUp className="w-4 h-4 text-orange-600" /> Avg Readiness
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{overall?.averageReadiness ?? 0}%</div>
+                    <div className="mt-2 text-2xl font-bold text-slate-900">{overall?.averageReadiness ?? 0}%</div>
                 </div>
             </div>
 
             <SectorPerformanceChart data={chartData} />
 
-            <div className="rounded-2xl border border-orange-200/60 bg-white/80 dark:bg-gray-900/60 p-6">
+            <div className="rounded-2xl border border-orange-200/60 bg-orange-50 p-6">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <Building2 className="w-5 h-5 text-orange-600" /> Sector Breakdown
                     </h2>
-                    <div className="text-xs text-gray-600 dark:text-gray-300">
+                    <div className="text-xs text-slate-600">
                         Updated {formatCalculatedAt(data?.bySector.HEALTHCARE?.calculatedAt || data?.bySector.AGRICULTURE?.calculatedAt || data?.bySector.URBAN?.calculatedAt)}
                     </div>
                 </div>
@@ -307,19 +307,19 @@ export default function AnalyticsPage() {
                         return (
                             <div
                                 key={sector}
-                                className="rounded-2xl border border-orange-200/50 bg-white dark:bg-gray-950 p-4"
+                                className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60"
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        <div className="text-sm font-semibold text-slate-900">
                                             {sectorLabel[sector]}
                                         </div>
-                                        <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                                        <div className="mt-1 text-xs text-slate-600">
                                             Calculated: {formatCalculatedAt(row?.calculatedAt)}
                                         </div>
                                     </div>
                                     <div
-                                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${scoreChipClass(overallScore)}`}
+                                        className="shrink-0 rounded-full px-3 py-1 text-xs font-bold bg-orange-100 text-orange-900 border border-orange-200"
                                         title="Composite score across readiness + alignment"
                                     >
                                         {overallScore}%
@@ -329,12 +329,12 @@ export default function AnalyticsPage() {
                                 <div className="mt-4 space-y-3">
                                     <div>
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="font-semibold text-gray-700 dark:text-gray-200">
+                                            <span className="font-semibold text-slate-900">
                                                 Career readiness
                                             </span>
-                                            <span className="text-gray-600 dark:text-gray-300">{careerReadiness}%</span>
+                                            <span className="text-slate-600">{careerReadiness}%</span>
                                         </div>
-                                        <div className="mt-1 h-2 rounded-full bg-orange-100 dark:bg-gray-800 overflow-hidden">
+                                        <div className="mt-1 h-2 rounded-full bg-orange-100 overflow-hidden">
                                             <div
                                                 className="h-full bg-orange-600"
                                                 style={{ width: `${careerReadiness}%` }}
@@ -344,12 +344,12 @@ export default function AnalyticsPage() {
 
                                     <div>
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="font-semibold text-gray-700 dark:text-gray-200">
+                                            <span className="font-semibold text-slate-900">
                                                 Industry alignment
                                             </span>
-                                            <span className="text-gray-600 dark:text-gray-300">{industryAlignment}%</span>
+                                            <span className="text-slate-600">{industryAlignment}%</span>
                                         </div>
-                                        <div className="mt-1 h-2 rounded-full bg-orange-100 dark:bg-gray-800 overflow-hidden">
+                                        <div className="mt-1 h-2 rounded-full bg-orange-100 overflow-hidden">
                                             <div
                                                 className="h-full bg-orange-500"
                                                 style={{ width: `${industryAlignment}%` }}
@@ -359,7 +359,7 @@ export default function AnalyticsPage() {
                                 </div>
 
                                 <div className="mt-4 flex items-center justify-between gap-2">
-                                    <div className="text-xs text-gray-600 dark:text-gray-300">
+                                    <div className="text-xs text-slate-600">
                                         {row
                                             ? overallScore >= 75
                                                 ? "Strong performance — keep building depth."
@@ -370,7 +370,7 @@ export default function AnalyticsPage() {
                                     </div>
                                     <Link
                                         href={sectorRoutes[sector]}
-                                        className="inline-flex items-center gap-1 rounded-xl border border-orange-200 px-3 py-2 text-xs font-semibold text-orange-700 hover:bg-orange-50 dark:text-orange-300 dark:hover:bg-gray-900"
+                                        className="inline-flex items-center gap-1 rounded-xl border border-orange-200 px-3 py-2 text-xs font-semibold text-orange-700 bg-orange-50 hover:bg-orange-100 hover:text-orange-900"
                                     >
                                         View
                                         <TrendingUp className="w-4 h-4" />
@@ -382,9 +382,9 @@ export default function AnalyticsPage() {
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-orange-200/60 bg-white/80 dark:bg-gray-900/60 p-6 space-y-4">
+            <div className="rounded-2xl border border-orange-200/60 bg-blue-50 p-6 space-y-4">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <Brain className="w-5 h-5 text-orange-600" /> AI-Powered Recommendations
                     </h2>
                     <Link
@@ -397,19 +397,19 @@ export default function AnalyticsPage() {
 
                 <div className="grid gap-4 md:grid-cols-3">
                     {recsBySector.map(({ sector, icon, recs }) => (
-                        <div key={sector} className="rounded-2xl border border-orange-200/50 bg-white dark:bg-gray-950 p-4">
+                        <div key={sector} className="rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-lg shadow-orange-200/60 transition-shadow hover:shadow-xl hover:shadow-orange-300/80">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
+                                <div className="flex items-center gap-2 font-semibold text-slate-900">
                                     {icon} {sectorLabel[sector]}
                                 </div>
-                                {loadingRecs[sector] ? <div className="text-xs text-gray-500">Loading…</div> : null}
+                                {loadingRecs[sector] ? <div className="text-xs text-slate-500">Loading…</div> : null}
                             </div>
 
                             <div className="mt-3 space-y-3">
                                 {recs.length ? (
                                     recs.slice(0, 4).map((r, idx) => (
-                                        <div key={idx} className="rounded-xl border border-orange-100/60 bg-orange-50/40 p-3">
-                                            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                                        <div key={idx} className="rounded-xl border border-orange-100 bg-orange-100 p-3">
+                                            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                                                 {r.type === "news" ? (
                                                     <Newspaper className="w-4 h-4 text-orange-600" />
                                                 ) : (
@@ -417,7 +417,7 @@ export default function AnalyticsPage() {
                                                 )}
                                                 {r.title}
                                             </div>
-                                            <p className="mt-1 text-xs text-gray-700">{r.description}</p>
+                                            <p className="mt-1 text-xs text-slate-700">{r.description}</p>
                                             {r.url ? (
                                                 <a
                                                     href={r.url}
@@ -431,7 +431,7 @@ export default function AnalyticsPage() {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">No recommendations yet.</div>
+                                    <div className="text-sm text-slate-600">No recommendations yet.</div>
                                 )}
                             </div>
                         </div>
@@ -439,54 +439,54 @@ export default function AnalyticsPage() {
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-orange-200/60 bg-gradient-to-br from-orange-50/70 via-white/80 to-orange-100/60 dark:from-gray-950 dark:via-gray-950/60 dark:to-gray-900/60 p-6">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="rounded-2xl border border-orange-200/60 bg-blue-50 p-6">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-orange-600" /> Details &amp; Methodology
                 </h2>
 
                 <div className="mt-3 grid gap-4 md:grid-cols-3">
-                    <div className="rounded-2xl border border-orange-200/50 bg-white/70 dark:bg-gray-950 p-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                    <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                             <Target className="w-4 h-4 text-orange-600" /> What the scores mean
                         </div>
-                        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        <p className="mt-2 text-sm text-slate-700">
                             Scores run from 0–100. Higher indicates stronger readiness and alignment for the selected sector.
                         </p>
                     </div>
 
-                    <div className="rounded-2xl border border-orange-200/50 bg-white/70 dark:bg-gray-950 p-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                    <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                             <Award className="w-4 h-4 text-orange-600" /> What improves them
                         </div>
-                        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        <p className="mt-2 text-sm text-slate-700">
                             Add verified skills, complete relevant projects, and attach certifications to build evidence.
                         </p>
                     </div>
 
-                    <div className="rounded-2xl border border-orange-200/50 bg-white/70 dark:bg-gray-950 p-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                    <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                             <Newspaper className="w-4 h-4 text-orange-600" /> Why AI may show none
                         </div>
-                        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        <p className="mt-2 text-sm text-slate-700">
                             Recommendations depend on the availability of the AI endpoint and your current sector score.
                         </p>
                     </div>
                 </div>
 
-                <div className="mt-4 rounded-2xl border border-orange-200/50 bg-white/70 dark:bg-gray-950 p-4">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Quick interpretation</div>
-                    <div className="mt-2 grid gap-3 md:grid-cols-3">
-                        <div className="rounded-xl border border-orange-100/60 bg-orange-50/40 p-3">
-                            <div className="text-xs font-bold text-orange-700">75–100</div>
-                            <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">Strong — keep specializing.</div>
+                <div className="mt-4 rounded-2xl border border-orange-200/50 bg-white/70 p-4">
+                    <div className="text-sm font-bold text-slate-900 mb-2">Quick interpretation</div>
+                    <div className="grid gap-4 md:grid-cols-3 rounded-xl p-4">
+                        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 flex flex-col justify-center">
+                            <div className="text-xs font-bold text-slate-900 mb-1">75–100</div>
+                            <div className="text-sm text-slate-700">Strong — keep specializing.</div>
                         </div>
-                        <div className="rounded-xl border border-orange-100/60 bg-orange-50/40 p-3">
-                            <div className="text-xs font-bold text-orange-700">50–74</div>
-                            <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">Growing — add proof points.</div>
+                        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 flex flex-col justify-center">
+                            <div className="text-xs font-bold text-slate-900 mb-1">50–74</div>
+                            <div className="text-sm text-slate-700">Growing — add proof points.</div>
                         </div>
-                        <div className="rounded-xl border border-orange-100/60 bg-orange-50/40 p-3">
-                            <div className="text-xs font-bold text-orange-700">0–49</div>
-                            <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">Early — start with basics.</div>
+                        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 flex flex-col justify-center">
+                            <div className="text-xs font-bold text-slate-900 mb-1">0–49</div>
+                            <div className="text-sm text-slate-700">Early — start with basics.</div>
                         </div>
                     </div>
                 </div>
