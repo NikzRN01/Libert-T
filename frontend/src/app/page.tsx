@@ -92,12 +92,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative container mx-auto px-4 py-24 md:py-32">
         <div className="max-w-5xl mx-auto text-center space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 text-blue-700 rounded-full text-sm font-semibold shadow-sm">
-            <Zap className="h-4 w-4" />
-            AI-Powered Skill Intelligence Platform
-          </div>
-
+          
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-tight">
             Master Your Skills in
