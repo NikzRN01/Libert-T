@@ -179,7 +179,8 @@ export default function UrbanAssessmentPage() {
                     console.log("Raw certification data:", certData);
 
                     const certificationsArray = (
-                        Array.isArray(certData)
+                        const [searchTerm, setSearchTerm] = useState("");
+                        const [loading, setLoading] = useState(false);
                             ? certData
                             : typeof certData === "object" && certData !== null && Array.isArray((certData as { certifications?: unknown }).certifications)
                                 ? (certData as { certifications: unknown[] }).certifications
