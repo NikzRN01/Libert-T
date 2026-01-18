@@ -128,7 +128,7 @@ export default function UrbanAssessmentPage() {
             // Fetch projects
             try {
                 const projectRes = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/projects?sector=${sector}`,
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/${sector.toLowerCase()}/projects`,
                     { method: "GET", headers }
                 );
 
@@ -179,7 +179,8 @@ export default function UrbanAssessmentPage() {
                     console.log("Raw certification data:", certData);
 
                     const certificationsArray = (
-                        Array.isArray(certData)
+                        const [searchTerm, setSearchTerm] = useState("");
+                        const [loading, setLoading] = useState(false);
                             ? certData
                             : typeof certData === "object" && certData !== null && Array.isArray((certData as { certifications?: unknown }).certifications)
                                 ? (certData as { certifications: unknown[] }).certifications

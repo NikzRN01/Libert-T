@@ -176,7 +176,12 @@ export default function UrbanDashboard() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center shadow-lg">
                     <Building2 className="h-8 w-8 text-white" />
                 </div>
-                <div>
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                        <Link href="/dashboard" className="text-cyan-600 hover:text-cyan-700 font-semibold text-sm transition-colors">
+                            ← Back to Dashboard
+                        </Link>
+                    </div>
                     <h1 className="text-3xl font-bold text-cyan-700">Urban Technology</h1>
                     <p className="text-cyan-600 font-medium">
                         Track your smart city skills and transformation readiness
