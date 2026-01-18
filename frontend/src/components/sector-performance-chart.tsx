@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface SectorData {
     sector: string;
@@ -21,6 +22,18 @@ const ORANGE_PALETTE = {
     dark: '#EA580C',       // Dark orange
 };
 
+type TooltipEntry = {
+    color?: string;
+    name?: string;
+    value?: number | string;
+};
+
+type CustomTooltipProps = {
+    active?: boolean;
+    payload?: TooltipEntry[];
+    label?: string;
+};
+
 
 
 
@@ -30,15 +43,28 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
             <div className="bg-white/95 backdrop-blur-sm border border-orange-200 rounded-lg shadow-lg p-4 min-w-[220px]">
                 <p className="font-semibold text-slate-900 text-sm mb-2">{label}</p>
                 {payload.map((entry, index) => (
+                {payload.map((entry, index) => (
                     <p key={index} className="text-xs font-medium text-slate-700 mb-1">
-                        <span className="inline-block w-3 h-3 rounded mr-2" style={{ backgroundColor: entry.color }}></span>
-                        {entry.name}: <span className="font-bold text-orange-600">{entry.value}%</span>
+                        <span
+                            className="inline-block w-3 h-3 rounded mr-2"
+                            style={{ backgroundColor: entry.color ?? ORANGE_PALETTE.medium }}
+                        ></span>
+                        {entry.name ?? "Value"}: <span className="font-bold text-orange-600">{entry.value}%</span>
                     </p>
                 ))}
             </div>
         );
     }
     return null;
+};
+
+type LegendEntry = {
+    value: string;
+    color: string;
+};
+
+type CustomLegendProps = {
+    payload: LegendEntry[];
 };
 
 const CustomLegend = (props: LegendProps) => {
@@ -56,6 +82,14 @@ const CustomLegend = (props: LegendProps) => {
 };
 
 export function SectorPerformanceChart({ data, height = 450 }: SectorPerformanceChartProps) {
+    type YAxisLabelProps = {
+        viewBox?: {
+            x?: number;
+            y?: number;
+            height?: number;
+        };
+    };
+
     // Centered Y-axis label renderer
     const renderYAxisLabel = ({ viewBox }: { viewBox?: { x?: number; y?: number; width?: number; height?: number } }) => {
         const { x, y, height } = viewBox || {};
