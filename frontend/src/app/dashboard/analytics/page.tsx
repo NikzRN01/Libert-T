@@ -594,83 +594,6 @@ export default function AnalyticsDashboard() {
                         </div>
                     )}
 
-                        {loadingRecs.HEALTHCARE ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                            </div>
-                        ) : healthcareRecs.length === 0 ? (
-                            <div className="text-center py-12">
-                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                {(() => {
-                                    const news = healthcareRecs.filter(r => r.type === "news").slice(0, 3);
-                                    const opportunities = healthcareRecs.filter(r => r.type === "opportunity").slice(0, 3);
-                                    const total = Math.min(news.length + opportunities.length, 5);
-                                    
-                                    return (
-                                        <>
-                                            {news.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Newspaper className="h-5 w-5 text-blue-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
-                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{news.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {news.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-blue-100 bg-blue-50/50 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            
-                                            {opportunities.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Briefcase className="h-5 w-5 text-blue-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
-                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{opportunities.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {opportunities.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-blue-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 {/* Agriculture Recommendations */}
                 {analytics?.bySector.AGRICULTURE && analytics.bySector.AGRICULTURE.overallScore > 0 && (
                     <div className="p-6 rounded-xl border border-green-200/60 bg-white/50 shadow-sm">
@@ -684,6 +607,8 @@ export default function AnalyticsDashboard() {
                                     <p className="text-sm text-slate-600">Innovation Score: {analytics.bySector.AGRICULTURE.overallScore}%</p>
                                 </div>
                             </div>
+
+                        </div>
 
                             {loadingRecs.AGRICULTURE ? (
                                 <div className="flex items-center justify-center py-12">
@@ -766,83 +691,6 @@ export default function AnalyticsDashboard() {
                         </div>
                     )}
 
-                        {loadingRecs.AGRICULTURE ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-                            </div>
-                        ) : agricultureRecs.length === 0 ? (
-                            <div className="text-center py-12">
-                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                {(() => {
-                                    const news = agricultureRecs.filter(r => r.type === "news").slice(0, 3);
-                                    const opportunities = agricultureRecs.filter(r => r.type === "opportunity").slice(0, 3);
-                                    const total = Math.min(news.length + opportunities.length, 5);
-                                    
-                                    return (
-                                        <>
-                                            {news.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Newspaper className="h-5 w-5 text-green-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
-                                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{news.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {news.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-green-100 bg-green-50/50 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            
-                                            {opportunities.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Briefcase className="h-5 w-5 text-green-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
-                                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{opportunities.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {opportunities.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-green-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 {/* Urban Recommendations */}
                 {analytics?.bySector.URBAN && analytics.bySector.URBAN.overallScore > 0 && (
                     <div className="p-6 rounded-xl border border-cyan-200/60 bg-white/50 shadow-sm">
@@ -855,6 +703,8 @@ export default function AnalyticsDashboard() {
                                     <h2 className="text-2xl font-bold text-slate-900">Urban & Smart Cities</h2>
                                     <p className="text-sm text-slate-600">Readiness Score: {analytics.bySector.URBAN.overallScore}%</p>
                                 </div>
+                            </div>
+
                             </div>
 
                             {loadingRecs.URBAN ? (
@@ -936,82 +786,6 @@ export default function AnalyticsDashboard() {
                                 </div>
                             )}
                         </div>
-
-                        {loadingRecs.URBAN ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
-                            </div>
-                        ) : urbanRecs.length === 0 ? (
-                            <div className="text-center py-12">
-                                <Sparkles className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                                <p className="text-slate-600 text-lg font-medium">Fetching AI recommendations...</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                {(() => {
-                                    const news = urbanRecs.filter(r => r.type === "news").slice(0, 3);
-                                    const opportunities = urbanRecs.filter(r => r.type === "opportunity").slice(0, 3);
-                                    const total = Math.min(news.length + opportunities.length, 5);
-                                    
-                                    return (
-                                        <>
-                                            {news.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Newspaper className="h-5 w-5 text-cyan-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Industry News & Trends</h3>
-                                                        <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">{news.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {news.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-cyan-100 bg-cyan-50/50 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            
-                                            {opportunities.length > 0 && (
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Briefcase className="h-5 w-5 text-cyan-600" />
-                                                        <h3 className="text-sm font-bold text-slate-700">Career Opportunities</h3>
-                                                        <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">{opportunities.length}</span>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {opportunities.map((rec, index) => (
-                                                            <div key={index} className="p-4 rounded-xl border border-cyan-200 bg-white/80 shadow-sm hover:shadow-md transition-shadow">
-                                                                <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-                                                                <p className="text-xs text-slate-600 mt-1">{rec.description}</p>
-                                                                {rec.source && (
-                                                                    <p className="text-xs text-slate-500 mt-2">{rec.source} {rec.date && `• ${rec.date}`}</p>
-                                                                )}
-                                                                {rec.url && (
-                                                                    <a href={rec.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-600 hover:underline mt-2 inline-block">
-                                                                        Learn more →
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        )}
-                    </div>
                 )}
                 </div>
             </div>

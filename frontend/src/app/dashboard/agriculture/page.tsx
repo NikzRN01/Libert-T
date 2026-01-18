@@ -41,7 +41,6 @@ export default function AgricultureDashboard() {
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState<7 | 14 | 30>(7);
-    const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
     const fetchAgricultureStats = useCallback(async () => {
         try {

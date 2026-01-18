@@ -42,7 +42,6 @@ export default function HealthcareDashboard() {
     const [pathways, setPathways] = useState<CareerPathway[]>([]);
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState<7 | 14 | 30>(7);
-    const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
     const fetchHealthcareStats = useCallback(async () => {
         try {

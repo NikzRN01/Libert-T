@@ -72,7 +72,6 @@ export default function UrbanDashboard() {
     const [loading, setLoading] = useState(true);
     const [skills, setSkills] = useState<UrbanSkill[]>([]);
     const [timeRange, setTimeRange] = useState<7 | 14 | 30>(7);
-    const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
     useEffect(() => {
         fetchUrbanData();
