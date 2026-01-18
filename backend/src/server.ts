@@ -9,6 +9,8 @@ import agricultureRoutes from './routes/agriculture.routes';
 import urbanRoutes from './routes/urban.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import chatRoutes from './routes/chat.routes';
+import mentorRoutes from './routes/mentor.routes';
+import verificationRoutes from './routes/verification.routes';
 
 const app: Application = express();
 
@@ -47,6 +49,8 @@ app.use('/api/agriculture', agricultureRoutes);
 app.use('/api/urban', urbanRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/mentor', mentorRoutes);
+app.use('/api/verification', verificationRoutes);
 
 // Start server
 const PORT = config.port;
@@ -71,3 +75,4 @@ async function startServer() {
 startServer();
 
 export default app;
+

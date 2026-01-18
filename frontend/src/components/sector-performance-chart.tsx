@@ -1,7 +1,16 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Legend,
+    ResponsiveContainer,
+    Tooltip,
+    TooltipProps,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 interface SectorData {
     sector: string;
@@ -22,74 +31,28 @@ const ORANGE_PALETTE = {
     dark: '#EA580C',       // Dark orange
 };
 
-type TooltipEntry = {
-    color?: string;
-    name?: string;
-    value?: number | string;
-};
 
-type CustomTooltipProps = {
-    active?: boolean;
-    payload?: TooltipEntry[];
-    label?: string;
-};
-
-
-
-
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white/95 backdrop-blur-sm border border-orange-200 rounded-lg shadow-lg p-4 min-w-[220px]">
                 <p className="font-semibold text-slate-900 text-sm mb-2">{label}</p>
                 {payload.map((entry, index) => (
-                {payload.map((entry, index) => (
                     <p key={index} className="text-xs font-medium text-slate-700 mb-1">
                         <span
                             className="inline-block w-3 h-3 rounded mr-2"
                             style={{ backgroundColor: entry.color ?? ORANGE_PALETTE.medium }}
-                        ></span>
-                        {entry.name ?? "Value"}: <span className="font-bold text-orange-600">{entry.value}%</span>
+                        />
+                        {entry.name ?? "Value"}: <span className="font-bold text-orange-600">{String(entry.value)}%</span>
                     </p>
                 ))}
             </div>
         );
     }
     return null;
-};
-
-type LegendEntry = {
-    value: string;
-    color: string;
-};
-
-type CustomLegendProps = {
-    payload: LegendEntry[];
-};
-
-const CustomLegend = (props: LegendProps) => {
-    const { payload } = props;
-    return (
-        <div className="flex flex-wrap justify-center gap-6 mt-6 pb-4">
-            {payload && payload.map((entry, index) => (
-                <div key={index} className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: entry.color }}></div>
-                    <span className="text-sm font-medium text-slate-700">{entry.value}</span>
-                </div>
-            ))}
-        </div>
-    );
-};
+}
 
 export function SectorPerformanceChart({ data, height = 450 }: SectorPerformanceChartProps) {
-    type YAxisLabelProps = {
-        viewBox?: {
-            x?: number;
-            y?: number;
-            height?: number;
-        };
-    };
-
     // Centered Y-axis label renderer
     const renderYAxisLabel = ({ viewBox }: { viewBox?: { x?: number; y?: number; width?: number; height?: number } }) => {
         const { x, y, height } = viewBox || {};
@@ -181,6 +144,7 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                                 content={<CustomTooltip />}
                                 cursor={{ fill: 'rgba(249, 115, 22, 0.08)' }}
                             />
+                            <Legend wrapperStyle={{ paddingTop: 16 }} />
 
                             <Bar
                                 dataKey="careerReadiness"
@@ -206,13 +170,6 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-
-                {/* Legend */}
-                <CustomLegend payload={[
-                    { value: 'Career Readiness', color: ORANGE_PALETTE.light },
-                    { value: 'Industry Alignment', color: ORANGE_PALETTE.medium },
-                    { value: 'Overall Score', color: ORANGE_PALETTE.dark }
-                ]} />
             </div>
         </div>
     );
