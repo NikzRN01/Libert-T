@@ -27,11 +27,15 @@ model User {
 
   // Relations
   profile        Profile?
+  mentorProfile  MentorProfile?
   skills         Skill[]
   projects       Project[]
   certifications Certification[]
   learningPaths  LearningPath[]
   analytics      SkillAnalytics[]
+
+  verificationRequestsSent     SkillVerificationRequest[] @relation("VerificationRequester")
+  verificationRequestsReceived SkillVerificationRequest[] @relation("VerificationReviewer")
 
   @@index([email])
   @@index([role])
@@ -102,12 +106,73 @@ model Skill {
   // Endorsements
   endorsements      Int           @default(0)
 
+  verificationRequests SkillVerificationRequest[]
+
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
   @@index([userId, sector])
   @@index([sector, category])
   @@index([name])
+}
+
+// ============================================
+// MENTOR / EDUCATOR
+// ============================================
+
+model MentorProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Which sectors this mentor is allowed to verify for
+  sectors      String   @default("[]") // Sector[] stored as JSON string "[]"
+
+  organization String?
+  title        String?
+  bio          String?
+  contactEmail String?
+
+  // Whether the platform/admin has approved this mentor profile
+  isApproved   Boolean  @default(false)
+  approvedAt   DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isApproved])
+}
+
+// ============================================
+// SKILL VERIFICATION REQUESTS
+// ============================================
+
+model SkillVerificationRequest {
+  id          String   @id @default(uuid())
+
+  skillId     String
+  skill       Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  requesterId String
+  requester   User     @relation("VerificationRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  reviewerId  String
+  reviewer    User     @relation("VerificationReviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED | CANCELLED
+  message     String?
+  evidenceUrl String?
+  decisionNote String?
+
+  decidedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([skillId])
+  @@index([requesterId])
+  @@index([reviewerId])
+  @@index([status])
 }
 
 // ============================================

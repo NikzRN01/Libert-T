@@ -316,9 +316,9 @@ export default function SkillsPage() {
                                         {getProficiencyLabel(skill.proficiencyLevel)}
                                     </span>
                                 </div>
-                                <div className="w-full bg-muted rounded-full h-3 shadow-inner">
+                                <div className="w-full h-3 rounded-full shadow-inner overflow-hidden bg-black/10 dark:bg-white/10">
                                     <div
-                                        className="bg-linear-to-r from-primary to-accent h-3 rounded-full transition-all shadow-md"
+                                        className="h-3 rounded-full transition-all shadow-md bg-linear-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
                                         style={{ width: `${(skill.proficiencyLevel / 5) * 100}%` }}
                                     />
                                 </div>

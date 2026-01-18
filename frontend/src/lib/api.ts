@@ -3,7 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 // Get auth token from localStorage
 function getAuthToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('token');
+        return localStorage.getItem('token') || null;
 }
 
 export async function apiClient<T = unknown>(
@@ -84,6 +84,29 @@ export const skillsApi = {
         const queryString = sector ? `?sector=${sector}` : '';
         return apiClient(`/api/skills/categories${queryString}`, { method: 'GET' }, false);
     },
+    getById: (id: string) => api.get(`/api/skills/${id}`),
+};
+
+export const mentorApi = {
+    listApproved: (sector?: string) => {
+        const queryString = sector ? `?sector=${encodeURIComponent(sector)}` : '';
+        return api.get(`/api/mentor/approved${queryString}`);
+    },
+    getMyProfile: () => api.get('/api/mentor/me'),
+    saveMyProfile: (data: unknown) => api.put('/api/mentor/me', data),
+};
+
+export const verificationApi = {
+    createRequest: (skillId: string, data: { reviewerId: string; message?: string; evidenceUrl?: string }) =>
+        api.post(`/api/verification/skills/${skillId}/requests`, data),
+    listSent: () => api.get('/api/verification/requests/sent'),
+    listReceived: (status?: string) => {
+        const queryString = status ? `?status=${encodeURIComponent(status)}` : '';
+        return api.get(`/api/verification/requests/received${queryString}`);
+    },
+    cancel: (requestId: string) => api.post(`/api/verification/requests/${requestId}/cancel`, {}),
+    decide: (requestId: string, data: { decision: 'APPROVED' | 'REJECTED'; decisionNote?: string }) =>
+        api.post(`/api/verification/requests/${requestId}/decision`, data),
 };
 
 // Healthcare API
@@ -136,4 +159,6 @@ export const analyticsApi = {
     generate: (sector: string) => api.post(`/api/analytics/generate/${sector}`, {}),
     get: (sector: string) => api.get(`/api/analytics/${sector}`),
     getCrossSector: () => api.get('/api/analytics/cross-sector/overview'),
+    getRecommendations: (sector: string, score: number) =>
+        api.get(`/api/analytics/${encodeURIComponent(sector)}/recommendations?score=${encodeURIComponent(String(score))}`),
 };
