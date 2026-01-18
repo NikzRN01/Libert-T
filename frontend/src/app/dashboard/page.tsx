@@ -1,42 +1,80 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useStoredToken, useStoredUser } from "@/lib/auth";
-import {
-    Activity, TrendingUp, Building2, BarChart3, Compass, Info, Lightbulb,
-    AlertCircle, Award, BookOpen, Star, Trophy, Target, ArrowRight, Zap
-} from "lucide-react";
-import { analyticsApi, healthcareApi, agricultureApi, urbanApi, skillsApi } from "@/lib/api";
-import { formatDistanceToNow } from "date-fns";
+import { Activity, TrendingUp, Building2, BarChart3, Zap, AlertTriangle } from "lucide-react";
+import { healthcareApi, agricultureApi, urbanApi } from "@/lib/api";
 
 type Sector = "HEALTHCARE" | "AGRICULTURE" | "URBAN";
 
-interface DashboardData {
-    recentActivity: any[];
-    skillGaps: any[];
-    stats: {
-        totalSkills: number;
-        completedProjects: number;
-        certifications: number;
-        avgReadiness: number;
+type SkillItem = {
+    id: string;
+    name: string;
+    level?: number;
+    proficiency?: number;
+    proficiencyLevel?: number;
+    category?: string;
+};
+
+type SkillsResponse = {
+    skills?: SkillItem[];
+    data?: SkillItem[];
+} | SkillItem[];
+
+type SkillGapItem = {
+    skill: string;
+    sector: string;
+    sectorKey: Sector;
+    current: number;
+    required: number;
+    skillCount: number;
+};
+
+function clampPercent(value: number): number {
+    if (Number.isNaN(value)) return 0;
+    return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function extractSkills(response: unknown): SkillItem[] {
+    if (Array.isArray(response)) return response;
+    if (response && typeof response === "object") {
+        const resp = response as SkillsResponse;
+        if ("skills" in resp && Array.isArray(resp.skills)) return resp.skills;
+        if ("data" in resp && Array.isArray(resp.data)) return resp.data;
     }
+    return [];
+}
+
+function calculateAverageLevel(skills: SkillItem[]): number {
+    if (skills.length === 0) return 0;
+    const total = skills.reduce((sum, skill) => {
+        // proficiencyLevel is typically 1-5, convert to percentage
+        const profLevel = skill.proficiencyLevel ?? skill.level ?? skill.proficiency;
+        if (typeof profLevel === "number") {
+            // If it's 1-5 scale, convert to percentage
+            if (profLevel <= 5) {
+                return sum + (profLevel * 20);
+            }
+            // Already a percentage
+            return sum + profLevel;
+        }
+        return sum;
+    }, 0);
+    return clampPercent(total / skills.length);
 }
 
 export default function DashboardPage() {
     const router = useRouter();
     const user = useStoredUser();
     const token = useStoredToken();
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<DashboardData>({
-        recentActivity: [],
-        skillGaps: [],
-        stats: { totalSkills: 0, completedProjects: 0, certifications: 0, avgReadiness: 0 }
-    });
-
     const typingChars = Math.min(40, Math.max(18, (user?.name?.length || 6) + 8));
 
-    const typewriterStyle: React.CSSProperties & Record<string, string | number> = {
+    const [skillGapData, setSkillGapData] = useState<SkillGapItem[]>([]);
+    const [loadingGaps, setLoadingGaps] = useState(true);
+    const hasFetched = useRef(false);
+
+    const typewriterStyle: CSSProperties & Record<string, string | number> = {
         "--typing-chars": typingChars,
         "--typing-duration": "3.4s",
     };
@@ -44,99 +82,79 @@ export default function DashboardPage() {
     useEffect(() => {
         if (!token || !user) {
             router.replace("/login");
-            return;
         }
+    }, [router, token, user]);
 
-        const fetchData = async () => {
+    // Fetch skill data from all sectors
+    useEffect(() => {
+        if (!token || !user || hasFetched.current) return;
+        hasFetched.current = true;
+
+        const fetchSectorSkills = async () => {
+            setLoadingGaps(true);
             try {
-                // Fetch basic stats and cross-sector analytics
-                const crossSectorRes = await analyticsApi.getCrossSector().catch(() => ({ data: { overall: {} } }));
-                const stats = crossSectorRes.data?.overall || {};
-
-                // Fetch data for all sectors to aggregate
-                const sectors: Sector[] = ["HEALTHCARE", "AGRICULTURE", "URBAN"];
-                const apis = {
-                    HEALTHCARE: healthcareApi,
-                    AGRICULTURE: agricultureApi,
-                    URBAN: urbanApi
-                };
-
-                const [
-                    hcSkills, hcCerts, hcProjects, hcAnalytics,
-                    agSkills, agCerts, agProjects, agAnalytics,
-                    urSkills, urCerts, urProjects, urAnalytics
-                ] = await Promise.all([
-                    healthcareApi.getSkills().catch(() => ({ data: [] })),
-                    healthcareApi.getCertifications().catch(() => ({ data: [] })),
-                    healthcareApi.getProjects().catch(() => ({ data: [] })),
-                    analyticsApi.get("HEALTHCARE").catch(() => ({ data: null })),
-
-                    agricultureApi.getSkills().catch(() => ({ data: [] })),
-                    agricultureApi.getCertifications().catch(() => ({ data: [] })),
-                    agricultureApi.getProjects().catch(() => ({ data: [] })),
-                    analyticsApi.get("AGRICULTURE").catch(() => ({ data: null })),
-
-                    urbanApi.getSkills().catch(() => ({ data: [] })),
-                    urbanApi.getCertifications().catch(() => ({ data: [] })),
-                    urbanApi.getProjects().catch(() => ({ data: [] })),
-                    analyticsApi.get("URBAN").catch(() => ({ data: null })),
+                const [healthcareRes, agricultureRes, urbanRes] = await Promise.allSettled([
+                    healthcareApi.getSkills(),
+                    agricultureApi.getSkills(),
+                    urbanApi.getSkills(),
                 ]);
 
-                // Process Recent Activity
-                const activities = [
-                    ...(hcCerts.data || []).map((i: any) => ({ ...i, type: 'certification', sector: 'HEALTHCARE', date: i.issueDate })),
-                    ...(agCerts.data || []).map((i: any) => ({ ...i, type: 'certification', sector: 'AGRICULTURE', date: i.issueDate })),
-                    ...(urCerts.data || []).map((i: any) => ({ ...i, type: 'certification', sector: 'URBAN', date: i.issueDate })),
+                const healthcareSkills = healthcareRes.status === "fulfilled" ? extractSkills(healthcareRes.value) : [];
+                const agricultureSkills = agricultureRes.status === "fulfilled" ? extractSkills(agricultureRes.value) : [];
+                const urbanSkills = urbanRes.status === "fulfilled" ? extractSkills(urbanRes.value) : [];
 
-                    ...(hcProjects.data || []).map((i: any) => ({ ...i, type: 'project', sector: 'HEALTHCARE', date: i.createdAt })),
-                    ...(agProjects.data || []).map((i: any) => ({ ...i, type: 'project', sector: 'AGRICULTURE', date: i.createdAt })),
-                    ...(urProjects.data || []).map((i: any) => ({ ...i, type: 'project', sector: 'URBAN', date: i.createdAt })),
-                ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+                const healthcareLevel = calculateAverageLevel(healthcareSkills);
+                const agricultureLevel = calculateAverageLevel(agricultureSkills);
+                const urbanLevel = calculateAverageLevel(urbanSkills);
 
-                // Process Skill Gaps
-                let gaps: any[] = [];
-                const processGaps = (analytics: any, sector: string) => {
-                    if (analytics?.data?.skillGaps) {
-                        try {
-                            const parsed = JSON.parse(analytics.data.skillGaps);
-                            return parsed.map((g: any) => ({
-                                ...g,
-                                sector,
-                                skillName: g.category ? g.category.replace(/_/g, ' ') : "Skill Gap",
-                                currentScore: Math.floor(Math.random() * 30) + 10, // Mock current for demo (10-40%)
-                                targetScore: 75 // Mock target
-                            }));
-                        } catch (e) { return []; }
-                    }
-                    return [];
-                };
+                const gaps: SkillGapItem[] = [];
 
-                gaps = [
-                    ...processGaps(hcAnalytics, "HEALTHCARE"),
-                    ...processGaps(agAnalytics, "AGRICULTURE"),
-                    ...processGaps(urAnalytics, "URBAN")
-                ].slice(0, 3);
+                // Only add sectors that have skills
+                if (healthcareSkills.length > 0) {
+                    gaps.push({
+                        skill: "Healthcare Informatics",
+                        sector: "Healthcare Tech",
+                        sectorKey: "HEALTHCARE",
+                        current: healthcareLevel,
+                        required: 70,
+                        skillCount: healthcareSkills.length,
+                    });
+                }
 
-                setData({
-                    recentActivity: activities,
-                    skillGaps: gaps,
-                    stats: {
-                        totalSkills: stats.totalSkills || 0,
-                        completedProjects: stats.totalProjects || 0,
-                        certifications: stats.totalCertifications || 0,
-                        avgReadiness: stats.averageReadiness || 0
-                    }
-                });
+                if (agricultureSkills.length > 0) {
+                    gaps.push({
+                        skill: "Agricultural Data Systems",
+                        sector: "AgriTech",
+                        sectorKey: "AGRICULTURE",
+                        current: agricultureLevel,
+                        required: 65,
+                        skillCount: agricultureSkills.length,
+                    });
+                }
 
+                if (urbanSkills.length > 0) {
+                    gaps.push({
+                        skill: "Urban Planning Analytics",
+                        sector: "Smart Cities",
+                        sectorKey: "URBAN",
+                        current: urbanLevel,
+                        required: 75,
+                        skillCount: urbanSkills.length,
+                    });
+                }
+
+                setSkillGapData(gaps);
             } catch (error) {
-                console.error("Dashboard data fetch error:", error);
+                console.error("Failed to fetch sector skills:", error);
+                // Keep empty state on error
+                setSkillGapData([]);
             } finally {
-                setLoading(false);
+                setLoadingGaps(false);
             }
         };
 
-        fetchData();
-    }, [router, token, user]);
+        void fetchSectorSkills();
+    }, [token, user]);
 
     if (!user) {
         return (
@@ -204,175 +222,7 @@ export default function DashboardPage() {
                 }
             `}</style>
 
-            {/* Purpose & Instructions Section */}
-            <div className="grid lg:grid-cols-3 gap-8">
-                {/* Purpose Card */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-                    <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
-
-                    <div className="relative">
-                        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                            <Compass className="h-6 w-6" />
-                            Why are you here?
-                        </h2>
-                        <p className="text-blue-100 text-lg leading-relaxed mb-6">
-                            SkillXIntell is your personal command center for academic and professional growth.
-                            We simply help you <span className="font-semibold text-white">track, analyze, and improve</span> your readiness
-                            in emerging sectors like Healthcare, Agriculture, and Smart Cities.
-                        </p>
-
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/10">
-                                <h3 className="font-semibold mb-1 flex items-center gap-2">
-                                    <Activity className="h-4 w-4" />
-                                    Skill Tracking
-                                </h3>
-                                <p className="text-sm text-blue-100 opacity-90">Monitor your proficiency levels across tailored industry standards.</p>
-                            </div>
-                            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/10">
-                                <h3 className="font-semibold mb-1 flex items-center gap-2">
-                                    <Lightbulb className="h-4 w-4" />
-                                    AI Guidance
-                                </h3>
-                                <p className="text-sm text-blue-100 opacity-90">Get personalized career path recommendations and gap analysis.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Quick Start Guide */}
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                        <Info className="h-5 w-5 text-blue-600" />
-                        Quick Start Guide
-                    </h2>
-                    <div className="space-y-6">
-                        <div className="flex gap-4">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">1</div>
-                            <div>
-                                <h4 className="font-semibold text-slate-900">Choose a Sector</h4>
-                                <p className="text-sm text-slate-600">Select a domain below (e.g., Healthcare) to view specific skills.</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">2</div>
-                            <div>
-                                <h4 className="font-semibold text-slate-900">Take Assessment</h4>
-                                <p className="text-sm text-slate-600">Complete quick quizzes to verify your current knowledge.</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">3</div>
-                            <div>
-                                <h4 className="font-semibold text-slate-900">View Insights</h4>
-                                <p className="text-sm text-slate-600">Check the Analytics tab to see your growth and recommendations.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Skill Gap Analysis & Recent Activity Grid */}
-            <div className="grid lg:grid-cols-2 gap-8">
-                {/* Skill Gap Analysis */}
-                <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 border border-slate-200/80 shadow-sm">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                        <BarChart3 className="h-6 w-6 text-orange-500" />
-                        Skill Gap Analysis
-                    </h2>
-
-                    <div className="space-y-6">
-                        {data.skillGaps.length > 0 ? (
-                            data.skillGaps.map((gap: any, i) => (
-                                <div key={i} className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900">{gap.skillName || "Unknown Skill"}</h4>
-                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 mt-1 inline-block">
-                                                {gap.sector === "HEALTHCARE" ? "Healthcare Tech" : gap.sector === "AGRICULTURE" ? "AgriTech" : "Smart Cities"}
-                                            </span>
-                                        </div>
-                                        <div className="p-2 bg-red-50 text-red-600 rounded-lg">
-                                            <AlertCircle className="h-4 w-4" />
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4">
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span className="text-slate-500">Current: {gap.currentScore || 0}%</span>
-                                            <span className="text-slate-500">Target: {gap.targetScore || 100}%</span>
-                                        </div>
-                                        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full"
-                                                style={{ width: `${gap.currentScore || 0}%` }}
-                                            />
-                                        </div>
-                                        <div className="text-right mt-1">
-                                            <span className="text-xs font-bold text-orange-600">
-                                                +{Math.max(0, (gap.targetScore || 100) - (gap.currentScore || 0))}% needed
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center py-10 text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                                <p>No skill gaps identified yet. Great job!</p>
-                                <button onClick={() => router.push('/dashboard/analytics')} className="text-sm text-blue-600 font-semibold mt-2 hover:underline">
-                                    View Full Analytics
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 border border-slate-200/80 shadow-sm h-full">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                        <Activity className="h-6 w-6 text-blue-500" />
-                        Recent Activity
-                    </h2>
-
-                    <div className="space-y-6 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-                        {data.recentActivity.length > 0 ? (
-                            data.recentActivity.map((item, i) => (
-                                <div key={i} className="relative pl-10">
-                                    <div className={`absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm z-10 ${item.type === 'certification' ? 'bg-orange-100 text-orange-600' :
-                                            'bg-blue-100 text-blue-600'
-                                        }`}>
-                                        {item.type === 'certification' ? <Award className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-slate-900 leading-tight">
-                                            {item.type === 'certification' ? `Earned ${item.name}` : `Submitted ${item.title}`}
-                                        </h4>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-xs text-slate-500">{item.sector}</span>
-                                            <span className="text-slate-300">•</span>
-                                            <span className="text-xs text-slate-400">
-                                                {item.date ? formatDistanceToNow(new Date(item.date), { addSuffix: true }) : 'Recently'}
-                                            </span>
-                                        </div>
-                                        {item.type === 'certification' && (
-                                            <div className="mt-2 text-xs font-medium text-green-600 bg-green-50 inline-block px-2 py-1 rounded">
-                                                Verified & Certified
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center py-10 pl-4 text-slate-500">
-                                <p>No recent activity.</p>
-                                <p className="text-sm text-slate-400 mt-1">Complete courses or add projects to see them here.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
+            {/* Dashboard Navigation Grid */}
             <div>
                 <h2 className="text-2xl font-bold text-slate-900 mb-6">Explore Your Sectors</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -435,6 +285,110 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </button>
+
+                    {/* Analytics */}
+                    <button
+                        onClick={() => router.push('/dashboard/analytics')}
+                        className="group relative bg-white/85 rounded-2xl p-8 border border-orange-100 hover:border-orange-300 hover:shadow-[0_25px_60px_-25px_rgba(249,115,22,0.55)] transition-all duration-300 text-left hover:-translate-y-1 backdrop-blur-lg"
+                    >
+                        <div className="relative">
+                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform bg-orange-600 text-white">
+                                <BarChart3 className="h-8 w-8" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">Analytics</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                Skill gaps, readiness scores, and AI-driven recommendations.
+                            </p>
+                            <div className="flex items-center text-orange-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                                <span>Open dashboard</span>
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Skill Gap Analysis Section */}
+            <div className="bg-white/85 rounded-2xl p-6 border border-slate-200/80 shadow-lg backdrop-blur-lg">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center">
+                            <Zap className="w-4 h-4 text-white" />
+                        </div>
+                        Skill Gap Analysis
+                    </h2>
+                    {loadingGaps && (
+                        <div className="text-sm text-slate-500">Loading...</div>
+                    )}
+                </div>
+
+                <div className="space-y-4">
+                    {!loadingGaps && skillGapData.length === 0 ? (
+                        <div className="text-center py-8 text-slate-500">
+                            <p className="text-sm">No skills found in any sector.</p>
+                            <p className="text-xs mt-1">Add skills to Healthcare, Agriculture, or Urban sectors to see your skill gap analysis.</p>
+                        </div>
+                    ) : (
+                        skillGapData.map((item, idx) => {
+                            const gap = item.required - item.current;
+                            const isHighGap = gap >= 30;
+                            const progressPercent = Math.min((item.current / item.required) * 100, 100);
+
+                            return (
+                                <div
+                                    key={idx}
+                                    className="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                            <h3 className="text-base font-semibold text-slate-900">
+                                                {item.skill}
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="inline-block px-2.5 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600 font-medium">
+                                                    {item.sector}
+                                                </span>
+                                                <span className="text-xs text-slate-400">
+                                                    {item.skillCount} skill{item.skillCount !== 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className={`shrink-0 p-2.5 rounded-full ${isHighGap ? 'bg-orange-50' : 'bg-amber-50'}`}>
+                                            {isHighGap ? (
+                                                <AlertTriangle className="w-5 h-5 text-orange-500" />
+                                            ) : (
+                                                <TrendingUp className="w-5 h-5 text-amber-500" />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-4">
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between text-sm mb-2">
+                                                <span className="text-slate-600">
+                                                    Current: <span className="font-semibold text-slate-900">{item.current}%</span>
+                                                </span>
+                                                <span className="text-slate-400">→</span>
+                                                <span className="text-slate-600">
+                                                    Required: <span className="font-semibold text-slate-900">{item.required}%</span>
+                                                </span>
+                                            </div>
+                                            <div className="relative h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                                                <div
+                                                    className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 transition-all duration-500"
+                                                    style={{ width: `${progressPercent}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className={`text-right min-w-[60px] ${isHighGap ? 'text-orange-500' : 'text-amber-500'}`}>
+                                            <div className="text-lg font-bold">+{gap}%</div>
+                                            <div className="text-xs font-medium">needed</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </div>
