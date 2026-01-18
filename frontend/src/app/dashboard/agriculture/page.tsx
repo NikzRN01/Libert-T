@@ -112,12 +112,12 @@ export default function AgricultureDashboard() {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4 bg-linear-to-r from-secondary/10 to-secondary/5 p-6 rounded-2xl border-2 border-border shadow-lg">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg">
                     <Sprout className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Agriculture</h1>
-                    <p className="text-muted-foreground font-medium">
+                    <h1 className="text-3xl font-bold text-emerald-700">Agriculture</h1>
+                    <p className="text-emerald-600 font-medium">
                         Track your agritech skills and innovation readiness
                     </p>
                 </div>
@@ -335,48 +335,48 @@ export default function AgricultureDashboard() {
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Total Skills</span>
-                        <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                            <Target className="h-5 w-5 text-secondary" />
+                        <span className="text-sm text-emerald-700 font-semibold">Total Skills</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                            <Target className="h-5 w-5 text-emerald-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.totalSkills || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">AgriTech competencies</p>
+                    <div className="text-4xl font-bold text-emerald-900">{stats?.totalSkills || 0}</div>
+                    <p className="text-sm text-emerald-600 mt-2 font-medium">AgriTech competencies</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Certifications</span>
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <Award className="h-5 w-5 text-primary" />
+                        <span className="text-sm text-emerald-700 font-semibold">Certifications</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                            <Award className="h-5 w-5 text-emerald-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.certifications || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Active credentials</p>
+                    <div className="text-4xl font-bold text-emerald-900">{stats?.certifications || 0}</div>
+                    <p className="text-sm text-emerald-600 mt-2 font-medium">Active credentials</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Projects</span>
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <Briefcase className="h-5 w-5 text-accent" />
+                        <span className="text-sm text-emerald-700 font-semibold">Projects</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                            <Briefcase className="h-5 w-5 text-emerald-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.completedProjects || 0}</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">Completed</p>
+                    <div className="text-4xl font-bold text-emerald-900">{stats?.completedProjects || 0}</div>
+                    <p className="text-sm text-emerald-600 mt-2 font-medium">Completed</p>
                 </div>
 
-                <div className="p-6 rounded-2xl border-2 border-border bg-card hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="p-6 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground font-semibold">Innovation Score</span>
-                        <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                            <TrendingUp className="h-5 w-5 text-secondary" />
+                        <span className="text-sm text-emerald-700 font-semibold">Innovation Score</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                            <TrendingUp className="h-5 w-5 text-emerald-600" />
                         </div>
                     </div>
-                    <div className="text-4xl font-bold text-foreground">{stats?.innovationScore || 0}%</div>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">
+                    <div className="text-4xl font-bold text-emerald-900">{stats?.innovationScore || 0}%</div>
+                    <p className="text-sm text-emerald-600 mt-2 font-medium">
                         Avg proficiency: {stats?.averageProficiency || "0"}/5
                     </p>
                 </div>
@@ -386,45 +386,45 @@ export default function AgricultureDashboard() {
             <div className="grid md:grid-cols-3 gap-6">
                 <Link
                     href="/dashboard/agriculture/skills"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-secondary/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-2xl hover:border-emerald-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Target className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Skills Tracker</h3>
+                        <h3 className="font-bold text-lg text-emerald-900">Skills Tracker</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-emerald-700 leading-relaxed">
                         Manage your agritech skills and proficiency levels
                     </p>
                 </Link>
 
                 <Link
                     href="/dashboard/agriculture/certifications"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-primary/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-2xl hover:border-emerald-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Award className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Certifications</h3>
+                        <h3 className="font-bold text-lg text-emerald-900">Certifications</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-emerald-700 leading-relaxed">
                         Track precision farming and sustainability certs
                     </p>
                 </Link>
 
                 <Link
                     href="/dashboard/agriculture/projects"
-                    className="p-8 rounded-2xl border-2 border-border bg-card hover:shadow-2xl hover:border-accent/50 transition-all transform hover:-translate-y-1 group"
+                    className="p-8 rounded-2xl border-2 border-emerald-200 bg-white/80 hover:shadow-2xl hover:border-emerald-400 transition-all transform hover:-translate-y-1 group"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-300 to-emerald-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <Briefcase className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-lg text-foreground">Projects</h3>
+                        <h3 className="font-bold text-lg text-emerald-900">Projects</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-emerald-700 leading-relaxed">
                         Showcase your agricultural technology projects
                     </p>
                 </Link>
@@ -433,7 +433,7 @@ export default function AgricultureDashboard() {
             {/* Recommended Courses */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Recommended Courses</h2>
+                    <h2 className="text-2xl font-bold text-emerald-800">Recommended Courses</h2>
                 </div>
 
                 {pathways.length > 0 && pathways.some(p => p.courses && p.courses.length > 0) ? (
@@ -444,36 +444,38 @@ export default function AgricultureDashboard() {
                                 index === self.findIndex((c) => c.id === course.id)
                             );
                             return uniqueCourses.slice(0, 9).map((course) => (
-                                <CourseCard key={course.id} course={course} />
+                                <div key={course.id} className="rounded-xl border-2 border-emerald-200 bg-white/90 shadow hover:shadow-lg transition-all">
+                                    <CourseCard course={course} />
+                                </div>
                             ));
                         })()}
                     </div>
                 ) : (
-                    <div className="p-8 rounded-xl border border-border bg-card text-center">
-                        <p className="text-muted-foreground">No courses available. Add more skills to get personalized recommendations.</p>
+                    <div className="p-8 rounded-xl border-2 border-emerald-200 bg-white/90 text-center">
+                        <p className="text-emerald-700">No courses available. Add more skills to get personalized recommendations.</p>
                     </div>
                 )}
             </div>
 
             {/* Innovation Readiness */}
-            <div className="p-6 rounded-xl border border-border bg-card">
-                <h2 className="text-xl font-semibold mb-4">Innovation Readiness Assessment</h2>
+            <div className="p-6 rounded-xl border-2 border-emerald-200 bg-white/90">
+                <h2 className="text-xl font-semibold mb-4 text-emerald-800">Innovation Readiness Assessment</h2>
                 <div className="space-y-4">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium">Overall Innovation Readiness</span>
-                            <span className="text-sm font-medium">{stats?.innovationScore || 0}%</span>
+                            <span className="text-sm font-medium text-emerald-700">Overall Innovation Readiness</span>
+                            <span className="text-sm font-medium text-emerald-700">{stats?.innovationScore || 0}%</span>
                         </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-emerald-100 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-agriculture transition-all"
+                                className="h-full bg-emerald-500 transition-all"
                                 style={{ width: `${stats?.innovationScore || 0}%` }}
                             />
                         </div>
                     </div>
                     <Link
                         href="/dashboard/agriculture/assessment"
-                        className="inline-block text-sm text-agriculture hover:underline"
+                        className="inline-block text-sm text-emerald-700 hover:underline"
                     >
                         View detailed assessment →
                     </Link>

@@ -1,6 +1,5 @@
-"use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+"use client";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface SectorData {
@@ -15,12 +14,16 @@ interface SectorPerformanceChartProps {
     height?: number;
 }
 
+
 // Orange color palette with different shades
 const ORANGE_PALETTE = {
     light: '#FED7AA',      // Light orange
     medium: '#FB923C',     // Medium orange
     dark: '#EA580C',       // Dark orange
 };
+
+// Import types from recharts
+import type { TooltipProps, LegendProps } from 'recharts';
 
 type TooltipEntry = {
     color?: string;
@@ -37,13 +40,13 @@ type CustomTooltipProps = {
 
 
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = (props: any) => {
+    const { active, payload, label } = props;
     if (active && payload && payload.length) {
         return (
             <div className="bg-white/95 backdrop-blur-sm border border-orange-200 rounded-lg shadow-lg p-4 min-w-[220px]">
                 <p className="font-semibold text-slate-900 text-sm mb-2">{label}</p>
-                {payload.map((entry, index) => (
-                {payload.map((entry, index) => (
+                {payload.map((entry: TooltipEntry, index: number) => (
                     <p key={index} className="text-xs font-medium text-slate-700 mb-1">
                         <span
                             className="inline-block w-3 h-3 rounded mr-2"
@@ -67,11 +70,11 @@ type CustomLegendProps = {
     payload: LegendEntry[];
 };
 
-const CustomLegend = (props: LegendProps) => {
+const CustomLegend = (props: any) => {
     const { payload } = props;
     return (
         <div className="flex flex-wrap justify-center gap-6 mt-6 pb-4">
-            {payload && payload.map((entry, index) => (
+            {payload && payload.map((entry: any, index: number) => (
                 <div key={index} className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded" style={{ backgroundColor: entry.color }}></div>
                     <span className="text-sm font-medium text-slate-700">{entry.value}</span>
@@ -170,7 +173,7 @@ export function SectorPerformanceChart({ data, height = 450 }: SectorPerformance
                                 height={40}
                             />
                             <YAxis
-                                label={{ content: renderYAxisLabel }}
+                                label={renderYAxisLabel}
                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                 axisLine={{ stroke: '#fed7aa', strokeWidth: 1 }}
                                 tickLine={false}
