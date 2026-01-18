@@ -189,6 +189,11 @@ export default function UrbanProjectsPage() {
 
     const handleEditProject = (project: Project) => {
         setEditingProject(project);
+
+        const parsedTeamSize =
+            typeof project.teamSize === "string" ? Number.parseInt(project.teamSize, 10) : project.teamSize;
+        const teamSize = Number.isFinite(parsedTeamSize) && (parsedTeamSize ?? 0) > 0 ? (parsedTeamSize as number) : 1;
+
         setFormData({
             title: project.title,
             description: project.description,
@@ -200,7 +205,7 @@ export default function UrbanProjectsPage() {
             startDate: project.startDate.split('T')[0],
             endDate: project.endDate ? project.endDate.split('T')[0] : "",
             status: project.status,
-            teamSize: project.teamSize || 1,
+            teamSize,
             role: project.role || "",
             repositoryUrl: project.repositoryUrl || "",
             liveUrl: project.liveUrl || "",
@@ -397,12 +402,19 @@ export default function UrbanProjectsPage() {
                                 <span className={`inline-block px-3 py-1 text-xs rounded-xl font-semibold border ${getStatusColor(project.status)}`}>
                                     {project.status.replace("_", " ")}
                                 </span>
-                                {project.teamSize && project.teamSize > 1 && (
+                                {(() => {
+                                    const teamSize =
+                                        typeof project.teamSize === "string"
+                                            ? Number.parseInt(project.teamSize, 10)
+                                            : project.teamSize;
+                                    if (!Number.isFinite(teamSize) || (teamSize ?? 0) <= 1) return null;
+                                    return (
                                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-muted text-muted-foreground text-xs rounded-xl font-semibold">
                                         <Users className="h-3 w-3" />
-                                        Team of {project.teamSize}
+                                        Team of {teamSize}
                                     </span>
-                                )}
+                                    );
+                                })()}
                             </div>
 
                             <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">

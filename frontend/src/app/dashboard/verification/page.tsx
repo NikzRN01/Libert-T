@@ -108,15 +108,6 @@ export default function VerificationInboxPage() {
                         Review and approve/reject student skill verification requests.
                     </p>
                 </div>
-                <button
-                    onClick={() => {
-                        clearAuthStorage();
-                        router.replace("/login");
-                    }}
-                    className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold text-slate-700"
-                >
-                    Logout
-                </button>
             </div>
 
             {error && (

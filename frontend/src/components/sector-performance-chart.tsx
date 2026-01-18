@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import type { LabelProps } from 'recharts';
 
 interface SectorData {
@@ -23,7 +23,20 @@ const ORANGE_PALETTE = {
 };
 
 
-function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
+type CustomTooltipPayloadItem = {
+    color?: string;
+    name?: string;
+    value?: unknown;
+};
+
+type CustomTooltipProps = {
+    active?: boolean;
+    payload?: CustomTooltipPayloadItem[];
+    label?: string;
+};
+
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white/95 backdrop-blur-sm border border-orange-200 rounded-lg shadow-lg p-4 min-w-[220px]">
