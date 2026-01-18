@@ -94,10 +94,10 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Profile Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div className="p-6">
+            <div className="relative overflow-hidden rounded-2xl border border-blue-200/80 bg-white/80 shadow-2xl backdrop-blur-xl">
+                <div className="p-8">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                             {/* Avatar */}
@@ -118,10 +118,10 @@ export default function ProfilePage() {
 
                             {/* User Info */}
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <h1 className="text-3xl font-black text-slate-900">
                                     {profile?.name || user?.name}
                                 </h1>
-                                <p className="text-gray-600 dark:text-gray-400 capitalize">
+                                <p className="text-blue-700 capitalize font-semibold">
                                     {(profile?.role || user?.role)?.toLowerCase()}
                                 </p>
                             </div>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
                         {/* Edit Button */}
                         <Link
                             href="/dashboard/profile/edit"
-                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            className="flex items-center space-x-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md transition-colors"
                         >
                             <Edit className="h-4 w-4" />
                             <span>Edit Profile</span>
@@ -140,34 +140,34 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Details */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div className="p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-xl shadow-xl">
+                <div className="p-8">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-6">
                         Profile Information
                     </h2>
 
                     <div className="space-y-4">
-                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center space-x-3 text-slate-700">
                             <Mail className="h-5 w-5" />
                             <span>{profile?.email || user?.email}</span>
                         </div>
 
                         {profile?.profile?.phone && (
-                            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center space-x-3 text-slate-700">
                                 <Phone className="h-5 w-5" />
                                 <span>{profile.profile.phone}</span>
                             </div>
                         )}
 
                         {profile?.profile?.location && (
-                            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center space-x-3 text-slate-700">
                                 <MapPin className="h-5 w-5" />
                                 <span>{profile.profile.location}</span>
                             </div>
                         )}
 
                         {(profile?.createdAt || user?.createdAt) && (
-                            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center space-x-3 text-slate-700">
                                 <Calendar className="h-5 w-5" />
                                 <span>
                                     Joined {new Date((profile?.createdAt || user?.createdAt) as string).toLocaleDateString()}
@@ -178,10 +178,10 @@ export default function ProfilePage() {
 
                     {profile?.profile?.bio && (
                         <div className="mt-6">
-                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <h3 className="text-sm font-bold text-blue-800 mb-2">
                                 Bio
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-slate-700">
                                 {profile.profile.bio}
                             </p>
                         </div>
@@ -190,14 +190,14 @@ export default function ProfilePage() {
                     {profile?.profile?.interests &&
                         profile.profile.interests.length > 0 && (
                             <div className="mt-6">
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <h3 className="text-sm font-bold text-blue-800 mb-2">
                                     Interests
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {profile.profile.interests.map((interest: string, index: number) => (
                                         <span
                                             key={index}
-                                            className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                                            className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold"
                                         >
                                             {interest}
                                         </span>
@@ -209,7 +209,7 @@ export default function ProfilePage() {
                     {profile?.profile?.targetSectors &&
                         profile.profile.targetSectors.length > 0 && (
                             <div className="mt-6">
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <h3 className="text-sm font-bold text-purple-800 mb-2">
                                     Target Sectors
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                                         (sector: string, index: number) => (
                                             <span
                                                 key={index}
-                                                className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm"
+                                                className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-semibold"
                                             >
                                                 {sector}
                                             </span>
@@ -229,7 +229,7 @@ export default function ProfilePage() {
 
                     {(profile?.profile?.linkedIn || profile?.profile?.github || profile?.profile?.portfolio) && (
                         <div className="mt-6">
-                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <h3 className="text-sm font-bold text-blue-800 mb-2">
                                 Social Links
                             </h3>
                             <div className="space-y-2">
@@ -238,7 +238,7 @@ export default function ProfilePage() {
                                         href={profile.profile.linkedIn}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="flex items-center gap-2 text-blue-700 dark:text-blue-300 hover:underline"
+                                        className="flex items-center gap-2 text-blue-700 hover:underline font-semibold"
                                     >
                                         <Linkedin className="h-4 w-4" />
                                         <span>LinkedIn</span>
@@ -249,7 +249,7 @@ export default function ProfilePage() {
                                         href={profile.profile.github}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:underline"
+                                        className="flex items-center gap-2 text-slate-900 hover:underline font-semibold"
                                     >
                                         <Github className="h-4 w-4" />
                                         <span>GitHub</span>
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                                         href={profile.profile.portfolio}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="flex items-center gap-2 text-purple-700 dark:text-purple-300 hover:underline"
+                                        className="flex items-center gap-2 text-purple-700 hover:underline font-semibold"
                                     >
                                         <Link2 className="h-4 w-4" />
                                         <span>Portfolio</span>
@@ -274,30 +274,28 @@ export default function ProfilePage() {
 
             {/* Stats */}
             {profile?.stats && (
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                        <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="grid grid-cols-3 gap-6">
+                    <div className="rounded-2xl border border-blue-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                        <div className="text-4xl font-black text-blue-600">
                             {profile.stats.totalSkills || 0}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <div className="text-base text-slate-700 mt-2 font-semibold">
                             Skills
                         </div>
                     </div>
-
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                        <div className="text-4xl font-black text-emerald-600">
                             {profile.stats.totalProjects || 0}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <div className="text-base text-slate-700 mt-2 font-semibold">
                             Projects
                         </div>
                     </div>
-
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                        <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                    <div className="rounded-2xl border border-purple-100 bg-white/80 backdrop-blur-lg shadow-lg p-8 text-center">
+                        <div className="text-4xl font-black text-purple-600">
                             {profile.stats.totalCertifications || 0}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <div className="text-base text-slate-700 mt-2 font-semibold">
                             Certifications
                         </div>
                     </div>
